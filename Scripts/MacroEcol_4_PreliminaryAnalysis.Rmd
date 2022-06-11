@@ -1,0 +1,1193 @@
+---
+title: "MacroEcol_4_PreliminaryAnalysis"
+author: "Laura Ospina-Rozo"
+date: "25/04/2022"
+output:
+  html_document: 
+    toc: yes
+    toc_float: yes
+    toc_depth: 5
+    highlight: kate
+    theme: paper
+    self_contained: yes
+    mode: selfcontained
+editor_options: 
+  chunk_output_type: console
+---
+
+# Libraries
+
+```{r, warning=FALSE, message=FALSE}
+source("./MacroEcol_1_Libraries.R")
+```
+
+
+# Data Sets
+
+## Reflectivity by Individual
+
+```{r}
+Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1]
+```
+
+## Absorptivity by Individual
+
+```{r}
+Cons2 <- read.csv("../Data/FromCode/ConsAbsEcolInd.csv")[-1]
+```
+
+## Reflectivity by species
+
+Summarise the data frame: one value per species (each variable). This is useful to 
+
+```{r}
+
+Cons1agg <-
+  Cons1 %>% 
+  dplyr::select (-ind) %>%# remove individual id
+  dplyr::select (phylogeny_name, everything ()) %>% # order columns
+  group_by (phylogeny_name) %>%  # group
+  summarise (across(everything(), list(mean))) # mean
+
+# Modify to make it compatible with tree tips
+ConsAgg <- as.data.frame(Cons1agg) # convert to a data frame
+rownames(ConsAgg) <- ConsAgg[, 1] # make species the row names 
+ConsAgg <- ConsAgg [,2:length(ConsAgg)] # eliminate spp name (redundant)
+
+# Separate the data frames 
+# Useful for plotting in the tree
+names(ConsAgg) <- c("TOT", "VIS", "NIR", "Res",
+                    "PC1", "PC2", "Size" )
+
+TOTdf <- ConsAgg %>% dplyr::select (TOT) 
+VISdf <- ConsAgg %>% dplyr::select (VIS) 
+NIRdf <- ConsAgg %>% dplyr::select (NIR) 
+Resdf <- ConsAgg %>% dplyr::select (Res) 
+PC1df <- ConsAgg %>% dplyr::select (PC1) 
+PC2df <- ConsAgg %>% dplyr::select (PC2) 
+Sizdf <- ConsAgg %>% dplyr::select (Size) 
+
+write.csv(ConsAgg,"../Data/ConsReflEcolSpp.csv")
+
+```
+
+# Meaning of the PCs
+
+Lower PC1 = higher humidity (vapour, rain and clouds) lower aridity.  
+
+<br>
+
+Lower PC2 = higher solar radiation, higher max temp, more days above 35 and more aridity
+
+<br>
+<br>
+
+# Correlations without phylogeny
+
+## Reflectivity
+
+### Models
+
+```{r}
+
+EcoMod_TOT <- lm( data = Cons1, R_ALL ~ PC1 + PC2 + size + PC1*size + PC2*size)
+
+EcoMod_VIS <- lm( data = Cons1, R_VIS ~ PC1 + PC2 + size + PC1*size + PC2*size)
+
+EcoMod_NIR <- lm( data = Cons1, R_NIR ~ PC1 + PC2 + size + PC1*size + PC2*size)
+
+EcoMod_Res <- lm( data = Cons1, Res ~ PC1 + PC2 + size + PC1*size + PC2*size)
+
+export_summs(EcoMod_TOT, EcoMod_VIS, EcoMod_NIR, EcoMod_Res, 
+             error_format = "SE = {std.error} p = {p.value}",
+             model.names = c("TOT", "VIS", "NIR", "Res")) 
+
+
+```
+
+If interaction was not included: 
+
+PC1 does not predict reflectivity.
+PC2 predicts VIS reflectivity and Residuals, but with oposite pattern: 
+Hot and arid environments are correlated with high reflectivity in VIS, and lower (negative) NIR residuals. 
+Size has an effect in total, nir and vis reflectivity but not in the residuals.
+
+
+Interaction included in all models: 
+
+_TOT_ ----
+
+Size explains total reflectivity: overall, larger beetles reflect more light
+
+_VIS_ ----
+
+size explains reflectivity in VIS: larger beetles generally reflect more vis light.
+
+PC1 and PC1-Size-Interaction explain reflectivity in VIS: Beetles in humid environments reflect more VIS. And this effect is likely to be more pronounced in small beetles. 
+
+PC2 explains reflectivity in VIS: Beetles in hot/arid environments are reflect more VIS. And this pattern prevails regardless of the size of the beetle.
+
+_Res_ ----
+
+PC2 and PC2-Size interaction explain NIR residuals: Beetles in hot/arid environments seem to reflect less NIR than the value expected by the simple correlation VIS-NIR. And this pattern is more pronounced in small beetles. 
+
+
+### Plots
+
+
+#### PC1
+
+```{r fig.width = 7, fig.height = 9}
+
+toplotPC1 <- 
+  Cons1 %>% 
+  dplyr::select (-PC2,-phylogeny_name) %>% 
+  gather (key = spectralband, 
+          value = Reflectivity, - ind, -PC1, -size)   # prepare for ggplot
+
+
+ggplot(toplotPC1, aes(x = PC1, y = Reflectivity, colour = spectralband))+
+  geom_point(size=2,alpha=0.4)+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  geom_smooth (method="lm")+
+  theme_bw()+
+  facet_wrap(~ spectralband) +
+  scale_color_brewer(palette = "Accent")+
+  theme(legend.position = "none")
+
+```
+
+
+#### PC2
+
+```{r fig.width = 7, fig.height = 9, message=FALSE}
+
+toplotPC2 <- 
+  Cons1 %>% 
+  dplyr::select (-PC1,-phylogeny_name) %>% 
+  gather (key = spectralband, 
+          value = Reflectivity, - ind, -PC2, -size)   # prepare for ggplot
+
+
+
+ggplot(toplotPC2, aes(x = PC2, y = Reflectivity, colour = spectralband))+
+  geom_point(size=2,alpha=0.4)+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  geom_smooth (method="lm")+
+  theme_bw()+
+  facet_wrap(~ spectralband) +
+  scale_color_brewer(palette = "Accent")+
+  theme(legend.position = "none")
+
+```
+
+#### Size
+
+```{r fig.width = 7, fig.height = 9}
+
+toplotSize <- 
+  Cons1 %>% 
+  dplyr::select (-PC1,-phylogeny_name, -PC2) %>% 
+  gather (key = spectralband, 
+          value = Reflectivity, -ind, -size)   # prepare for ggplot
+
+ggplot(toplotSize, aes(x = size, y = Reflectivity, colour = spectralband))+
+  geom_point(size=2,alpha=0.4)+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  geom_smooth (method="lm")+
+  theme_bw()+
+  facet_wrap(~ spectralband) +
+  scale_color_brewer(palette = "Accent")+
+  theme(legend.position = "none")
+
+
+```
+
+
+
+## Absorptivity
+
+### Models
+
+```{r}
+
+EcoMod_Abs_TOT <- lm( data = Cons2, A_ALL ~ PC1 + PC2 + size)
+
+EcoMod_Abs_VIS <- lm( data = Cons2, A_VIS ~ PC1 + PC2 + size)
+
+EcoMod_Abs_NIR <- lm( data = Cons2, A_NIR ~ PC1 + PC2 + size)
+
+export_summs(EcoMod_Abs_TOT, EcoMod_Abs_VIS, EcoMod_Abs_NIR, 
+             error_format = "SE = {std.error} p = {p.value}",
+             model.names = c("TOT", "VIS", "NIR")) 
+
+```
+
+Neither PC's, nor size can explain the absorptivity in this subset of data with a linear relation.
+
+### Plot PC1
+
+```{r fig.width = 7, fig.height = 9}
+
+toplotAPC1 <- 
+  Cons2 %>% 
+  dplyr::select (1, 2, 4, 11, 12, 13) %>% 
+  gather (key = spectralband, 
+          value = Absorptivity, - ind, -PC1, -size)   # prepare for ggplot
+
+
+ggplot(toplotAPC1, aes(x = PC1, y = Absorptivity, colour = spectralband))+
+  geom_point(size=2,alpha=0.4)+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  theme_bw()+
+  facet_wrap(~ spectralband) +
+  scale_color_brewer(palette = "Accent")+
+  theme(legend.position = "none")
+
+```
+
+### Plot PC2
+
+```{r fig.width = 7, fig.height = 9}
+
+toplotAPC2 <- 
+  Cons2 %>% 
+  dplyr::select (1, 3, 4, 11, 12, 13) %>% 
+  gather (key = spectralband, 
+          value = Absorptivity, - ind, -PC2, -size)   # prepare for ggplot
+
+ggplot(toplotAPC2, aes(x = PC2, y = Absorptivity, colour = spectralband))+
+  geom_point(size=2,alpha=0.4)+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  geom_text(data = subset (toplotAPC2, PC2 < -1.5), 
+            aes(label=ind),col="black",
+            position = position_nudge(x = -0.5, y= 3),
+            alpha=.3, size=1.5)+
+  ylim(-10,100)+
+  xlim(-9,3)+
+  theme_bw()+
+  facet_wrap(~ spectralband) +
+  scale_color_brewer(palette = "Accent")+
+  theme(legend.position = "none")
+
+```
+
+
+# Phylogenetic relationships
+
+## Prepare Data
+
+```{r}
+
+# Phylogeny
+trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk ")
+
+```
+
+Read and prune the MCC tree
+
+The MCC (Maximum clade credibility) tree plotted here is the BEAST MCC tree.
+
+```{r}
+
+# read the tree
+MCCtree.raw <- 
+  ape::read.nexus("../Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+
+# Prune extra spp in the tree, not contain in the test sample
+species.MCC <- as.data.frame(unique(Cons1$phylogeny_name))
+
+# Convert to "row names" (required for following steps)
+row.names(species.MCC) <- species.MCC[, 1] 
+
+# Make sure the names in data set and tree match
+temp.MCC <- name.check(MCCtree.raw, species.MCC) 
+
+# This step would be neccesary if the tips had been different.
+# MCCtree <- drop.tip(MCCtree.raw, temp.MCC$tree_not_data)
+# Not used in our case.
+
+# Instead, changed the name
+MCCtree <- MCCtree.raw
+
+```
+
+## Plot the tree
+
+```{r warning = FALSE}
+
+# create phylogeny object for ggtree()
+phylo.MCC <- ggtree(MCCtree, layout="rectangular") + geom_tiplab(size = 1.5) 
+
+# set xlim 
+phylo.MCC + xlim(0, 25) +
+  geom_nodepoint(col="gold", alpha=0.4)
+
+```
+
+## Plot the traits on the tree
+
+The reflectivity values that we include in this plot has to be the average between individuals, since there is only one branch per species. Thus, calculations are done based on the data frame `ConsAgg` (see section Data Processiong / Consolidated Data Frames / Reflectivity per species )
+
+p1 and p2 are two basic plots containing size and ecological variables
+p1 contains results of PC1 and p2 the results of PC2
+
+```{r}
+
+# create a MCC tree without tip names for the plot
+tree_only <- ggtree(MCCtree, layout="rectangular")
+
+# create heat map columns
+# Note: log transforms increase contrast for visualization purposes
+
+# Add Size
+p0 <- gheatmap(tree_only, Sizdf,
+  width = 0.05, low = "gray90", high = "black", 
+  font.size = 2, 
+  colnames_position = "bottom", colnames_angle = 0, 
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = "Size")
+
+# Add PCs
+
+p1.scale <- p0 + new_scale_fill() # add new scale for second variable
+p1 <- gheatmap(p1.scale, (PC1df),
+  offset = 1.5, # to avoid overlapping with p1
+  width = 0.05, low = "#bd1a26", high = "#fffecc",
+  font.size = 2, 
+  colnames_position = "bottom", colnames_angle = 0, 
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = "PC1")
+
+p2.scale <- p0 + new_scale_fill() # add new scale for second variable
+p2 <- gheatmap(p2.scale, (PC2df),
+  offset = 1.5, # to avoid overlapping with p1
+  width = 0.05, low = "red", high = "gold",
+  font.size = 2, 
+  colnames_position = "bottom", colnames_angle = 0, 
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = "PC2")
+```
+
+The basic plots can be combined with reflectivity on any band (TOT, VIS and NIR), and residuals 
+
+According to the section Testing correlations with the environment, only size and PC2 had an effect over VIS and residuals. Thus, the following plot focuses only on these 4 variables.
+
+```{r}
+
+# Add Reflectance
+
+# VIS
+p3.scale <- p2 + new_scale_fill() # add new scale for second variable
+p3 <- gheatmap(p3.scale, log(VISdf),
+  offset = 3, # to avoid overlapping with p1
+  width = 0.05, low = "#1b9e77", high = "#FFFFBF",
+  font.size = 2, 
+  colnames_position = "bottom", colnames_angle = 0, 
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = "VIS")
+
+# Res
+p4.scale <- p3 + new_scale_fill() # add new scale for second variable
+p4 <- gheatmap(p4.scale, 
+               log(Resdf+ # get log to bring them closer to each other
+                     (abs((min(Resdf)))+1)# make them all positive
+                   ), # this correction allows better visualization
+  offset = 4.5, 
+  width = 0.05, low = "#88419d", high = "#edf8fb",
+  font.size = 2, 
+  colnames_position = "bottom", colnames_angle = 0, 
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = "Res")
+
+p4
+
+```
+
+
+# Phylogenetic Comparative analysis
+
+## Asumptions
+
+- Independence of each data points
+- Correct distribution of the residuals
+- Linear relationship between the response and the linear predictor
+
+```{r figures-side, fig.show="hold", out.width="50%"}
+
+plot(EcoMod_TOT$residuals, ylab="Residuals TOT Model")
+abline(h=0, col="orange")
+
+plot(EcoMod_VIS$residuals, ylab="Residuals VIS Model")
+abline(h=0, col="orange")
+
+plot(EcoMod_NIR$residuals, ylab="Residuals NIR Model")
+abline(h=0, col="orange")
+
+plot(EcoMod_Res$residuals, ylab="Residuals Res Model")
+abline(h=0, col="orange")
+
+```
+
+Data points are independent. The residuals of the models do not show any extra pattern and they seem to vary homogenously across the sample.
+
+
+## Different approaches
+
+### Intraspecific variation
+
+MCMC Model
+
+This model tests if the correlations we found in the previous step remain after correcting by phylogeny. This models considers the instraspecific differences in both the reflectivity and the location
+
+Note: 
+
+We use an inverse Wishart prior for the variances and parameter expanded priors for the random effects. Specifically, we use the inverse-gamma prior (V=1) with scale and shape equal to 0.001 (nu=0.002). For parameter expanded priors, we use V=1, nu=1, alpha.mu=0, which is equivalent to a proper Cauchy prior for the standard deviation with scale equal to square-root(alpha.V.). Here we used alpha.V=25^2 following Gelman.2006.
+
+_With V=1 these distributions are equivalent to inverse gamma distributions with shape and scale parameters set to nu/2._
+
+
+#### Set priors for MCMC
+
+```{r}
+# Include 2 Gs = 2 random factors:
+# 1) species (multiple individuals per species) = "phylogeny_name" 
+# 2) phylogeny (phylogenetic relatedness) = "animal" 
+
+prior <- list(
+  R = list(V = 1, n = 0.002),
+  G = list(
+    G1 = list(V = 1, n = 1, alpha.mu = 0, alpha.V = 25^2),
+    G2 = list(V = 1, n = 1, alpha.mu = 0, alpha.V = 25^2)
+  )
+)
+
+```
+
+
+#### On one Tree
+
+On the MCC tree only
+
+Prepare data sets
+
+```{r}
+
+ALLDataSet <- 
+  Cons1 %>% 
+  dplyr::select (-R_VIS, -R_NIR, - Res) %>% 
+  rename ("Reflectance" = R_ALL) %>% 
+  dplyr::select (ind, phylogeny_name, everything())
+
+
+NIRDataSet <- 
+  Cons1 %>% 
+  dplyr::select (-R_ALL, -R_VIS, - Res) %>% 
+  rename ("Reflectance" = R_NIR) %>% 
+  dplyr::select (ind, phylogeny_name, everything())
+
+
+VISDataSet <- 
+  Cons1 %>% 
+  dplyr::select (-R_ALL, -R_NIR, - Res) %>% 
+  rename ("Reflectance" = R_VIS) %>% 
+  dplyr::select (ind, phylogeny_name, everything())
+
+
+ResDataSet <- 
+  Cons1 %>% 
+  dplyr::select (-R_ALL, -R_NIR, -R_VIS) %>% 
+  rename ("Reflectance" = Res) %>% 
+  dplyr::select (ind, phylogeny_name, everything()) 
+
+
+```
+
+Set up the model
+
+```{r}
+
+mcmcmodel <- Reflectance ~ PC1 + PC2 + size + PC1*size + PC2*size
+
+```
+
+Parameters for the model:  nitt = 3000, burnin = 500, thin = 1.
+Set up a shared inverseA and sub-datasets for the MCC tree analysis
+
+
+```{r}
+
+AinvTA.MCC <- inverseA(MCCtree)$Ainv
+
+ALLDataSet$animal <- factor(ALLDataSet$phylogeny_name)
+
+NIRDataSet$animal <- factor(NIRDataSet$phylogeny_name)
+
+VISDataSet$animal <- factor(VISDataSet$phylogeny_name)
+
+ResDataSet$animal <- factor(ResDataSet$phylogeny_name)
+
+```
+
+
+Note: In the plots, the trace should span across the y axis to show that the model have reached all the possibilities.
+
+In the density plots, if the center of the distribution is away from zero, the variable is effective on the dependent variable. The n value in the figure equals to the trees we saved from the model, here: 3000(nitt) - 500(burnin) = 2500.
+
+##### ALL Reflectivity
+
+```{r}
+
+mcmcModMCC_ALL <- MCMCglmm(mcmcmodel,
+  random = ~ animal + phylogeny_name,
+  # account for phylogeny info and species as random factors
+  prior = prior,
+  ginverse = list(animal = AinvTA.MCC),
+  # because "animal" that accounts for phylogeny
+  data = ALLDataSet,
+  family = "gaussian", # depends on the distribution of the parameter 
+  nitt = 3000, burnin = 500, thin = 1, # just to get the chains start
+  # Since this is only one round, increase this number to increase reliability
+  pl = T,
+  pr = F,
+  verbose = F,
+  singular.ok = T
+)
+
+summary(mcmcModMCC_ALL)$solutions %>% 
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+# plot(mcmcModMCC_VIS) can be used to check the progress of the model
+
+```
+
+##### NIR Reflectivity
+
+```{r}
+
+mcmcModMCC_NIR <- MCMCglmm(mcmcmodel,
+  random = ~ animal + phylogeny_name,
+  # account for phylogeny info and species as random factors
+  prior = prior,
+  ginverse = list(animal = AinvTA.MCC),
+  # because "animal" that accounts for phylogeny
+  data = NIRDataSet,
+  family = "gaussian", # depends on the distribution of the parameter 
+  nitt = 3000, burnin = 500, thin = 1, # just to get the chains start
+  # Since this is only one round, increase this number to increase reliability
+  pl = T,
+  pr = F,
+  verbose = F,
+  singular.ok = T
+)
+
+summary(mcmcModMCC_ALL)$solutions %>% 
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+# plot(mcmcModMCC_VIS) can be used to check the progress of the model
+
+```
+
+##### VIS Reflectivity
+
+```{r}
+
+mcmcModMCC_VIS <- MCMCglmm(mcmcmodel,
+  random = ~ animal + phylogeny_name,
+  # account for phylogeny info and species as random factors
+  prior = prior,
+  ginverse = list(animal = AinvTA.MCC),
+  # because "animal" that accounts for phylogeny
+  data = VISDataSet,
+  family = "gaussian", # depends on the distribution of the parameter 
+  nitt = 3000, burnin = 500, thin = 1, # just to get the chains start
+  # Since this is only one round, increase this number to increase reliability
+  pl = T,
+  pr = F,
+  verbose = F,
+  singular.ok = T
+)
+
+summary(mcmcModMCC_VIS)$solutions %>% 
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+# plot(mcmcModMCC_VIS) can be used to check the progress of the model
+
+```
+
+
+
+##### Residuals 
+
+```{r}
+
+mcmcModMCC_Res <- MCMCglmm(mcmcmodel,
+  random = ~ animal + phylogeny_name,
+  # account for phylogeny info and species as random factors
+  prior = prior,
+  ginverse = list(animal = AinvTA.MCC),
+  # because "animal" that accounts for phylogeny
+  data = ResDataSet,
+  family = "gaussian", # depends on the distribution of the parameter 
+  nitt = 3000, burnin = 500, thin = 1, # just to get the chains start
+  # Since this is only one round, increase this number to increase reliability
+  pl = T,
+  pr = F,
+  verbose = F,
+  singular.ok = T
+)
+
+summary(mcmcModMCC_Res)$solutions %>% 
+    kbl() %>%
+    kable_paper("hover", full_width = F)
+
+# plot(mcmcModMCC_VIS) can be used to check the progress of the model
+
+```
+
+
+#### On multiple trees
+
+First run nitt = 1300, burnin = 0, thin = 1 to kick it running. 
+Next, repeat 1300 times on nitt = 2000, burnin = 1999, thin = 1. And the first 300 times will be discarded.
+
+```{r warning=FALSE}
+source("5_code_run_mcmc.R") # Function with MCMCglmm through trees
+```
+
+
+##### ALL Reflectivity
+
+```{r message=FALSE,  results='hide'}
+mcmc.reg.ALL <- run_mcmc(trees, mcmcmodel, ALLDataSet)
+```
+
+```{r message=FALSE}
+
+summary(mcmc.reg.ALL)$solutions %>%
+  round(3) %>%
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+```
+
+
+##### NIR Reflectivity
+
+```{r message=FALSE,  results='hide'}
+
+mcmc.reg.NIR <- run_mcmc(trees, mcmcmodel, NIRDataSet)
+
+```
+
+
+```{r message=FALSE}
+
+summary(mcmc.reg.NIR)$solutions %>%
+  round(3) %>%
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+```
+
+
+
+##### VIS Reflectivity
+
+```{r message=FALSE,  results='hide'}
+
+mcmc.reg.VIS <- run_mcmc(trees, mcmcmodel, VISDataSet)
+
+```
+
+```{r message=FALSE}
+
+summary(mcmc.reg.VIS)$solutions %>%
+  round(3) %>%
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+
+```
+
+
+##### Residuals
+
+```{r message=FALSE,  results='hide'}
+
+mcmc.reg.Res <- run_mcmc(trees, mcmcmodel, ResDataSet)
+
+```
+
+```{r message=FALSE}
+
+summary(mcmc.reg.Res)$solutions %>%
+  round(3) %>%
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+```
+
+#### Model Convergency
+
+obtain the ``trace'' of the sampling (to check for convergence and auto-correlation) and posterior density of each parameter.
+
+If the model has converged there should be no trend in the time series. If it's not spanning all over, it means that the trace for the residual variance has strong auto-correlation and needs to be run for longer.
+
+In the density plots, if the center of the distribution away from zero, meaning that the variable is effective on the dependent variable. The n value in the figure equals to the trees we saved from the model, nitt# - burnin#.
+
+##### ALL Reflectivity
+
+```{r}
+plot(mcmc.reg.ALL)
+```
+
+##### NIR Reflectivity
+
+```{r}
+plot(mcmc.reg.NIR)
+```
+
+
+##### VIS Reflectivity
+
+```{r}
+plot(mcmc.reg.VIS)
+```
+
+##### Residuals 
+
+```{r}
+plot(mcmc.reg.Res)
+```
+
+
+### Interspecific variation
+
+#### PGLS
+
+This model tests if the correlations we found in the previous step remain after correcting by phylogeny. This model does not consider instraspecific variation. We averaged both location and reflectivity and obtained only one value per species. 
+
+Model is the same used for MCMCglmm
+
+Make sure names between data and tree tips match
+
+```{r}
+
+Cons1agg <- as.data.frame(Cons1agg)
+row.names(Cons1agg) <- Cons1agg [, 1] 
+names(Cons1agg) <- c("phylogeny_name", "TOT", "VIS", "NIR", "Res",
+                     "PC1", "PC2", "size")
+
+
+# Test if the species are the same
+identical(
+  length(name.check(MCCtree, Cons1agg$phylogeny_name)$tree_not_data),
+  length(Cons1agg$phylogeny_name)
+)
+
+# name.check(MCCtree, Cons1agg$phylogeny_name)
+
+```
+
+Set up: 
+
+```{r}
+
+comp_data <- comparative.data(
+  phy = MCCtree, data = Cons1agg,
+  names.col = "phylogeny_name", vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+
+```
+
+
+##### ALL Reflectivity 
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodTOT <- pgls(TOT ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsmodTOT) 
+
+```
+
+Results after correcting by phylogeny: 
+
+None of the variables has an effect in the total reflectance
+
+```{r}
+
+# visualize a likelihood surface
+lm.lk.TOT <- pgls.profile(pglsmodTOT, which = "lambda") 
+plot(lm.lk.TOT)
+
+```
+
+Model diagnostic plots
+
+```{r}
+par(mfrow = c(2, 2))
+plot(pglsmodTOT)
+```
+
+Test phylogenetic signal using Pagel's lambda
+
+```{r}
+
+pagelTOTRefl <- Cons1agg$TOT # Define which trait you want to test
+names(pagelTOTRefl) <- rownames(Cons1agg) # Row names = tree tips
+phylosig(MCCtree, pagelTOTRefl, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomizations
+
+```
+
+Phylogenetic signal is high. 
+
+
+
+##### NIR Reflectivity 
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodNIR <- pgls(NIR ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsmodNIR) 
+
+```
+
+Results after correcting by phylogeny: 
+
+None of the variables has an effect in the NIR reflectance
+
+```{r}
+
+# visualize a likelihood surface
+lm.lk.NIR <- pgls.profile(pglsmodNIR, which = "lambda") 
+plot(lm.lk.NIR)
+
+```
+
+Model diagnostic plots
+
+```{r}
+par(mfrow = c(2, 2))
+plot(pglsmodNIR)
+```
+
+Test phylogenetic signal using Pagel's lambda
+
+```{r}
+
+pagelNIRRefl <- Cons1agg$NIR # Define which trait you want to test
+names(pagelNIRRefl) <- rownames(Cons1agg) # Row names = tree tips
+phylosig(MCCtree, pagelNIRRefl, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomizations
+
+```
+
+Phylogenetic signal is high. 
+
+
+
+##### VIS Reflectivity
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodVIS <- pgls(VIS ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsmodVIS) 
+
+```
+
+Results after correcting by phylogeny: 
+
+_Size_ ----
+
+Remains important. Even after correcting by phylogeny, larger beetles reflect more visible light
+
+_PC1 and PC2_ ----
+
+PC1 and PC2 have marginal pvalues. PC1 may have some influence. 
+
+_Interactions_ ----
+
+PC1-Size-Interaction remains significant: smaller beetles tend to reflect more visible light in more humid environments.
+
+Likelihood surfaces of lambda:
+
+```{r}
+
+# visualize a likelihood surface
+lm.lk.VIS <- pgls.profile(pglsmodVIS, which = "lambda") 
+plot(lm.lk.VIS)
+
+```
+
+Model diagnostic plots
+
+```{r}
+par(mfrow = c(2, 2))
+plot(pglsmodVIS)
+```
+
+Test phylogenetic signal using Pagel's lambda
+
+```{r}
+
+pagelVISRefl <- Cons1agg$VIS # Define which trait you want to test
+names(pagelVISRefl) <- rownames(Cons1agg) # Row names = tree tips
+phylosig(MCCtree, pagelVISRefl, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomizations
+
+```
+
+Phylogenetic signal is high. 
+
+
+
+##### Residuals
+
+```{r message= FALSE}
+pglsmodRes <- pgls(Res ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsmodRes)
+```
+
+Results after correcting by phylogeny: 
+
+_Size_ ----
+
+Not significant (as before)
+
+_PC1 and PC2_ ----
+
+PC2 remained significant: Beetles in hotter environments have smaller NIR Residuals (reflect less extra NIR from the expected by the VIS-NIR correlation) 
+
+_Interactions_ ----
+
+PC2-Size-Interaction remains significant: smaller beetles tend to have smaller NIR Residuals in hotter/arid environments.
+
+** It does not necesarily mean they reflect less NIR, it may mean that the amount of NIR and VIS ligth reflected is more similar. Needs further investigation
+
+
+Likelihood surfaces of lambda
+
+```{r}
+
+# visualize a likelihood surface
+lm.lk.Res <- pgls.profile(pglsmodRes, which = "lambda") 
+plot(lm.lk.Res)
+```
+
+Model diagnostic plots
+
+```{r }
+par(mfrow = c(2, 2))
+plot(pglsmodRes)
+```
+
+Test phylogenetic signal using Pagel's lambda
+
+```{r}
+
+pagelRes <- Cons1agg$Res # Define which trait you want to test
+names(pagelRes) <- rownames(Cons1agg) # Row names = tree tips
+phylosig(MCCtree, pagelRes, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomizations
+
+```
+
+Phylogenetic signal is very high
+
+
+
+#### MCMCglmm at species level
+
+It should give us similar results to the PGLS
+
+Model is the same as before
+
+Set priors for MCMC
+
+```{r}
+# Include 1 Gs = 1 random factors:
+# 1) phylogeny (phylogenetic relatedness) = "animal" 
+
+prior.sp2 <- list(
+  R = list(V = 1, n = 0.002),
+  G = list(G1 = list(V = 1, n = 1, alpha.mu = 0, alpha.V = 25^2))
+)
+
+```
+
+
+Prepare data sets
+
+```{r}
+
+
+TOTDataSetSpp <- 
+  Cons1agg %>% 
+  dplyr::select (-NIR, -VIS, - Res) %>% 
+  rename ("Reflectance" = TOT) 
+
+NIRDataSetSpp <- 
+  Cons1agg %>% 
+  dplyr::select (-TOT, -VIS, - Res) %>% 
+  rename ("Reflectance" = NIR) 
+
+VISDataSetSpp <- 
+  Cons1agg %>% 
+  dplyr::select (-TOT, -NIR, - Res) %>% 
+  rename ("Reflectance" = VIS) 
+
+
+ResDataSetSpp <- 
+  Cons1agg %>% 
+  dplyr::select (-TOT, -NIR, -VIS) %>% 
+  rename ("Reflectance" = Res) 
+
+
+
+TOTDataSetSpp$animal <- factor(TOTDataSetSpp$phylogeny_name)
+
+NIRDataSetSpp$animal <- factor(NIRDataSetSpp$phylogeny_name)
+
+VISDataSetSpp$animal <- factor(VISDataSetSpp$phylogeny_name)
+
+ResDataSetSpp$animal <- factor(ResDataSetSpp$phylogeny_name)
+
+```
+
+Set up the model
+
+```{r}
+
+mcmcmodel.spp <- Reflectance ~ PC1 + PC2 + size + PC1*size + PC2*size
+
+```
+
+
+##### ALL Reflectivity
+
+```{r}
+
+mcmcModMCC_TOTsp <- MCMCglmm(mcmcmodel.spp,
+  random = ~animal,
+  # account for only phylogeny as random factors
+  prior = prior.sp2,
+  ginverse = list(animal = AinvTA.MCC),
+  data = TOTDataSetSpp,
+  family = "gaussian",
+  nitt = 3000, burnin = 500, thin = 1,
+  pl = T,
+  pr = F,
+  verbose = F,
+  singular.ok = T
+)
+
+summary(mcmcModMCC_TOTsp)$solutions %>% 
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+
+```
+
+None of the variables has a significant effect on TOTAL reflectivity
+
+
+##### NIR Reflectivity
+
+```{r}
+
+mcmcModMCC_NIRsp <- MCMCglmm(mcmcmodel.spp,
+  random = ~animal,
+  # account for only phylogeny as random factors
+  prior = prior.sp2,
+  ginverse = list(animal = AinvTA.MCC),
+  data = NIRDataSetSpp,
+  family = "gaussian",
+  nitt = 3000, burnin = 500, thin = 1,
+  pl = T,
+  pr = F,
+  verbose = F,
+  singular.ok = T
+)
+
+summary(mcmcModMCC_NIRsp)$solutions %>% 
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+
+```
+
+None of the variables has a significant effect on NIR reflectivity
+
+
+##### VIS Reflectivity
+
+```{r}
+
+mcmcModMCC_VISsp <- MCMCglmm(mcmcmodel.spp,
+  random = ~animal,
+  # account for only phylogeny as random factors
+  prior = prior.sp2,
+  ginverse = list(animal = AinvTA.MCC),
+  data = VISDataSetSpp,
+  family = "gaussian",
+  nitt = 3000, burnin = 500, thin = 1,
+  pl = T,
+  pr = F,
+  verbose = F,
+  singular.ok = T
+)
+
+summary(mcmcModMCC_VISsp)$solutions %>% 
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+
+```
+
+The results of this model are very similar to the ones obtained in the PGLs model. 
+The only difference is that the marginal p value of PC1 in the PGLs model is closer to 0.05 with the MCMC approach
+
+PC2 remains at a  marginal p value.
+
+##### Residuals
+
+```{r}
+
+mcmcModMCC_Ressp <- MCMCglmm(mcmcmodel.spp,
+  random = ~animal,
+  # account for only phylogeny as random factors
+  prior = prior.sp2,
+  ginverse = list(animal = AinvTA.MCC),
+  data = ResDataSetSpp,
+  family = "gaussian",
+  nitt = 3000, burnin = 500, thin = 1,
+  pl = T,
+  pr = F,
+  verbose = F,
+  singular.ok = T
+)
+
+summary(mcmcModMCC_Ressp)$solutions %>% 
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+
+```
+
+Results are the same as in PGLs
+

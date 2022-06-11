@@ -1,0 +1,276 @@
+---
+title: "MacroEcol_1_SettingUp"
+author: "Laura Ospina-Rozo"
+date: "25/04/2022"
+output:
+  html_document: 
+    toc: yes
+    toc_float: yes
+    toc_depth: 5
+    highlight: kate
+    theme: paper
+    self_contained: yes
+    mode: selfcontained
+    editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+# Libraries
+
+Install
+
+```{r eval=FALSE}
+
+#For PCA
+install.packages("Hmisc")
+install.packages("psych")
+install.packages("plot.matrix")
+
+
+#For plots
+install.packages("ggplot2")
+install.packages("RColorBrewer")
+install.packages("gridExtra")
+install.packages("devtools")
+devtools::install_github("eliocamp/ggnewscale") 
+
+# spectral Data
+install.packages("pavo")
+
+
+#For MCMCglmm
+install.packages("MCMCglmm")
+install.packages("ggtree")
+install.packages("geiger") 
+install.packages("ggnewscale") 
+install.packages("phangorn") 
+
+
+# For PGLS
+install.packages("caper") 
+install.packages("phytools") 
+install.packages("coda")
+
+# Data wrangling
+install.packages("dplyr")
+install.packages("tidyverse")
+install.packages("tidyr")
+install.packages("reshape2")
+
+# MarkDown HTML
+install.packages("kableExtra")
+install.packages("ggExtra")
+install.packages("jtools")
+
+```
+
+Load
+
+We used a .R file to contain and load all the libraries:
+
+```{r, warning=FALSE, message=FALSE}
+source("./MacroEcol_1_Libraries.R")
+```
+
+
+
+# Data Frames
+
+```{r message=FALSE, warning=FALSE}
+#Import data
+refl1<-read.csv("../Data/1_Reflectance_HRBatch.csv") # HR batch
+refl2<-read.csv("../Data/2_Reflectance_FirstBatch.csv") # original
+TopTrans<-read.csv("../Data/3_Transmittance_HRBatch.csv") # transmittance
+theorySun<-read.csv("../Data/4_SunIrradiance.csv") # Sun irradiance
+
+
+#Fix the column names and convert to rspec object
+refl1 <-
+  refl1 %>% 
+  dplyr::select(sort(tidyselect::peek_vars())) %>% 
+  dplyr::select(wl, everything()) %>% 
+  filter(wl >= 400 & wl <= 1700) %>% 
+  dplyr::select(-clor2, #same as clor 12 in refl2
+         -rpmt1, -vrid1, -vrid2, -ocul1, # locality missing
+         -rose1) %>% # no ecol variables available 
+  rename (
+    anom03 = anom1,
+    anom02 = anom2,
+    atki03 = atki1,
+    atki04 = atki2,
+    aurs03 = aurs1,
+    aurs04 = aurs2,
+    clor17 = clor1,
+    conc05 = conc1,
+    conc06 = conc2,
+    ecry04 = ecry1,
+    ecry05 = ecry2,
+    fchi03 = fchi1,
+    fchi04 = fchi2,
+    gray04 = gray1,
+    gray05 = gray2,
+    hirs15 = hirs1,
+    hirs16 = hirs2,
+    lats04 = lats1,
+    lats05 = lats2,
+    mcla03 = mcla1,
+    macl06 = mclm1,
+    macl07 = mclm2,
+    narm04 = narm1,
+    narm05 = narm2,
+    pczo05 = ocul2,
+    pczv04 = oliv1,
+    pczv05 = oliv2,
+    opal03 = opal1,
+    pali08 = pali1,
+    pali09 = pali2,
+    poro16 = poro1,
+    poro17 = poro2,
+    pczp05 = ppsi1,
+    pczp06 = ppsi2,
+    prsi04 = prsi1,
+    prsi05 = prsi2,
+    prsi06 = prsi3,
+    pvul05 = pvul1,
+    pvul06 = pvul2,
+    rayn04 = rayn1,
+    rayn05 = rayn2,
+    repa03 = rpan1,
+    reps03 = rpmm1,
+    smgg03 = smgd1,
+    smgg04 = smgd2,
+    tars05 = tars1,
+    tars06 = tars2,
+    xyle07 = xyln1,
+    xyle08 = xyln2,
+    xyle09 = xyln3 ) %>%  #rename to fuse with the other data set
+  as.rspec(.) %>% 
+  procspec(.,fixneg = "zero") 
+
+
+refl2 <-
+  refl2 %>% 
+  dplyr::select(sort(tidyselect::peek_vars())) %>% 
+  dplyr::select(wl, everything()) %>% 
+  filter(wl >= 400 & wl <= 1700) %>% 
+  dplyr::select(-ambl03, -anom02, -black, -mima03,
+         -oliv03, -para01, -para02, -saul03,
+         -velu00, -vrdi01, -xyle03) %>% #removed. Location not available
+  rename (velu05 = flin01,
+          velu04 = flin02,
+          narm03 = namr03,
+          rept01 = rep201,
+          rept02 = rep202,
+          rept03 = rep203,
+          rubi03 = sutr01,
+          rubi04 = sutr02,
+          rubi05 = sutr03,
+          rubi06 = sutr04) %>%  # renamed
+  as.rspec(.) %>% 
+  procspec(.,fixneg = "zero") 
+
+
+TopTrans <-
+  TopTrans %>% 
+  dplyr::select(sort(tidyselect::peek_vars())) %>% 
+  dplyr::select(wl, everything()) %>% 
+  filter(wl >= 400 & wl <= 1700) %>% 
+  dplyr::select(-clor2t, #same as clor 12 in refl2
+         -rpmt1t, -vrid1t, -vrid2t, -ocul1t, # locality missing
+         -rose1t) %>%   # no ecol variables available 
+  rename (
+    anom03 = anom1t,
+    anom02 = anom2t,
+    atki03 = atki1t,
+    atki04 = atki2t,
+    aurs03 = aurs1t,
+    aurs04 = aurs2t,
+    clor17 = clor1t,
+    conc05 = conc1t,
+    conc06 = conc2t,
+    ecry04 = ecry1t,
+    ecry05 = ecry2t,
+    fchi03 = fchi1t,
+    fchi04 = fchi2t,
+    gray04 = gray1t,
+    gray05 = gray2t,
+    hirs15 = hirs1t,
+    hirs16 = hirs2t,
+    lats04 = lats1t,
+    lats05 = lats2t,
+    mcla03 = mcla1t,
+    macl06 = mclm1t,
+    macl07 = mclm2t,
+    narm04 = narm1t,
+    narm05 = narm2t,
+    pczo05 = ocul2t,
+    pczv04 = oliv1t,
+    pczv05 = oliv2t,
+    opal03 = opal1t,
+    pali08 = pali1t,
+    pali09 = pali2t,
+    poro16 = poro1t,
+    poro17 = poro2t,
+    pczp05 = ppsi1t,
+    pczp06 = ppsi2t,
+    prsi04 = prsi1t,
+    prsi05 = prsi2t,
+    prsi06 = prsi3t,
+    pvul05 = pvul1t,
+    pvul06 = pvul2t,
+    rayn04 = rayn1t,
+    rayn05 = rayn2t,
+    repa03 = rpan1t,
+    reps03 = rpmm1t,
+    smgg03 = smgd1t,
+    smgg04 = smgd2t,
+    tars05 = tars1t,
+    tars06 = tars2t,
+    xyle07 = xyln1t,
+    xyle08 = xyln2t,
+    xyle09 = xyln3t ) %>%  #rename to fuse with the other data set
+  as.rspec(.) %>% 
+  procspec(.,fixneg = "zero") 
+
+
+# Convert the sun irradiance into an rspec object
+
+theorySun <-
+  theorySun %>% 
+  filter(wl >= 400 & wl <= 1700) %>% 
+  as.rspec(.) %>% 
+  procspec(.,fixneg = "zero") 
+
+
+# Produce the final data frames for calculating irradiance
+
+Transmitance <- 
+  TopTrans %>% 
+  mutate(Sun = theorySun$irradiance) # Add Sun irradiance as the last column
+
+Reflectance <- 
+  data.frame (refl1,refl2[,2:length(refl2)]) %>% 
+  dplyr::select(sort(tidyselect::peek_vars())) %>% 
+  select(wl, everything()) %>% 
+  as.rspec(.) %>% 
+  procspec(.,fixneg = "zero") %>% 
+  mutate(Sun = theorySun$irradiance) # Add Sun irradiance as the last column
+
+
+```
+
+Create files
+
+```{r}
+
+write.csv(Reflectance,"../Data/FromCode/Reflectance_PData.csv")
+write.csv(Transmitance,"../Data/FromCode/Transmitance_PData.csv")
+
+```
+

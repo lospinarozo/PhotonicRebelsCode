@@ -1,0 +1,505 @@
+---
+title: "MacroEcol_2_OpticalProperties"
+author: "Laura Ospina-Rozo"
+date: "25/04/2022"
+output:
+  html_document: 
+    toc: yes
+    toc_float: yes
+    toc_depth: 5
+    highlight: kate
+    theme: paper
+    self_contained: yes
+    mode: selfcontained
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+# Setting up
+
+Load Libraries and Data sets
+
+```{r, warning=FALSE, message=FALSE}
+# Libraries
+source("./MacroEcol_1_Libraries.R")
+```
+
+```{r, warning=FALSE, message=FALSE}
+
+# Data Sets
+
+Reflectance <- read.csv("../Data/FromCode/Reflectance_PData.csv") %>% 
+  select(-1) %>% 
+  as.rspec()
+
+Transmitance <- read.csv("../Data/FromCode/Transmitance_PData.csv") %>% 
+  select(-1) %>% 
+  as.rspec()
+
+theorySun <- read.csv("../Data/4_SunIrradiance.csv") %>% # Sun irradiance
+ as.rspec()
+
+```
+
+
+# Calculate Optical Properties
+
+## Reflectivity
+
+In the field of Biophysical Ecology Reflectivity is defined as the ratio of total reflected to total incident radiation, and is a proportion ranging from 0 to 1 (i.e. not wavelength resolved).
+It is calculating by combining the hemispherical reflectance of each beetle and the sun irradiance in 4 steps:
+<br>
+Note: In the field of Physics reflectivity corresponds to the angle-integrated reflectance (% reflectance per nm, i.e. it is wavelength resolved), but this is not the definition we used
+<br>
+<br>
+
+<span style="color: #04C799"> **1) Multiplication** </span>  <br/>
+
+We created a function to multiply the irradiance of the sun * the reflectance at each wavelength
+
+```{r message=FALSE, warning=FALSE}
+# 1) Define the following function to find the multiplication
+
+Find.multiplication<-function(s){
+  vector2<-rep("NA", length(s[ , 1]))
+  for( i in 2 : length(s) - 1){
+    for (y in 1 : length(s[ , 1])){
+      vector2[y] <- s[y, i] * s[y, "Sun"] # multiply each column by the last one
+    }
+    s[i] <- as.numeric(vector2) 
+  }
+  return(s)
+}
+
+# 2) Apply 
+PrelValuesRefl <- Find.multiplication(Reflectance) 
+
+# 3) Clean up preliminary values for reflectivity
+PrelValuesRefl <-
+  PrelValuesRefl %>% 
+  dplyr::select (-wl, # the wavelengths were altered, eliminate
+          -Sun) %>% # Sun irradiance not required anymore, eliminate
+  mutate (wl = Reflectance$wl) %>%  # add the correct wavelength column
+  dplyr::select(wl, everything()) %>% # set the wl column as column 1
+  as.rspec(.) # convert to rspec object
+
+```
+
+<span style="color: #04C799"> **2) Subset** </span>  <br/>
+
+Then, we separated the data into different subsets according to the spectral band: visible (VIS), NIR or Visible+NIR (ALL)
+
+```{r}
+
+Refl_VIS <- 
+  PrelValuesRefl %>% 
+  filter(wl <= 700)
+
+Refl_NIR <- 
+  PrelValuesRefl %>% 
+  filter(wl >= 700)
+
+Refl_ALL <-
+  PrelValuesRefl
+
+Sun_VIS <-
+  theorySun %>% 
+  filter(wl <= 700)
+
+Sun_NIR <-
+  theorySun %>% 
+  filter(wl >= 700)
+
+```
+
+
+<span style="color: #04C799"> **3) Area under the curve** </span>  <br/>
+
+Afterwards, we found the area under the curve for each beetle on each spectral band
+
+```{r message=FALSE, warning=FALSE}
+# Find the AUC for the samples
+
+# "Full" spectrum 400 to 1700 nm
+Sumdf1 <- summary(Refl_ALL)
+B1ALL <- Sumdf1$B1
+
+# VIS 400 to 700 nm
+Sumdf2 <- summary(Refl_VIS)
+B1VIS <- Sumdf2$B1
+
+# NIR 700 to 1700 nm
+Sumdf3 <- summary(Refl_NIR)
+B1NIR <- Sumdf3$B1
+
+```
+
+As well as the area under the curve for the sun irradiance on each spectral band
+
+```{r message=FALSE, warning=FALSE}
+
+# Find the AUC for the sun irradiance
+B1SunALL <- summary(theorySun)$B1
+B1SunVIS <- summary(Sun_VIS)$B1
+B1SunNIR <- summary(Sun_NIR)$B1
+
+```
+
+
+<span style="color: #04C799"> **4) Standarisation** </span>  <br/>
+
+We divided the vectors containing the AUC per species, by the AUC of the sun for each spectral range.
+
+This step is useful to express reflectivity as the percentage of light coming from the sun, reflected by the beetle on each spectral range
+
+```{r}
+
+Reflectivity <- data.frame(
+  "ind"= names(PrelValuesRefl[2:length(PrelValuesRefl)]),
+  "R_ALL"= B1ALL/B1SunALL,
+  "R_VIS"= B1VIS/B1SunVIS,
+  "R_NIR"= B1NIR/B1SunNIR)
+
+head(Reflectivity)
+
+```
+
+<br>
+<br>
+
+## Transmissivity
+
+The process and rationale to calculate transmissivity is similar to reflectivity. We combined the hemispherical reflectance of each beetle and the sun irradiance in 4 steps:
+
+<span style="color: #04C799"> **1) Multiplication** </span>  <br/>
+
+This function multiplies the irradiance of the sun * the reflectance at each wavelength
+
+```{r message=FALSE, warning=FALSE}
+# 1)  The function has already been defined in the previous section
+
+# 2) Apply 
+PrelValuesTrans <- Find.multiplication(Transmitance) 
+
+# 3) Clean up preliminary values for reflectivity
+PrelValuesTrans <-
+  PrelValuesTrans %>% 
+  dplyr::select (-wl, # the wavelengths were altered, eliminate
+          -Sun) %>% # Sun irradiance not required anymore, eliminate
+  mutate (wl = Transmitance$wl) %>%  # add the correct wavelength column
+  dplyr::select(wl, everything()) %>% # set the wl column as column 1
+  as.rspec(.) # convert to rspec object
+  
+```
+
+<span style="color: #04C799"> **2) Subset** </span>  <br/>
+
+We separated the data into different subsets according to the spectral band: visible (VIS), NIR or Visible+NIR (ALL)
+
+```{r}
+
+Tran_VIS <- 
+  PrelValuesTrans %>% 
+  filter(wl <= 700)
+
+Tran_NIR <- 
+  PrelValuesTrans %>% 
+  filter(wl >= 700)
+
+Tran_ALL <-
+  PrelValuesTrans
+
+```
+
+<span style="color: #04C799"> **3) Area under the curve** </span>  <br/>
+
+Afterwards, we found the area under the curve for each beetle on each spectral band
+
+```{r message=FALSE, warning=FALSE}
+# Find the AUC for the samples
+
+# "Full" spectrum 400 to 1700 nm
+Sumdf4 <- summary(Tran_ALL)
+TB1ALL <- Sumdf4$B1
+
+# VIS 400 to 700 nm
+Sumdf5 <- summary(Tran_VIS)
+TB1VIS <- Sumdf5$B1
+
+# NIR 700 to 1700 nm
+Sumdf6 <- summary(Tran_NIR)
+TB1NIR <- Sumdf6$B1
+
+
+# Use the AUC for the sun irradiance calculated in the reflectivity section.
+
+```
+
+
+<span style="color: #04C799"> **4) Standarisation** </span>  <br/>
+
+We divided the vectors with the AUC per species, by the AUC of the sun for each spectral range.
+
+This step is useful to express Transmissivity as the percentage of light coming from the sun, that passes through a beetle elytra on each spectral range
+
+
+```{r}
+
+Transmissivity <- data.frame(
+  "ind"= names(PrelValuesTrans[2:length(PrelValuesTrans)]),
+  "T_ALL"= TB1ALL/B1SunALL,
+  "T_VIS"= TB1VIS/B1SunVIS,
+  "T_NIR"= TB1NIR/B1SunNIR) %>% 
+  arrange(ind)
+
+head(Transmissivity)
+
+```
+
+<br>
+<br>
+
+## Absorptivity
+
+We assumed that all the light that is neither reflected nor absorbed by the elytra must be absorbed by it. Thus, we calculated the absorptivity as Abs = 100 - (Reflectivity + Transmissivity)
+
+```{r}
+
+Reflect_sub <- 
+  Reflectivity %>% 
+  filter(ind %in% (Transmissivity$ind)) %>% 
+  arrange(ind)
+```
+
+
+## Consolidated
+
+Finally we created a data frame containing the three optical properties reflectvity (R), transmissivity (T) and absorptivity (A) for each beetle on each of the three spectral bands: visible (VIS= 400 to 700 nm), near infrared (NIR= 700 to 1400nm) and both combined (ALL= 400 to 1400nm) 
+
+```{r}
+
+Optical <- # A data frame with the 3 optical properties
+  data.frame(Reflect_sub,Transmissivity) %>% 
+  dplyr::select(-ind.1) %>% 
+  mutate(
+    A_ALL = 100 - (R_ALL + T_ALL), # Absorptivity for VIS+NIR 
+    A_VIS = 100 - (R_VIS + T_VIS), # Absorptivity for VIS
+    A_NIR = 100 - (R_NIR + T_NIR) # Absorptivity for NIR
+  )
+
+head(Optical)
+
+```
+
+<br>
+<br>
+
+
+## NIR/VIS Residuals 
+
+We included this step because visible and NIR reflectivity are expected to be correlated. Considering the residuals of the correlation between these two properties is useful to explore if NIR reflectivity is driven by pressures different than the ones affecting visible (mainly thermoregulation)
+
+```{r message=FALSE}
+
+#Plot of the correlation between NIR and VIS reflectivity
+ggplot(data = Reflectivity, aes(x = R_VIS, y = R_NIR))+
+  geom_point(size=3,alpha=0.4, pch=21,
+             col="black",
+             fill= "#39BEB1")+
+  geom_smooth (method="lm", col="black")+
+  theme_bw() +
+  xlab("Reflectivity in VIS (%)") +
+  ylab("Reflectivity in NIR (%)")
+
+# Linear model
+NIRVISMod1 <- lm (Reflectivity$R_NIR ~ Reflectivity$R_VIS)
+
+export_summs(NIRVISMod1, error_format = "SE = {std.error}")
+
+# Include Residuals in the data frame
+Reflectivity$Res <- NIRVISMod1$residuals 
+
+```
+
+Relationship between reflectivity in NIR and the residuals: 
+
+```{r message=FALSE}
+
+ForResNIRPlot <-
+  Reflectivity %>% 
+  dplyr::select (ind, Res, R_NIR) %>% 
+  arrange (R_NIR) 
+
+ggplot(data = ForResNIRPlot, aes(x= R_NIR ,y = Res))+
+  geom_point(size=3,alpha=0.4, pch=21,
+             col="black",
+             fill= "#39BEB1")+
+  geom_text(data = subset (ForResNIRPlot, Res > 10 | Res < -15), 
+            aes(label=ind),col="black",
+            position = position_nudge(x = +1.8),
+            alpha=.3, size=2.5)+
+  theme_bw() +
+  geom_hline(yintercept=0)+
+  xlab("Reflectivity in NIR (%)") +
+  ylab("Residuals from NIR-VIS correlation (%)")
+
+
+```
+
+Relationship between reflectivity in VIS and the residuals: 
+
+```{r message=FALSE}
+
+ForResVISPlot <-
+  Reflectivity %>% 
+  dplyr::select (ind, Res, R_VIS) %>% 
+  arrange (R_VIS) 
+
+ggplot(data = ForResVISPlot, aes(x= R_VIS ,y = Res))+
+  geom_point(size=3,alpha=0.4, pch=21,
+             col="black",
+             fill= "#39BEB1")+
+  geom_text(data = subset (ForResVISPlot, Res > 10 | Res < -15), 
+            aes(label=ind),col="black",
+            position = position_nudge(x = +0.8),
+            alpha=.3, size=2.5)+
+  theme_bw() +
+  geom_hline(yintercept=0)+
+  xlab("Reflectivity in VIS (%)") +
+  ylab("Residuals from NIR-VIS correlation (%)")
+
+
+```
+
+<br>
+<br>
+
+# Notes
+
+<span style="color: #04C799"> **On phylogeny:** </span>  <br/>
+
+Some beetles were removed from the analysis because their position on the phylogeny is uncertain. 
+
+```{r}
+
+Reflectivity <-
+  Reflectivity %>% 
+  mutate (spp = substr(ind, 1, 4)) %>% 
+  filter (spp != "ambl"& # Amblyterus cicatricosus
+          spp != "psqz"& # Pseudoschizongnatus schoenfeldti
+          spp != "saul"& # Saulostomus villosus
+          spp != "sqzb"& # Schizognathus burmeisteri
+          spp != "sqzc"& # Schizognathus compressicornis
+          spp != "sqzm"  # Schizognathus mesosternalis
+            ) %>% # These species were removed. No phylogenetic info
+  dplyr::select (-spp)
+
+
+```
+
+<br>
+<br>
+
+<span style="color: #04C799"> **Data frames from code:** </span>  <br/>
+
+
+`Reflectivity` contains the standardized values of Reflectivity for 261 individuals (those from wich we had sufficient phylogenetic information). 
+
+`Optical` contains the standardized values for three optical properties Reflectivity, Transmissivity and Absorptivity for a subset of 51 individuals form the previous sample (correspondent to the same set of individuals analyzed in the heating rates chapter). 
+
+<br>
+<br>
+
+
+# Additional variables
+
+Finally we created data frames that contain the optical properties, size and phylogeny name for each beetle
+
+<span style="color: #04C799"> **Size:** </span>  <br/>
+
+We measured the length between the frontal edge of the head to the end of the abdomen from calibrated photographs of the specimens.
+
+```{r}
+Size <- read.csv("../Data/8_Size.csv")
+
+Size <-
+  Size %>% 
+  mutate (spp = substr(ind, 1, 4)) %>% 
+  filter (spp != "ambl"& # Amblyterus cicatricosus
+          spp != "psqz"& # Pseudoschizongnatus schoenfeldti
+          spp != "saul"& # Saulostomus villosus
+          spp != "sqzb"& # Schizognathus burmeisteri
+          spp != "sqzc"& # Schizognathus compressicornis
+          spp != "sqzm"  # Schizognathus mesosternalis
+            ) %>% # These species were removed. No phylogenetic info
+  dplyr::select (-spp)
+
+```
+
+<br>
+
+<span style="color: #04C799"> **Phylogeny name:** </span>  <br/>
+
+```{r}
+
+SppNames <- read.csv("../Data/9_CodesAndSpecies.csv")
+
+SppNames <-
+  SppNames %>% 
+  mutate (spp = substr(Ind, 1, 4)) %>% 
+  filter (spp != "ambl"& # Amblyterus cicatricosus
+          spp != "psqz"& # Pseudoschizongnatus schoenfeldti
+          spp != "saul"& # Saulostomus villosus
+          spp != "sqzb"& # Schizognathus burmeisteri
+          spp != "sqzc"& # Schizognathus compressicornis
+          spp != "sqzm"  # Schizognathus mesosternalis
+            ) %>% # These species were removed. No phylogenetic info
+  dplyr::select (-spp) %>% 
+  arrange(Ind)
+
+```
+
+
+<br>
+<br>
+
+# Final Data Frames
+
+<span style="color: #04C799"> **Reflectivity by individual** </span>  <br/>
+
+Consolidated file with reflectivity on each spectral band, size and phylogeny name for each beetle.
+
+```{r}
+
+Cons1oo <-
+  data.frame(Reflectivity, Size, SppNames) %>% 
+  dplyr::select(-ind.1,-Ind)
+
+write.csv(Cons1oo,"../Data/FromCode/ConsolidatedReflectivityInd.csv")
+
+```
+
+<span style="color: #04C799"> **Absorptivity by individual** </span>  <br/>
+
+
+Consolidated file with absorptivity on each spectral band, size and phylogeny name for each beetle.
+
+```{r}
+
+Cons2oo <- 
+  Cons1oo %>% 
+  filter(ind %in% (Optical$ind)) %>% # Subset the reflectivity set
+  arrange(ind) %>% 
+  dplyr::select(size) %>% # Keep only the size
+  bind_cols(. , Optical) %>% # join with the 'Optical' Data frame
+  dplyr::select(ind, everything()) # rearrange the column order
+
+write.csv(Cons2oo,"../Data/FromCode/ConsolidatedAbsoptivityInd.csv")
+  
+```
+
+
+
+
+

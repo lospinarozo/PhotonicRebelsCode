@@ -1,0 +1,17 @@
+---
+title: "MacroEcol_0_Main"
+author: "Laura Ospina-Rozo"
+date: '2022-06-09'
+output:
+  html_document: 
+    toc: yes
+    toc_float: yes
+    toc_depth: 5
+    highlight: kate
+    theme: paper
+    self_contained: yes
+    mode: selfcontained
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---

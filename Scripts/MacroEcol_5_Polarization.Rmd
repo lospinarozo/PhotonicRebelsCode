@@ -1,0 +1,979 @@
+---
+title: "5_Polarization"
+author: "Laura Ospina-Rozo"
+date: "25/04/2022"
+output:
+  html_document: 
+    toc: yes
+    toc_float: yes
+    toc_depth: 5
+    highlight: kate
+    theme: paper
+    self_contained: yes
+    mode: selfcontained
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+
+In this file, we calculate the reflectance of the beetles from the RGB values measured from calibrated photographs to find the XXXX of polarization.
+
+Specifically, we first linearise the RBGs using the parameters derived from the MATLAB code adapted from Stevens et al 2007 (Biological Journal of the Linnean society, 90(2), 211-237).
+
+Next we equalise the RGB values with the grey standard with known reflectance.
+
+Then we calculate the difference between the two polarizations standardized by their sum. 
+
+Finally we correlate the polarization with reflectivity obtained in previous scripts
+
+# Setting up
+
+## General
+
+Libraries sourced from an additional script
+
+```{r message = FALSE, warning=FALSE}
+source("./MacroEcol_1_Libraries.R")
+```
+
+We included an overall option to keep as many decimals as possible in our data, which is important for our calculations
+
+```{r}
+options(scipen = 100)
+```
+
+We imported the data set containing ecological and phylogeny data obtained in previous steps. 
+
+```{r}
+Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1] 
+
+```
+
+
+## Parameters
+
+To calibrate, we photographed a set of 2%, 20%, 40%, 60%, 80% and 99% and standards. Then, we fitted a polynomial regression between the RGB values the standards display in our set up and their expected reflectance on each channel (obtained from the manufacturer), using a custom made function in MatLab. 
+
+Since the pictures were not taken on the same day, we calibrated the beetle photographs to the photographs of the standards taken on the same day. That means we had one set of parameters for each camera configuration (in the code this is called camera_cat)
+
+The parameters obtained from these curves were stored in .txt files, so we wrote a function to import them directly.
+
+```{r}
+
+read_parameters_from_file <- function(camera_cat, type) {
+  param <- read.table(paste0("../Data/ParametersMatLab/StandardParams", 
+                             camera_cat, type, ".txt"), header=TRUE) %>% 
+  select(1:5,7) %>% 
+  mutate(camera_cat = rep(camera_cat)) %>% 
+  mutate(type=rep(type))
+  
+  return(param)
+}
+
+parameter0 <-
+  bind_rows(
+  read_parameters_from_file("J21", "LCP"),
+  read_parameters_from_file("J21", "RCP"),
+  read_parameters_from_file("J21", "VIS"),
+  
+  read_parameters_from_file("J25", "LCP"),
+  read_parameters_from_file("J25", "RCP"),
+  read_parameters_from_file("J25", "VIS"),
+  
+  read_parameters_from_file("J26", "LCP"),
+  read_parameters_from_file("J26", "RCP"),
+  read_parameters_from_file("J26", "VIS"),
+  
+  read_parameters_from_file("F01", "LCP"),
+  read_parameters_from_file("F01", "RCP"),
+  read_parameters_from_file("F01", "VIS"),
+  
+  read_parameters_from_file("F04", "LCP"),
+  read_parameters_from_file("F04", "RCP"),
+  read_parameters_from_file("F04", "VIS")
+
+  )
+
+```
+
+The regression uses 4 parameters a, b, c, and d. We obtained one value for each parameter, on each channel (R,G, B) for each type of filter (VIS = Visible, LCP =left handed circularly polarized and RCP= right circularly polarized) on each camera configuration (camera_cat)
+
+```{r}
+
+parameter <- 
+  parameter0 %>% filter(Channel != "Gy") %>% # keep only the channels R, G, B.
+  select(-5) %>% # this column is the % of fitting (ideally) above 0.99)
+  gather(key = parameter, 
+         value = value,
+         - Channel, -type, -camera_cat) #re-arrange: All parameters in 1 column
+
+head(parameter)
+
+```
+
+## Grey Standard
+
+This is the known reflectance (from manufacturer) of the 40% grey placed next to each beetle in the photographs
+
+```{r}
+
+grey_standard_refl <- read.csv("../Data/12_knownGreyStdReflectance.csv")
+
+```
+
+## Raw RGB values
+
+These are the RGB valuyes extracted from the calibrated photographs. We considered one region of interest (ROI) in one elytron and one in the pronotum. We also sampled the 40% grey as a reference.
+
+```{r import data, echo = FALSE, message = FALSE}
+RGB_raw <- read.csv("../Data/10_Polarization.csv")
+
+# simplify
+RGB_raw_transform <- 
+  RGB_raw %>% 
+  # remove these columns that we do not need:
+  select(-Pic_code,-ANIC,-SpeciesName, -area, -min, -max) %>% 
+  # Change names
+  rename("type" = Filter, # This means VIS, Left polarize, or right polarized
+         "Channel" = label, # This means R, G or B
+         "value" = mean) %>% # This refers to the value of each channel
+  filter(ind != "pind03") # removed because values were repeated accidentally
+
+
+```
+
+
+**Elytra**
+
+We separated the RGB values of the elytra and the grey standard but kept a unique identifier called PhotoID. This helps pairing the sample with the grey that was in that picture further in the analysis (required to run the linearisation function).
+
+```{r}
+
+RGBElytraNGrey <-
+  RGB_raw_transform %>% 
+  filter(tr != "Pronotum") %>% # remove data for the pronotum
+  unite("PhotoID", # Create a unique code
+        c(1,2,4), # which contains the individual_Filter_Channel
+        remove=FALSE) # still keep all the original columns
+
+# Each beetle sample has a grey standard in the same photo.  
+levels(as.factor(RGBElytraNGrey$tr)) 
+
+# We will separate the elytra and grey
+# but they will still share the unique PhotoID to pair them later
+
+RGBElytra <-
+  RGBElytraNGrey %>% 
+  filter(tr == "Elytra")
+  
+RGBElGrey <-
+  RGBElytraNGrey %>% 
+  filter(tr == "Grey")
+
+```
+
+
+
+**Pronotum**
+
+Pronotum data was not available for the following beetles: 
+
+```{r}
+
+RGBPronot1 <-
+  RGB_raw_transform %>% 
+  filter(tr != "Elytra") %>%  # remove data for the elytra
+  unite("PhotoID", # Create a unique code
+        c(1,2,4), # which contains the individual_Filter_Channel
+        remove=FALSE) # still keep all the original columns
+
+inPGind <- levels(as.factor(RGBPronot1[RGBPronot1$tr=="Grey",]$ind))
+inPRind <- levels(as.factor(RGBPronot1[RGBPronot1$tr=="Pronotum",]$ind))
+
+setdiff(inPGind,inPRind)
+setdiff(inPRind,inPGind)
+# Note pronotum missing for these: "ecry03" "mcla02" "roci02"
+```
+
+They are considered for the overall polarization analysis but not in the correlations elytra-pronotum.
+
+We separated the RGB values of the pronotum and the grey standard but kept a unique identifier called PhotoID. This helps pairing the sample with the grey that was in that picture further in the analysis (required to run the linearisation function).
+
+```{r}
+
+RGBPronot1 <-
+  RGBPronot1 %>% 
+  filter(ind != "ecry03" &
+         ind != "mcla02" &
+         ind != "roci02") # Remove these species because pronotum unavailable
+
+RGBPronot <- 
+  RGBPronot1 %>% 
+  filter(tr == "Pronotum")
+
+RGBPrGrey <- 
+  RGBPronot1 %>% 
+  filter(tr == "Grey")
+
+```
+
+
+
+
+# Calibrations
+
+Here we linearise and equalise RGBs for each camera setting and each channel separately.
+
+First we defined the functions as follows: 
+<br>
+
+<span style="color: #04C799"> **Linearization** </span>  <br/>
+
+$$\ Y = a*exp(b*x) + c*exp(d*x)$$
+Where a, b c and d are the parameters obtained from MatLab. x is the raw RGB value for the ROI and Y is the linearised value
+
+
+```{r}
+
+#The arguments of this functions are: 
+# a DataFrame: containing the RGB values that we want to linearise
+# a ParameterData: a data frame containing the parameters a,b,c,d from MatLab
+
+lin_equ_RGB <- function(DataFrame,ParameterData){ 
+  Result <- DataFrame # keep the original data, results will be added to it
+  Result$Linearized <- rep("NA",length(DataFrame[1])) # add an empty column
+ 
+  for (i in 1:length(DataFrame$PhotoID)) {
+    
+    para <- ParameterData %>% # the data frame with the parameters
+      
+      # For each line in the DataFrame to linearise, we need to find
+      # the correspondent set of parameters:
+      filter(type == DataFrame$type[i] &  # VIS, LCP, or RCP
+             Channel == DataFrame$Channel[i] & # R, G or B
+             camera_cat == DataFrame$camera_cat[i]) %>% # Camera conditions
+             arrange(.,parameter) # arranged alphabetically
+    
+    # Apply the formula
+     Result$Linearized[i]<- 
+       para$value[1] * exp(para$value[2] * Result$value[i]) +
+       para$value[3] * exp(para$value[4] * Result$value[i]) 
+    
+  }
+  return(Result)
+}
+
+
+```
+
+
+<span style="color: #04C799"> **Equalisation** </span>  <br/>
+
+$$\ E = l / (rg /(kg*255))$$
+Where rg is the raw RGB values for the grey in the photo, kg is the known reflectance of the gray standard (from the fabricator), l is the linearised value of the ROI and E is the equalised value of the ROI.
+
+
+For this part we did not use and equation, rather we obtained the calculations directly form the data frames.
+
+## Elytra
+
+#### Linearise
+
+We applied the function defined in the previous step
+
+```{r}
+
+LinearizedElytra <- lin_equ_RGB(RGBElytra,parameter) %>% 
+  select(PhotoID, tr, Linearized) # apply function
+
+head(LinearizedElytra)
+
+LinearizedElytra$Linearized <- round(as.numeric
+                                     (LinearizedElytra$Linearized),4 ) # round
+
+LinearizedElytraSpr <- 
+  LinearizedElytra %>% 
+  spread(tr,Linearized)
+
+```
+
+#### Equalise
+
+And then equalised following the equation
+
+```{r}
+
+RGBElGreys <- 
+  RGBElGrey %>% 
+  select(PhotoID,value) # select the relevant columns of the raw grey values
+
+EQElytra <-
+  merge(RGBElGreys,LinearizedElytraSpr,
+        all=FALSE) %>% 
+  rename(RawGrey = value) %>% 
+  mutate(Equalized = 
+           Elytra/(RawGrey/(grey_standard_refl[1,2]*255)))  
+
+```
+
+
+#### Average 
+
+We averaged the RGB values of the three channels for each filter.
+
+```{r}
+
+RGB_ave <- EQElytra %>% 
+  select(PhotoID,Equalized) %>% 
+  mutate(Reflectance = Equalized * 100) %>% 
+  select(-Equalized) %>% 
+  separate(PhotoID,c("ind","Type","Channel"), sep="_") %>% 
+  group_by(ind, Type) %>% 
+  mutate(RGB_ave = mean(Reflectance)) %>% 
+  select(ind, Type ,RGB_ave) %>% 
+  distinct() %>%  # leave only the one row for each individual
+  filter(!grepl('ambl', ind)) %>% 
+  filter(!grepl('sqzb', ind)) # remove, absent in the phylogeny
+
+head(RGB_ave)
+
+```
+
+
+## Pronotum
+
+#### Linearise
+
+We applied the function defined in the previous step
+
+```{r}
+LinearizedPron <- lin_equ_RGB(RGBPronot,parameter) %>% 
+  select(PhotoID, tr, Linearized) # apply function
+
+head(LinearizedPron)
+
+LinearizedPron$Linearized <- round(as.numeric
+                                   (LinearizedPron$Linearized),4 ) # round
+
+LinearizedPronSpr <- 
+  LinearizedPron %>% 
+  spread(tr,Linearized)
+
+```
+
+#### Equalise
+
+And then equalised following the equation
+
+```{r}
+
+RGBPrGreys <- 
+  RGBPrGrey %>% 
+  select(PhotoID,value) # select the relevant columns of the raw grey values
+
+EQPronot <-
+  merge(RGBPrGreys,LinearizedPronSpr,
+        all=FALSE) %>% 
+  rename(RawGrey = value) %>% 
+  mutate(Equalized = 
+           Pronotum/(RawGrey/(grey_standard_refl[1,2]*255)))  
+
+```
+
+
+#### Average
+
+We averaged the RGB values of the three channels for each filter.
+
+```{r}
+
+RGB_avePr <- EQPronot %>% 
+  select(PhotoID,Equalized) %>% 
+  mutate(Reflectance = Equalized * 100) %>% 
+  select(-Equalized) %>% 
+  separate(PhotoID,c("ind","Type","Channel"), sep="_") %>% 
+  group_by(ind, Type) %>% 
+  mutate(RGB_aveP = mean(Reflectance)) %>% 
+  select(ind, Type ,RGB_aveP) %>% 
+  distinct() %>%  # leave only the one row for each individual
+  filter(!grepl('ambl', ind)) %>% 
+  filter(!grepl('sqzb', ind)) # remove, absent in the phylogeny
+
+head(RGB_avePr)
+
+```
+
+
+
+# Polarization
+
+We calculated the polarization as $$\ P \ = \frac{l - r}{l + r}$$
+
+where $l$ represents the mean reflectance under the filter for left handed circular polarization and $r$ represents the mean reflectance under the filter for right handed circular polarization.
+
+
+## Elytra
+
+Thus we obtained the polarization values for the elytron ROI by individual:
+
+```{r}
+
+# Calculate the polarization:
+ElyPol <- 
+  RGB_ave %>% 
+  spread(Type,RGB_ave) %>% 
+  mutate(Polarization =  (LCP - RCP) / (LCP + RCP))
+
+head(ElyPol) # by individual
+```
+
+And by species:
+
+```{r}
+
+# Average: One polarization value by spp
+ElyPolbysp <-
+  ElyPol %>% 
+  select(ind, Polarization) %>%  
+  mutate(spp= substr(ind,1,4)) # Add column for spp
+
+EPolbs <- 
+  ElyPolbysp[2:3] %>% 
+  group_by(spp) %>% 
+  summarise(Pol = mean(Polarization)) # by species
+
+head(EPolbs)
+
+```
+
+
+## Pronotum
+
+Thus we obtained the polarization values for the pronotum ROI by individual:
+
+```{r}
+# Calculate the polarization:
+ProPol <- 
+  RGB_avePr %>% 
+  spread(Type,RGB_aveP) %>% 
+  mutate(Polarization =  (LCP - RCP) / (LCP + RCP))
+
+head(ProPol) #  by individual
+
+```
+
+And by species:
+
+```{r}
+
+# Average: One polarization value by spp
+ProPolbysp <-
+  ProPol %>% 
+  select(ind, Polarization) %>%  
+  mutate(spp= substr(ind,1,4)) # Add column for spp
+
+PPolbs <- 
+  ProPolbysp[2:3] %>% 
+  group_by(spp) %>% 
+  summarise(Pol = mean(Polarization)) # by species
+  
+head(PPolbs)
+
+```
+
+
+## Consolidates
+
+### Body Part
+
+First make sure the two data frames contain the same number of species, thus the differences between the individuals in both data frames should be 0
+
+
+```{r}
+ProPol <-
+  ProPol %>%
+  rename(PronotPol = Polarization)
+
+ElyPol <-
+  ElyPol %>% 
+  rename(ElytrPol = Polarization) #Keep all spp for other tests
+
+
+ElyPolEP <-
+  ElyPol %>% 
+  filter(ind != "ecry03" &
+         ind != "mcla02" &
+         ind != "roci02") # Removed, pronotum unavailable
+
+inelytra <- levels(as.factor(ElyPolEP$ind))
+inpronotum <- levels (as.factor(ProPol$ind))
+
+setdiff(inelytra,inpronotum)
+setdiff(inpronotum,inelytra)
+
+```
+
+Merge
+
+```{r}
+
+# simplify Data frames
+Elysimple <-
+  ElyPolEP %>% 
+  select(ind, ElytrPol )
+
+Prosimple <- 
+  ProPol %>% 
+  select(ind, PronotPol)
+
+BeetlePol <- 
+  merge (Elysimple,Prosimple) %>%   # Combine the two data frames
+  mutate(Difference = ElytrPol-PronotPol)
+
+head(BeetlePol)
+
+```
+
+### Ecological variables
+
+We merged the polarization data with the data frames obtained in previous steps that contain ecological variables, reflectivity, size and the species name as follows: 
+
+
+First compare the dimensions of the two data frames (Reflectance and polarization):
+
+```{r}
+
+Cons1 <-
+  Cons1 %>% 
+  mutate(spp = substr(ind,1,4)) 
+
+inTree <- levels(as.factor(Cons1$spp))
+inRGB <- levels (as.factor(EPolbs$spp))
+
+setdiff(inTree,inRGB)
+setdiff(inRGB,inTree)
+
+```
+
+Both contain the same species
+
+```{r}
+
+#Compare length:
+length(Cons1$ind)
+length(ElyPol$ind) 
+
+# subset the consolidated by the ind in polariz data frame
+Refbyind <- Cons1[Cons1$ind %in% ElyPol$ind, ] 
+
+```
+
+But since they had different numbers of individuals we only considered the ones that were common for both data frames to combine them into one larger data frame
+
+```{r}
+# Simplify the polarization data
+ElyPolbyind <- 
+  ElyPol %>% 
+  select(1,5) # keep only one column and the individual
+
+RPData <- 
+  merge (Refbyind,ElyPolbyind) # Combine the two
+
+head(RPData)
+
+```
+
+We also summarised this data by species 
+
+```{r}
+RPDataAgg <-
+  RPData %>% 
+  dplyr::select (-ind,-spp) %>%# remove individual id
+  dplyr::select (phylogeny_name, everything ()) %>% # order columns
+  group_by (phylogeny_name) %>%  # group
+  summarise (across(everything(), list(mean))) # mean
+
+head(RPDataAgg)
+```
+
+This way we can conduct the analysis at both individual and species level
+
+
+# Questions
+
+## Body part
+
+<span style="color: #04C799"> **Question** </span>  <br/>
+
+It is possible that different selective pressures apply to the elytra than to other parts of the beetle body. There are various species that seem to have stronger structural coloration in the pronotum. They may have lost the polarization in their elytra.  
+
+**Are there differences in the polarization between the elytra and pronotum of the same individual?**
+
+<span style="color: #04C799"> **Setting up** </span>  <br/>
+
+<span style="color: #04C799"> **Model** </span>  <br/>
+
+A paired t-test to compare the mean of the difference to 0.A negative difference would mean that in general the pronotum is more polarized than the elytra.
+
+```{r}
+# Paired t test
+t.test(BeetlePol$Difference)
+
+```
+
+The mean difference in polarization between the two body parts is not significantly different than 0.  
+
+
+<span style="color: #04C799"> **Plots** </span>  <br/>
+
+```{r}
+
+hist(BeetlePol$Difference, breaks =20, xlab="Difference in polarization (Elytra-Pronot)", ylab="Frequency")
+
+```
+
+These beetles with higher polarization in their elytra are:
+
+```{r}
+ElytraMoreP <-
+  BeetlePol %>% 
+  filter (Difference > 0.1)
+
+ElytraMoreP$ind
+```
+
+These beetles with higher polarization in their pronotum are:
+
+```{r}
+PronotumMoreP <-
+  BeetlePol %>% 
+  filter (Difference < -0.1)
+
+PronotumMoreP$ind
+```
+
+<br>
+<br>
+<br>
+
+## VIS Reflectivity
+
+<span style="color: #04C799"> **Question** </span>  <br/>
+
+It has been hypothesized that the chiral structures associated to polarization sensitivity are more effective reflecting light than pigments or other structures. This may be true considering that they can produce broad band metallic colours. However, it is also possible that chiral structures produce highly saturated angle-dependent colours which would mean reflecting a very narrow section of the spectrum.  
+
+**Is more polarization correlated with more reflectivity in the visible spectrum?**
+
+<span style="color: #04C799"> **Tests** </span>  <br/>
+
+There is a positive correlation between the degree of polarization and the amount of visible light reflected (reflectivity)  
+
+Individual level:
+```{r}
+cor.test(RPData$R_VIS,RPData$ElytrPol) # by individual
+
+modPol1 <- lm(RPData$R_VIS~RPData$ElytrPol) #by individual
+summary(modPol1)
+```
+
+Species level:
+```{r}
+cor.test(RPDataAgg$R_VIS_1,RPDataAgg$ElytrPol_1) # by spp
+
+modPol3 <- lm(RPDataAgg$R_VIS_1~RPDataAgg$ElytrPol_1) # by spp
+summary(modPol3)
+```
+
+
+<span style="color: #04C799"> **Plots** </span>  <br/>
+
+
+```{r message=FALSE, fig.cap = "Relationship between polarization and VIS reflectivity by individual"}
+
+ggplot(RPData, aes(ElytrPol,R_VIS)) +
+     geom_point(pch=21, bg="turquoise", col="black", alpha=0.5, size=2)+
+     ylab("VIS Reflectivity (400 to 700 nm) (%)")+ 
+     xlab("Polarization (L-R)/(L+R)")+
+     theme_bw() + 
+  geom_smooth(method=lm, alpha=0.4, col="#226D7A", fill="grey")
+ 
+```
+
+```{r}
+ToPlotPolbsp <- 
+  RPData %>% 
+  dplyr::select (-phylogeny_name) %>% 
+  mutate("spp" = substr(ind,1,4)) %>% 
+  select(-1) %>% 
+  group_by(spp) %>% 
+  summarise(meanAll = mean(R_ALL),
+            meanVIS = mean(R_VIS),
+            meanNIR = mean(R_NIR),
+            meanRes = mean(Res),
+            meanPol = mean(ElytrPol),
+            meanSize = mean(size),
+            sdAll = sd(R_ALL),
+            sdVIS = sd(R_VIS),
+            sdNIR = sd(R_NIR),
+            sdRes = sd(Res),
+            sdPol = sd(ElytrPol),
+            sdSize = sd(size))
+```
+
+
+```{r message=FALSE, fig.cap = "Relationship between polarization and VIS reflectivity by species"}
+ 
+ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanVIS))+
+    geom_errorbar(aes(ymin = meanVIS - sdVIS,
+                    ymax = meanVIS + sdVIS), 
+                col="#cecec2") + 
+  geom_errorbarh(aes(xmin = meanPol - sdPol,
+                     xmax = meanPol + sdPol),
+                 col="#cecec2") +
+  geom_smooth (method="lm", color="#593876", fill="#D7A1F9", alpha=0.3)+
+  geom_point(size=2, alpha=0.4, colour= "#593876")+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  theme_minimal()+
+  theme(legend.position = "none")
+
+```
+
+
+<span style="color: #04C799"> **Conclusion** </span>  <br/>
+
+**Yes, Beetles with more polarization reflect more visible light** 
+
+
+<br>
+<br>
+<br>
+
+## NIR Reflectivity
+
+<span style="color: #04C799"> **Question** </span>  <br/>
+
+The relationship between polarization and NIR is unknown. It has been observed that some beetles produce iridescence in NIR which could mean they have multilayers or a chiral structure to reflect long wavelengths. Considering that reflectance in visible and NIR are often correlated, it is reasonable to expect a similar pattern that the one observed for visible light. 
+
+**Is more polarization correlated with more reflectivity in the NIR?**
+
+<span style="color: #04C799"> **Tests** </span>  <br/>
+
+There is a negative correlation between the NIR reflectivity and polarization.  
+
+Individual level:
+```{r}
+cor.test(RPData$R_NIR,RPData$ElytrPol) # by individual
+
+modPol2 <- lm(RPData$R_NIR~RPData$ElytrPol) # by individual
+summary(modPol2)
+```
+
+Species level:
+```{r}
+cor.test(RPDataAgg$R_NIR_1,RPDataAgg$ElytrPol_1) # by species
+```
+(Correlation is lost when considering the average per species)
+
+<span style="color: #04C799"> **Plots** </span>  <br/>
+
+
+```{r message=FALSE, fig.cap = "Relationship between polarization and NIR reflectivity by individual"}
+
+ggplot(RPData, aes(ElytrPol,R_NIR)) +
+     geom_point(pch=21, bg="turquoise", col="black", alpha=0.5, size=2)+
+     ylab("NIR Reflectivity (700 to 1400 nm) (%)")+ 
+     xlab("Polarization (L-R)/(L+R)")+
+     theme_bw() + 
+  geom_smooth(method=lm, alpha=0.4, col="#226D7A", fill="grey") 
+
+
+```
+
+```{r message=FALSE, fig.cap = "Relationship between polarization and NIR reflectivity by species"}
+ 
+ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanNIR))+
+  geom_errorbar(aes(ymin = meanNIR - sdNIR,
+                    ymax = meanNIR + sdNIR), 
+                col="#cecec2") + 
+  geom_errorbarh(aes(xmin = meanPol - sdPol,
+                     xmax = meanPol + sdPol),
+                 col="#cecec2") +
+  #geom_smooth (method="lm", color="#593876", fill="#D7A1F9", alpha=0.3)+
+  geom_point(size=2, alpha=0.4, colour= "#593876")+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  theme_minimal()+
+  theme(legend.position = "none")
+
+
+```
+
+<span style="color: #04C799"> **Conclusion** </span>  <br/>
+
+**No, contrary to the hypothesis, Beetles with more polarization reflect less NIR light**  
+The reason for this could be that the mechanisms used to produce high NIR reflection are different than the chiral array, and that the two mechanisms can not be present in the same beetle.
+
+<br>
+<br>
+<br>
+
+## TOT Reflectivity
+
+<span style="color: #04C799"> **Question** </span>  <br/>
+
+Often the total reflectivity (including both NIR and VIS) determines the potential for passive thermoregulation in ectoterms since the body is permanently exposed to both types of radiation in roughly 50-50% proportion. If polarization is correlated with total reflectance, it could have been developed as a strategy for passive thermoregulation.
+
+**Is more polarization correlated with more reflectivity in total?**  
+
+<span style="color: #04C799"> **Tests** </span>  <br/>
+
+There is no correlation between polarization and total reflectivity  
+
+Individual level:
+```{r}
+cor.test(RPData$R_ALL,RPData$ElytrPol)
+```
+
+Species level:
+```{r}
+cor.test(RPDataAgg$R_ALL_1,RPDataAgg$ElytrPol_1)
+
+modPol4 <- lm(RPDataAgg$R_ALL_1~RPDataAgg$ElytrPol_1)
+summary(modPol4)
+```
+
+<span style="color: #04C799"> **Plots** </span>  <br/>
+
+```{r message=FALSE, fig.cap = "Relationship between polarization and ALL reflectivity by individual"}
+
+ggplot(RPData, aes(ElytrPol,R_ALL)) +
+     geom_point(pch=21, bg="turquoise", col="black", alpha=0.5, size=2)+
+     ylab("ALL Reflectivity (400 to 1400 nm) (%)")+ 
+     xlab("Polarization (L-R)/(L+R)")+
+     theme_bw()
+
+```
+
+```{r message=FALSE, fig.cap = "Relationship between polarization and ALL reflectivity by species"}
+
+ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanAll))+
+    geom_errorbar(aes(ymin = meanAll - sdAll,
+                    ymax = meanAll + sdAll), 
+                col="#cecec2") + 
+  geom_errorbarh(aes(xmin = meanPol - sdPol,
+                     xmax = meanPol + sdPol),
+                 col="#cecec2") +
+  geom_point(size=2, alpha=0.4, colour= "#593876")+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  theme_minimal()+
+  theme(legend.position = "none")
+
+```
+
+<span style="color: #04C799"> **Conclusion** </span>  <br/>
+
+**No, there is no correlation between polarization and total reflectiviy**  
+This could be the result of the fact that visible and NIR reflectivity have opposite correlations to polarization.
+
+<br>
+<br>
+<br>
+
+## Mechanism
+
+
+<span style="color: #04C799"> **Question** </span>  <br/>
+
+In our previous studies we discovered that some species have an unusual bilayered composite material in their elytra. This material consist in a white underlay that reflects visible and NIR light with a thin cuticle on top that acts like a pigment-based filter only in the visible. As a result they produce a unique pattern of broadband NIR reflectance. This mechanism does not coexist  with chiral nanostructures in the cuticle.  
+
+**Is it possible that the correlations with VIS and NIR are mainly driven by the species with white underlay?**  
+
+<span style="color: #04C799"> **Tests** </span>  <br/>
+
+If so, removing the species with white underlay should disrupt the correlations we found in previous steps.
+
+We removed 17 individuals belonging to the species _A. prasinus_, _Xylonichus sp._ and all three in the genus Paraschizognathus because in our previous studies we have confirmed they have a white underlay that reflects high NIR.
+
+```{r}
+
+# remove the species that contain a white underlay
+nounderlay <- 
+  RPData %>% 
+  filter (phylogeny_name != "Paraschizognathus_ocularis" &   
+          phylogeny_name != "Paraschizognathus_prasinus"  & 
+          phylogeny_name != "Paraschizognathus_olivaceous"  &
+          phylogeny_name != "Anoplognathus_prasinus" &
+          phylogeny_name != "Xylonichus_sp")
+
+```
+
+Removing these species does not alter the correlation between polarization and visible reflectivity.
+
+```{r}
+
+cor.test(nounderlay$R_VIS,nounderlay$ElytrPol) #Vis
+
+modPol5 <- lm(nounderlay$R_VIS~nounderlay$ElytrPol) #by individual
+summary(modPol5)
+
+```
+
+In fact, the estimate for the effect of polarization on reflectivity in our previous analysis was `r summary(modPol1)$coefficients[2]` and it is `r summary(modPol5)$coefficients[2]` after removing the species with the white underlay.
+
+In contrast, removing these species disrupts the negative correlation between polarization and NIR.
+
+```{r}
+cor.test(nounderlay$R_NIR,nounderlay$ElytrPol) # nir
+```
+
+This is evidenced by the change in the confidence interval: It is negative when considering all species `r cor.test(RPData$R_NIR,RPData$ElytrPol)$conf.int[1:2]` but it overlaps 0 when removing the species with a white underlay `r cor.test(nounderlay$R_NIR,nounderlay$ElytrPol)$conf.int[1:2]`
+
+Visually, it is also noticeable that the points excluded from the graph were those with NIR reflectivity above 60%
+
+```{r message=FALSE, fig.cap = "Relationship between polarization and NIR reflectivity by individual. The beetles with white underlay are shown in red."}
+
+RPData2 <- RPData
+# vector describing whether the beetle could potentially have a chiral cuticle
+RPData2$chiral <- RPData2$ind %in% nounderlay$ind 
+
+ggplot() +
+     geom_point(data = RPData2, 
+                mapping = aes(ElytrPol,R_NIR),
+                pch=21, bg="turquoise", col="black", alpha=0.5, size=2.5)+
+     geom_point(data = RPData2[RPData2$chiral=="FALSE",], 
+                mapping = aes(ElytrPol,R_NIR),
+                pch=21, bg="red", col="black", alpha=0.5, size=2.5)+
+     ylab("NIR Reflectivity (700 to 1400 nm) (%)")+ 
+     xlab("Polarization (L-R)/(L+R)")+
+     theme_bw() 
+     
+
+```
+
+<span style="color: #04C799"> **Conclusion** </span>  <br/>
+
+**More polarization correlates with more VIS reflectiviy even after removing the beetles with non-chiral composite materials**  
+
+<br>
+
+**Polarization does not reduce NIR reflectance. However, beetles with very high NIR reflectance seem to have developed an alternate mechanism that does not involve chiral structures (i.e. absence of circular polarization).**
+
+<br>
+<br>
+<br>
+
+# Results from this step
+
+We obtained a data frame useful to compare the degree of polarization between two body parts, elytron and pronotum
+
+```{r}
+write.csv(BeetlePol,"../Data/FromCode/PolarzElytraPronot.csv")
+```
+
+And we also added the polarization of the elytra to a subset of the dataframe with the ecological variables and reflectance. Note that this subset may have fewer individuals that the one we will use for the phylogenetic analysis of the reflectance, but they both have the same number of species.
+
+```{r}
+write.csv(RPData,"../Data/FromCode/PolarzElytraRefl.csv")
+```
+
+

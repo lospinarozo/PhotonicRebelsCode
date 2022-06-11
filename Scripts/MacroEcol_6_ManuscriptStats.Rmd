@@ -1,0 +1,600 @@
+---
+title: "6_PhylogeneticComparativeAnalysis_Reflectivity"
+author: "Laura Ospina-Rozo"
+date: "25/04/2022"
+output:
+  html_document: 
+    toc: yes
+    toc_float: yes
+    toc_depth: 5
+    highlight: kate
+    theme: paper
+    self_contained: yes
+    mode: selfcontained
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+# Libraries
+
+```{r, warning=FALSE, message=FALSE}
+source("./MacroEcol_1_Libraries.R")
+```
+
+
+# Data Sets
+
+Reflectivity by Individual
+
+```{r}
+Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1]
+```
+
+Absorptivity by Individual
+
+```{r}
+Cons2 <- read.csv("../Data/FromCode/ConsAbsEcolInd.csv")[-1]
+```
+
+Phylogeny (multiple trees)
+
+```{r}
+trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk ")
+```
+
+
+## Aggregate
+
+Sumarise all variables in the data frame to get one value per species. 
+
+In this analysis we will consider interspecific instead of intraspecific variability.
+
+```{r}
+
+Cons1agg <-
+  Cons1 %>% 
+  dplyr::select (-ind) %>%# remove individual id
+  dplyr::select (phylogeny_name, everything ()) %>% # order columns
+  dplyr::group_by (phylogeny_name) %>%  # group
+  dplyr::summarise (across(everything(), list(mean))) # mean
+
+# Modify to make it compatible with tree tips
+ConsAgg <- as.data.frame(Cons1agg) # convert to a data frame
+rownames(ConsAgg) <- ConsAgg[, 1] # make species the row names 
+ConsAgg <- ConsAgg [,2:length(ConsAgg)] # eliminate spp name (redundant)
+
+# Separate the data frames 
+# Useful for plotting in the tree
+names(ConsAgg) <- c("TOT", "VIS", "NIR", "Res",
+                    "PC1", "PC2", "Size" )
+
+TOTdf <- ConsAgg %>% dplyr::select (TOT) 
+VISdf <- ConsAgg %>% dplyr::select (VIS) 
+NIRdf <- ConsAgg %>% dplyr::select (NIR) 
+Resdf <- ConsAgg %>% dplyr::select (Res) 
+PC1df <- ConsAgg %>% dplyr::select (PC1) 
+PC2df <- ConsAgg %>% dplyr::select (PC2) 
+Sizdf <- ConsAgg %>% dplyr::select (Size) 
+
+```
+
+## Match
+
+Make sure that the phylogeny names are consistent in the data frame and the phylogenetic trees
+
+Read and prune the MCC tree
+
+The MCC (Maximum clade credibility) tree used here is the BEAST MCC tree.
+
+```{r}
+
+# read the tree
+MCCtree.raw <- 
+  ape::read.nexus("../Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+
+# Prune extra spp in the tree, not contain in the test sample
+species.MCC <- as.data.frame(unique(Cons1$phylogeny_name))
+
+# Convert to "row names" (required for following steps)
+row.names(species.MCC) <- species.MCC[, 1] 
+
+# Make sure the names in data set and tree match
+temp.MCC <- name.check(MCCtree.raw, species.MCC) 
+temp.MCC 
+
+# This step would be neccesary if the tips had been different.
+# MCCtree <- drop.tip(MCCtree.raw, temp.MCC$tree_not_data)
+# Not used in our case.
+
+# Instead, changed the name
+MCCtree <- MCCtree.raw
+
+```
+
+Make sure names between data and tree tips match
+
+```{r}
+
+Cons1agg <- as.data.frame(Cons1agg)
+row.names(Cons1agg) <- Cons1agg [, 1] 
+names(Cons1agg) <- c("phylogeny_name", "TOT", "VIS", "NIR",
+                     "Res","size", "PC1", "PC2")
+
+
+# Test if the species are the same
+identical(
+  length(name.check(MCCtree, Cons1agg$phylogeny_name)$tree_not_data),
+  length(Cons1agg$phylogeny_name)
+)
+
+
+```
+
+## Subset
+
+Create subsets for each waveband
+
+```{r}
+
+ALLDataSet <- 
+  Cons1agg %>% 
+  dplyr::select (-VIS, -NIR, - Res) %>% 
+  dplyr::rename ("Reflectance" = TOT) 
+
+NIRDataSet <- 
+  Cons1agg %>% 
+  dplyr::select (-TOT, -VIS, - Res) %>% 
+  dplyr::rename ("Reflectance" = NIR) 
+
+VISDataSet <- 
+  Cons1agg %>% 
+  dplyr::select (-TOT, -NIR, - Res) %>% 
+  dplyr::rename ("Reflectance" = VIS) 
+
+ResDataSet <- 
+  Cons1agg %>% 
+  dplyr::select (-TOT, -NIR, -VIS) %>% 
+  dplyr::rename ("Reflectance" = Res)
+
+NmoDataSet <-
+  Cons1agg %>% 
+  dplyr::select (-TOT, - Res) %>% 
+  dplyr::rename ("Reflectance" = NIR) 
+
+```
+
+
+
+# PGLS on MCC tree
+
+The PGLS model tests if the correlations we found in the previous step remain after correcting by phylogeny. This model does not consider instraspecific variation. We averaged both location and reflectivity and obtained only one value per species. 
+
+Set up: 
+
+```{r}
+
+comp_data <- comparative.data(
+  phy = MCCtree, data = Cons1agg,
+  names.col = "phylogeny_name", vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+
+```
+
+
+## TOT
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodTOT <- pgls(TOT ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsmodTOT) 
+
+```
+
+None of the variables has an effect in the total reflectance
+
+Test phylogenetic signal using Pagel's lambda:
+
+```{r}
+
+pagelTOTRefl <- Cons1agg$TOT # Define which trait you want to test
+names(pagelTOTRefl) <- rownames(Cons1agg) # Row names = tree tips
+phylosig(MCCtree, pagelTOTRefl, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomizations
+
+```
+
+Phylogenetic signal is high. 
+
+
+## VIS 
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodVIS <- pgls(VIS ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsmodVIS) 
+
+```
+
+Results after correcting by phylogeny: 
+
+_Size_ ----
+
+Even after correcting by phylogeny, larger beetles reflect more visible light
+
+_PC1 and PC2_ ----
+
+Marginal effects. 
+Larger PC1 lower VIS = Higher visible reflectivity in more humid environments.
+
+Larger PC2 lower VIS =  Higher visible reflectivity in more hot arid environments.
+
+_Interactions_ ----
+
+PC1:Size significant = smaller beetles tend to reflect more visible light in more humid environments *OR* The effects in PC1 and PC2 are more significant for smaller beetles.
+PC2:Size not significant
+
+
+Test phylogenetic signal using Pagel's lambda:
+
+```{r}
+
+pagelVISRefl <- Cons1agg$VIS # Define which trait you want to test
+names(pagelVISRefl) <- rownames(Cons1agg) # Row names = tree tips
+phylosig(MCCtree, pagelVISRefl, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomizations
+
+```
+
+Phylogenetic signal is high. 
+
+
+
+## NIR 
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodNIR <- pgls(NIR ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsmodNIR) 
+
+```
+
+Results after correcting by phylogeny: 
+
+None of the variables has an effect in the NIR reflectance
+
+Test phylogenetic signal using Pagel's lambda:
+
+```{r}
+
+pagelNIRRefl <- Cons1agg$NIR # Define which trait you want to test
+names(pagelNIRRefl) <- rownames(Cons1agg) # Row names = tree tips
+phylosig(MCCtree, pagelNIRRefl, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomizations
+
+```
+
+Phylogenetic signal is high. 
+
+
+
+## Res
+
+(i.e. residuals between NIR ~ VIS)
+
+```{r message= FALSE}
+pglsmodRes <- pgls(Res ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsmodRes)
+```
+
+Results after correcting by phylogeny: 
+
+_Size_ ----
+
+no effect
+
+_PC1 and PC2_ ----
+
+Larger PC2 larger NIR reflectivity =  NIR reflective beetles live in more fresh environments (less hot and arid)
+
+_Interactions_ ----
+
+smaller beetles tend to reflect more visible light in hotter arid environments *OR* The effect of PC2 in the NIR residuals is more significant for smaller beetles. 
+
+
+
+Test phylogenetic signal using Pagel's lambda:
+
+```{r}
+
+pagelRes <- Cons1agg$Res # Define which trait you want to test
+names(pagelRes) <- rownames(Cons1agg) # Row names = tree tips
+phylosig(MCCtree, pagelRes, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomizations
+
+```
+
+Phylogenetic signal is very high
+
+
+
+# PGLS Multiple Trees
+
+
+## Source function
+
+note that this function has to be adapted to the data frame and model on each case
+
+```{r warning=FALSE, message=FALSE}
+source("8_multiple_pgls_function_C.R")# function C is for reflectance as response
+```
+
+
+## Define model
+
+
+```{r }
+MuPGLSMod <- Reflectance ~ PC1 + PC2 + size + PC1*size + PC2*size
+```
+
+
+## Run 
+
+### TOT
+
+```{r message=FALSE, warning=FALSE}
+
+runsTOT<-lapply(trees,pgls_run,model=MuPGLSMod,dataset=ALLDataSet) 
+
+dfTOT <- ldply (runsTOT, data.frame)
+
+write.csv(dfTOT,"../Data/FromCode/MuTPglsResultsTOT.csv")
+
+mudfTOT <- read.csv("../Data/FromCode/MuTPglsResultsTOT.csv")[-1]
+
+HPDinterval(as.mcmc(dfTOT))
+
+```
+
+
+### VIS
+
+
+```{r message=FALSE, warning=FALSE}
+
+runsVIS<-lapply(trees,pgls_run,model=MuPGLSMod,dataset=VISDataSet) 
+
+dfVIS <- ldply (runsVIS, data.frame)
+
+write.csv(dfVIS,"../Data/FromCode/MuTPglsResultsVIS.csv")
+
+mudfVIS <- read.csv("../Data/FromCode/MuTPglsResultsVIS.csv")[-1]
+
+HPDinterval(as.mcmc(mudfVIS))
+
+
+```
+
+### NIR
+
+```{r message=FALSE, warning=FALSE}
+
+runsNIR<-lapply(trees,pgls_run,model=MuPGLSMod,dataset=NIRDataSet) 
+
+dfNIR <- ldply (runsNIR, data.frame)
+
+write.csv(dfNIR,"../Data/FromCode/MuTPglsResultsNIR.csv")
+
+mudfNIR <- read.csv("../Data/FromCode/MuTPglsResultsNIR.csv")[-1]
+
+HPDinterval(as.mcmc(mudfNIR))
+
+```
+
+### Res
+
+(i.e. residuals between NIR ~ VIS)
+
+```{r message=FALSE, warning=FALSE}
+
+runsRes<-lapply(trees,pgls_run,model=MuPGLSMod,dataset=ResDataSet) 
+
+dfRes <- ldply (runsRes, data.frame)
+
+write.csv(dfRes,"../Data/FromCode/MuTPglsResultsRes.csv")
+
+
+mudfRes <- read.csv("../Data/FromCode/MuTPglsResultsRes.csv")[-1]
+
+HPDinterval(as.mcmc(mudfRes))
+
+```
+
+
+# PGLS Different model
+
+I also tried running the PGLs to predict NIR with a different model using VIS visible reflectivity as a predictor
+
+## Source function
+
+note that this function has to be adapted to the data frame and model on each case
+
+```{r warning=FALSE, message=FALSE}
+source("9_multiple_pgls_function_D.R")# function D is NIR explained by PCs and VIS
+```
+
+
+## Define model
+
+```{r eval=FALSE}
+
+MuPGLSMod2 <- Reflectance ~ PC1 + PC2 + size + PC1*size + PC2*size + VIS
+
+```
+
+
+## Run
+
+```{r message=FALSE, warning=FALSE}
+
+runsNmo<-lapply(trees[51:60],pgls_run,model=MuPGLSMod,dataset=NmoDataSet) 
+
+dfNmo <- ldply (runsNmo, data.frame)
+
+write.csv(dfNmo,"../Data/FromCode/MuTPglsResultsNmo.csv")
+
+mudfNmo <- read.csv("../Data/FromCode/MuTPglsResultsNmo.csv")[-1]
+
+HPDinterval(as.mcmc(mudfNmo))
+
+```
+
+<br>
+<br>
+<br>
+
+# PGLS Intervals
+
+TOT
+
+```{r}
+mudfTOT <- read.csv("../Data/FromCode/MuTPglsResultsTOT.csv")[-1]
+
+rrTOT<- HPDinterval(as.mcmc(mudfTOT))
+
+```
+
+VIS
+
+```{r}
+mudfVIS <- read.csv("../Data/FromCode/MuTPglsResultsVIS.csv")[-1]
+
+rrVIS <- HPDinterval(as.mcmc(mudfVIS))
+```
+
+
+NIR
+
+```{r}
+mudfNIR <- read.csv("../Data/FromCode/MuTPglsResultsNIR.csv")[-1]
+
+rrNIR <- HPDinterval(as.mcmc(mudfNIR))
+
+```
+
+Res
+
+```{r}
+
+mudfRes <- read.csv("../Data/FromCode/MuTPglsResultsRes.csv")[-1]
+
+rrRes <- HPDinterval(as.mcmc(mudfRes))
+
+```
+
+full summary:
+
+
+```{r}
+
+
+Predictor <- c("PC1","PC1 p-val" , 
+               "PC2", "PC2 p-val", 
+               "Size", "Size p-val", 
+               "PC1:size", "PC1:size p-val", 
+               "PC2:size", "PC2:size p-val")
+
+rvTOTl <- round(as.numeric(c(rrTOT[1,1],rrTOT[3,1],rrTOT[4,1],rrTOT[6,1],
+              rrTOT[7,1],rrTOT[9,1],rrTOT[10,1],rrTOT[12,1],
+              rrTOT[13,1],rrTOT[15,1])),3)
+
+rvTOTu <- format(round(as.numeric(c(rrTOT[1,2],rrTOT[3,2],rrTOT[4,2],rrTOT[6,2],
+              rrTOT[7,2],rrTOT[9,2],rrTOT[10,2],rrTOT[12,2],
+              rrTOT[13,2],rrTOT[15,2])),3),nsmall=3)
+
+
+rvVISl <- round(as.numeric(c(rrVIS[1,1],rrVIS[3,1],rrVIS[4,1],rrVIS[6,1],
+              rrVIS[7,1],rrVIS[9,1],rrVIS[10,1],rrVIS[12,1],
+              rrVIS[13,1],rrVIS[15,1])),3)
+
+rvVISu <- format(round(as.numeric(c(rrVIS[1,2],rrVIS[3,2],rrVIS[4,2],rrVIS[6,2],
+              rrVIS[7,2],rrVIS[9,2],rrVIS[10,2],rrVIS[12,2],
+              rrVIS[13,2],rrVIS[15,2])),3),nsmall=3)
+
+
+
+rvNIRl <- round(as.numeric(c(rrNIR[1,1],rrNIR[3,1],rrNIR[4,1],rrNIR[6,1],
+              rrNIR[7,1],rrNIR[9,1],rrNIR[10,1],rrNIR[12,1],
+              rrNIR[13,1],rrNIR[15,1])),3)
+
+rvNIRu <- format(round(as.numeric(c(rrNIR[1,2],rrNIR[3,2],rrNIR[4,2],rrNIR[6,2],
+              rrNIR[7,2],rrNIR[9,2],rrNIR[10,2],rrNIR[12,2],
+              rrNIR[13,2],rrNIR[15,2])),3),nsmall=3)
+
+rvResl <- round(as.numeric(c(rrRes[1,1],rrRes[3,1],rrRes[4,1],rrRes[6,1],
+              rrRes[7,1],rrRes[9,1],rrRes[10,1],rrRes[12,1],
+              rrRes[13,1],rrRes[15,1])),3)
+
+rvResu <- round(as.numeric(c(rrRes[1,2],rrRes[3,2],rrRes[4,2],rrRes[6,2],
+              rrRes[7,2],rrRes[9,2],rrRes[10,2],rrRes[12,2],
+              rrRes[13,2],rrRes[15,2])),3)
+
+
+rvTOTi<-paste(rvTOTl,rvTOTu, sep = " ; ")
+rvVISi<-paste(rvVISl,rvVISu, sep = " ; ")
+rvNIRi<-paste(rvNIRl,rvNIRu, sep = " ; ")
+rvResi<-paste(rvResl,rvResu, sep = " ; ")
+
+rvVISi[1] <- cell_spec(rvVISi[1],bold = TRUE, color="#D40481")
+rvVISi[2] <- cell_spec(rvVISi[2],bold = TRUE)
+
+rvVISi[5] <- cell_spec(rvVISi[5],bold = TRUE, color="#D40481")
+rvVISi[6] <- cell_spec(rvVISi[6],bold = TRUE)
+
+rvVISi[7] <- cell_spec(rvVISi[7],bold = TRUE, color="#D40481")
+rvVISi[8] <- cell_spec(rvVISi[8],bold = TRUE)
+
+
+rvResi[3] <- cell_spec(rvResi[3],bold = TRUE, color="#D40481")
+rvResi[4] <- cell_spec(rvResi[4],bold = TRUE)
+
+rvResi[9] <- cell_spec(rvResi[9],bold = TRUE, color="#D40481")
+rvResi[10] <- cell_spec(rvResi[10],bold = TRUE)
+
+Resultspgls <- data.frame(Predictor,  
+                          "TOT" = rvTOTi,
+                          "VIS" = rvVISi,
+                          "NIR" = rvNIRi,
+                          "Res" = rvResi) 
+
+
+Resultspgls %>% 
+  kbl(align ="c", escape = FALSE) %>%
+  kable_classic() %>% 
+  add_indent(c(1, 3, 5, 7, 9)) 
+
+
+```
+
+
+# Conclusions
+
+Lower PC1 = higher humidity (vapour, rain and clouds) lower aridity.  
+
+<br>
+
+Lower PC2 = higher solar radiation, higher max temp, more days above 35 and more aridity
+
+<br>
+<br>
+
