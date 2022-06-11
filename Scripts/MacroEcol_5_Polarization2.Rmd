@@ -1,18 +1,6 @@
 ---
-title: "5_PhylogeneticComparativeAnalysis_Polarization"
-author: "Laura Ospina-Rozo"
-output:
-  html_document: 
-    toc: yes
-    toc_float: yes
-    toc_depth: 5
-    highlight: kate
-    theme: paper
-    self_contained: yes
-    mode: selfcontained
-    code_folding: hide
-editor_options: 
-  chunk_output_type: console
+title: "Polarisation PGLS"
+# author: "Laura Ospina-Rozo"
 ---
 
 In this script we study the Polarization trait corrected by phylogeny. 
@@ -31,43 +19,46 @@ We first aggregated the polarization and environment data to get one value per s
 
 ```{r}
 
-RPDataAgg<-read.csv("../Data/FromCode/PolarzElytraRefl.csv")[-1]
+RPDataAgg <- read.csv("../Data/FromCode/PolarzElytraRefl.csv")[-1]
+head(RPDataAgg)
 
-RPDAgg1 <- 
-  RPDataAgg %>% 
-  dplyr::select(-ind,-spp) %>% 
-  dplyr::select (phylogeny_name, everything ()) %>% 
-  group_by (phylogeny_name) %>%  # group
-  summarise (across(everything(), list(mean))) # mean
+RPDAgg1 <-
+  RPDataAgg %>%
+  dplyr::select(-ind, -spp) %>%
+  dplyr::select(phylogeny_name, everything()) %>%
+  dplyr::group_by(phylogeny_name) %>% # group
+  dplyr::summarise(across(everything(), list(mean))) # mean
 
 # Convert to a data frame for the comparative.data function
-RPDAgg1 <- as.data.frame(RPDAgg1) 
-names(RPDAgg1) <- c("phylogeny_name",
-                    "TOT", "VIS", "NIR", "Res", "size",
-                    "PC1", "PC2", "Pol")
-
+RPDAgg1 <- as.data.frame(RPDAgg1)
+head(RPDAgg1)
+names(RPDAgg1) <- c(
+  "phylogeny_name",
+  "TOT", "VIS", "NIR", "Res", "size",
+  "PC1", "PC2", "Pol"
+)
 # Modify to make it compatible with tree tips
 RPDAgg <- as.data.frame(RPDAgg1) # create new data frame
-rownames(RPDAgg) <- RPDAgg[, 1] # make species the row names 
-RPDAgg <- RPDAgg [,2:length(RPDAgg)] # eliminate spp name (redundant)
-
+rownames(RPDAgg) <- RPDAgg[, 1] # make species the row names
+RPDAgg <- RPDAgg[, 2:length(RPDAgg)] # eliminate spp name (redundant)
 ```
 
 We separated it into different data frames which is useful for plotting
 
 ```{r}
-names(RPDAgg) <- c("TOT", "VIS", "NIR", "Res", "size",
-                    "PC1", "PC2", "Pol")
+names(RPDAgg) <- c(
+  "TOT", "VIS", "NIR", "Res", "size",
+  "PC1", "PC2", "Pol"
+)
 
-TOTdf <- RPDAgg %>% dplyr::select (TOT) 
-VISdf <- RPDAgg %>% dplyr::select (VIS) 
-NIRdf <- RPDAgg %>% dplyr::select (NIR) 
-Resdf <- RPDAgg %>% dplyr::select (Res) 
-PC1df <- RPDAgg %>% dplyr::select (PC1) 
-PC2df <- RPDAgg %>% dplyr::select (PC2) 
-Sizdf <- RPDAgg %>% dplyr::select (size) 
-Poldf <- RPDAgg %>% dplyr::select (Pol) 
-
+TOTdf <- RPDAgg %>% dplyr::select(TOT)
+VISdf <- RPDAgg %>% dplyr::select(VIS)
+NIRdf <- RPDAgg %>% dplyr::select(NIR)
+Resdf <- RPDAgg %>% dplyr::select(Res)
+PC1df <- RPDAgg %>% dplyr::select(PC1)
+PC2df <- RPDAgg %>% dplyr::select(PC2)
+Sizdf <- RPDAgg %>% dplyr::select(size)
+Poldf <- RPDAgg %>% dplyr::select(Pol)
 ```
 
 And we imported the phylogeny from a .nwk file which contains 2000 phylogenetic trees. This allows us to test our hypothesis in multiple trees and not only on the MCC tree. This way, we account for any uncertainty in unresolved tips of our phylogeny.
@@ -75,8 +66,7 @@ And we imported the phylogeny from a .nwk file which contains 2000 phylogenetic 
 ```{r}
 
 # Phylogeny
-trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk ")
-
+trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
 ```
 
 We created the subsets we need to test our hypothesis
@@ -85,16 +75,14 @@ We created the subsets we need to test our hypothesis
 ```{r}
 
 PDVIS <-
-  RPDAgg %>% 
-  dplyr::select (-TOT, -NIR, - Res) %>% 
-  dplyr::rename ("Reflectance" = VIS)  # keep only visible reflectivity
+  RPDAgg %>%
+  dplyr::select(-TOT, -NIR, -Res) %>%
+  dplyr::rename("Reflectance" = VIS) # keep only visible reflectivity
 
 PDPol <-
-  RPDAgg %>% 
-  dplyr::select (-TOT, -NIR, - Res, -VIS) %>% 
-  dplyr::rename ("Polarization" = Pol)  # keep only polarization
-
-
+  RPDAgg %>%
+  dplyr::select(-TOT, -NIR, -Res, -VIS) %>%
+  dplyr::rename("Polarization" = Pol) # keep only polarization
 ```
 
 
@@ -110,31 +98,30 @@ Chiral structures are supposed to be well conserved within scarabs. Thus, abscen
 ```{r warning = FALSE}
 
 # read the tree
-MCCtree.raw <- 
+MCCtree.raw <-
   ape::read.nexus("../Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
 
 # Prune extra spp in the tree, not contain in the test sample
 species.MCC <- as.data.frame(unique(RPDataAgg$phylogeny_name))
 
 # Convert to "row names" (required for following steps)
-row.names(species.MCC) <- species.MCC[, 1] 
+row.names(species.MCC) <- species.MCC[, 1]
 
 # Make sure the names in data set and tree match
-temp.MCC <- name.check(MCCtree.raw, species.MCC) 
+temp.MCC <- name.check(MCCtree.raw, species.MCC)
 
 # This step would be neccesary if the tips had been different.
-#MCCtree <- drop.tip(MCCtree.raw, temp.MCC$tree_not_data)
+# MCCtree <- drop.tip(MCCtree.raw, temp.MCC$tree_not_data)
 
 # Instead, changed the name
 MCCtree <- MCCtree.raw
 
 # create phylogeny object for ggtree()
-phylo.MCC <- ggtree(MCCtree, layout="rectangular") + geom_tiplab(size = 1.5) 
+phylo.MCC <- ggtree(MCCtree, layout = "rectangular") + geom_tiplab(size = 1.5)
 
-# set xlim 
+# set xlim
 phylo.MCC + xlim(0, 25) +
-  geom_nodepoint(col="gold", alpha=0.4)
-
+  geom_nodepoint(col = "gold", alpha = 0.4)
 ```
 
 Plot the traits on the tree
@@ -145,19 +132,19 @@ The values that we include in this plot has to be the average between individual
 ```{r eval=FALSE}
 
 # create a MCC tree without tip names for the plot
-tree_only <- ggtree(MCCtree, layout="rectangular")
+tree_only <- ggtree(MCCtree, layout = "rectangular")
 
 # create heat map columns
 # Note: log transforms increase contrast for visualization purposes
 
 # Add Polariz
 p0 <- gheatmap(tree_only, Poldf,
-  width = 0.05, low = "gray90", high = "black" , 
-  font.size = 2, 
-  colnames_position = "bottom", colnames_angle = 0, 
+  width = 0.05, low = "gray90", high = "black",
+  font.size = 2,
+  colnames_position = "bottom", colnames_angle = 0,
   colnames_offset_x = 0, colnames_offset_y = -0.5,
-  legend_title = "Pol")
-
+  legend_title = "Pol"
+)
 ```
 
 
@@ -170,26 +157,28 @@ p3.scale <- p0 + new_scale_fill() # add new scale for second variable
 p3 <- gheatmap(p3.scale, log(VISdf),
   offset = 1.5, # to avoid overlapping with p1
   width = 0.05, low = "#1b9e77", high = "#FFFFBF",
-  font.size = 2, 
-  colnames_position = "bottom", colnames_angle = 0, 
+  font.size = 2,
+  colnames_position = "bottom", colnames_angle = 0,
   colnames_offset_x = 0, colnames_offset_y = -0.5,
-  legend_title = "VIS")
+  legend_title = "VIS"
+)
 
 # NIR
 p4.scale <- p3 + new_scale_fill() # add new scale for second variable
-p4 <- gheatmap(p4.scale, 
-               log(NIRdf+ # get log to bring them closer to each other
-                     (abs((min(NIRdf)))+1)# make them all positive
-                   ), # this correction allows better visualization
-  offset = 3, 
+p4 <- gheatmap(p4.scale,
+  log(
+    NIRdf + # get log to bring them closer to each other
+      (abs((min(NIRdf))) + 1) # make them all positive
+  ), # this correction allows better visualization
+  offset = 3,
   width = 0.05, low = "#88419d", high = "#edf8fb",
-  font.size = 2, 
-  colnames_position = "bottom", colnames_angle = 0, 
+  font.size = 2,
+  colnames_position = "bottom", colnames_angle = 0,
   colnames_offset_x = 0, colnames_offset_y = -0.5,
-  legend_title = "NIR")
+  legend_title = "NIR"
+)
 
 p4
-
 ```
 
 # Questions
@@ -211,13 +200,12 @@ Create the data frame of comparative data
 ```{r}
 
 comp_data <- comparative.data(
-  phy = MCCtree, 
+  phy = MCCtree,
   data = RPDAgg1, # aggregated data without the spp in the row names
   names.col = "phylogeny_name", # contains the column phylogeny name
   vcv = TRUE,
   na.omit = FALSE, warn.dropped = TRUE
 )
-
 ```
 
 Establish the model
@@ -227,8 +215,7 @@ pglsPDVIS <- pgls(VIS ~ Pol,
   data = comp_data, param.CI = 0.95, lambda = "ML"
 )
 
-summary(pglsPDVIS) 
-
+summary(pglsPDVIS)
 ```
 
 Test phylogenetic signal using Pagel's lambda:
@@ -241,7 +228,6 @@ pagelPDVIS <- PDVIS$Reflectance # Define which trait you want to test
 names(pagelPDVIS) <- rownames(PDVIS) # Row names = tree tips
 phylosig(MCCtree, pagelPDVIS, method = "lambda", test = TRUE, nsim = 999)
 # nsim = 999 means testing with 999 randomizations
-
 ```
 
 Phylogenetic signal is high for Polarization.
@@ -252,7 +238,6 @@ pagelPDPol <- PDVIS$Pol # Define which trait you want to test
 names(pagelPDPol) <- rownames(PDVIS) # Row names = tree tips
 phylosig(MCCtree, pagelPDPol, method = "lambda", test = TRUE, nsim = 999)
 # nsim = 999 means testing with 999 randomizations
-
 ```
 
 
@@ -282,29 +267,27 @@ Model
 ```{r }
 
 MuPGLSPol1 <- Reflectance ~ Pol
-
 ```
 
 Dataset
 
 ```{r message=FALSE}
-#Add the phylogeny name again because in this function it is needed:
-PDVIS2<-
-  PDVIS %>% 
-  dplyr::mutate(phylogeny_name = rownames(PDVIS)) %>% 
+# Add the phylogeny name again because in this function it is needed:
+PDVIS2 <-
+  PDVIS %>%
+  dplyr::mutate(phylogeny_name = rownames(PDVIS)) %>%
   dplyr::select(Reflectance, Pol)
 
 PDVIS2 <- as.data.frame(PDVIS2)
 head(PDVIS2)
-
 ```
 
 Apply
 
 ```{r message=FALSE, warning=FALSE}
-runsPol1<-lapply(trees,pgls_runA,model=MuPGLSPol1,dataset=PDVIS2) 
+runsPol1 <- lapply(trees, pgls_runA, model = MuPGLSPol1, dataset = PDVIS2)
 
-dfPol1 <- ldply (runsPol1, data.frame)
+dfPol1 <- ldply(runsPol1, data.frame)
 ```
 
 Get results
@@ -329,7 +312,7 @@ Create the data frame of comparative data
 ```{r}
 
 comp_data2 <- comparative.data(
-  phy = MCCtree, 
+  phy = MCCtree,
   data = RPDAgg1, # aggregated data without the spp in the row names
   names.col = "phylogeny_name", # contains the column phylogeny name
   vcv = TRUE,
@@ -337,19 +320,17 @@ comp_data2 <- comparative.data(
 )
 
 head(RPDAgg1)
-
 ```
 
 Establish the model
 
 ```{r message= FALSE, warnings=FALSE}
 
-pglsPDPol <- pgls(Pol ~ PC1 + PC2 + size + PC1*size + PC2*size,
+pglsPDPol <- pgls(Pol ~ PC1 + PC2 + size + PC1 * size + PC2 * size,
   data = comp_data2, param.CI = 0.95, lambda = "ML"
 )
 
 summary(pglsPDPol)
-
 ```
 
 Polarization
@@ -360,7 +341,6 @@ pagelPDPol <- PDVIS$Pol # Define which trait you want to test
 names(pagelPDPol) <- rownames(PDVIS) # Row names = tree tips
 phylosig(MCCtree, pagelPDPol, method = "lambda", test = TRUE, nsim = 999)
 # nsim = 999 means testing with 999 randomizations
-
 ```
 
 Phylogenetic signal is high. 
@@ -388,16 +368,16 @@ source("7_multiple_pgls_function_B.R") # script A is for Polarization as a respo
 Model
 
 ```{r }
-MuPGLSPol2 <- Polarization ~ PC1 + PC2 + size + PC1*size + PC2*size
+MuPGLSPol2 <- Polarization ~ PC1 + PC2 + size + PC1 * size + PC2 * size
 ```
 
 Dataset
 
 ```{r message=FALSE}
-#Add the phylogeny name again because in this function it is needed:
-PDPol2<-
-  PDPol %>% 
-  dplyr::mutate(phylogeny_name = rownames(PDPol)) %>% 
+# Add the phylogeny name again because in this function it is needed:
+PDPol2 <-
+  PDPol %>%
+  dplyr::mutate(phylogeny_name = rownames(PDPol)) %>%
   dplyr::select(phylogeny_name, Polarization, size, PC1, PC2)
 
 PDPol2 <- as.data.frame(PDPol2)
@@ -406,9 +386,9 @@ PDPol2 <- as.data.frame(PDPol2)
 Apply
 
 ```{r message=FALSE, warning=FALSE}
-runsPol2<-lapply(trees,pgls_runB,model=MuPGLSPol2,dataset=PDPol2) 
+runsPol2 <- lapply(trees, pgls_runB, model = MuPGLSPol2, dataset = PDPol2)
 
-dfPol2 <- ldply (runsPol2, data.frame)
+dfPol2 <- ldply(runsPol2, data.frame)
 ```
 
 Get results

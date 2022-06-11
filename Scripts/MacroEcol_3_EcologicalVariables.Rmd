@@ -1,19 +1,7 @@
 ---
-title: "MacroEcol_3_EcologicalVariables"
-author: "Laura Ospina-Rozo"
-date: "25/04/2022"
-output:
-  html_document: 
-    toc: yes
-    toc_float: yes
-    toc_depth: 5
-    highlight: kate
-    theme: paper
-    self_contained: yes
-    mode: selfcontained
-    code_folding: hide
-editor_options: 
-  chunk_output_type: console
+title: "Summarising ecological variables into principal components"
+#author: "Laura Ospina-Rozo"
+#date: "25/04/2022"
 ---
 
 Ecological Variables
@@ -57,7 +45,7 @@ climat <-
           species != "oliv3") %>% # removed. vegetation data not available
   arrange (species) %>% 
   dplyr::select (c(1,5:8,11:19)) %>% 
-  rename(
+  dplyr::rename(
     over35 = avg_temp_over_35, # days over 35deg averaged through 10 years
     MaxT = avg_max_temp, # daily -> mean in one month -> mean over 10 y
     MinT = avg_min_temp, # daily -> mean in one month -> mean over 10 y

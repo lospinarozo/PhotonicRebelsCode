@@ -1,23 +1,11 @@
 ---
-title: "5_Polarization"
-author: "Laura Ospina-Rozo"
-date: "25/04/2022"
-output:
-  html_document: 
-    toc: yes
-    toc_float: yes
-    toc_depth: 5
-    highlight: kate
-    theme: paper
-    self_contained: yes
-    mode: selfcontained
-    code_folding: hide
-editor_options: 
-  chunk_output_type: console
+title: "Calculating degree of polarisation"
+# author: "Laura Ospina-Rozo"
+# date: "25/04/2022"
 ---
 
 
-In this file, we calculate the reflectance of the beetles from the RGB values measured from calibrated photographs to find the XXXX of polarization.
+In this file, we calculate the reflectance of the beetles from the RGB values measured from calibrated photographs to find the degree of circular polarization.
 
 Specifically, we first linearise the RBGs using the parameters derived from the MATLAB code adapted from Stevens et al 2007 (Biological Journal of the Linnean society, 90(2), 211-237).
 
@@ -46,8 +34,7 @@ options(scipen = 100)
 We imported the data set containing ecological and phylogeny data obtained in previous steps. 
 
 ```{r}
-Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1] 
-
+Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1]
 ```
 
 
@@ -62,54 +49,51 @@ The parameters obtained from these curves were stored in .txt files, so we wrote
 ```{r}
 
 read_parameters_from_file <- function(camera_cat, type) {
-  param <- read.table(paste0("../Data/ParametersMatLab/StandardParams", 
-                             camera_cat, type, ".txt"), header=TRUE) %>% 
-  select(1:5,7) %>% 
-  mutate(camera_cat = rep(camera_cat)) %>% 
-  mutate(type=rep(type))
-  
+  param <- read.table(paste0(
+    "../Data/ParametersMatLab/StandardParams",
+    camera_cat, type, ".txt"
+  ), header = TRUE) %>%
+    dplyr::select(1:5, 7) %>%
+    dplyr::mutate(camera_cat = rep(camera_cat)) %>%
+    dplyr::mutate(type = rep(type))
+
   return(param)
 }
 
 parameter0 <-
   bind_rows(
-  read_parameters_from_file("J21", "LCP"),
-  read_parameters_from_file("J21", "RCP"),
-  read_parameters_from_file("J21", "VIS"),
-  
-  read_parameters_from_file("J25", "LCP"),
-  read_parameters_from_file("J25", "RCP"),
-  read_parameters_from_file("J25", "VIS"),
-  
-  read_parameters_from_file("J26", "LCP"),
-  read_parameters_from_file("J26", "RCP"),
-  read_parameters_from_file("J26", "VIS"),
-  
-  read_parameters_from_file("F01", "LCP"),
-  read_parameters_from_file("F01", "RCP"),
-  read_parameters_from_file("F01", "VIS"),
-  
-  read_parameters_from_file("F04", "LCP"),
-  read_parameters_from_file("F04", "RCP"),
-  read_parameters_from_file("F04", "VIS")
-
+    read_parameters_from_file("J21", "LCP"),
+    read_parameters_from_file("J21", "RCP"),
+    read_parameters_from_file("J21", "VIS"),
+    read_parameters_from_file("J25", "LCP"),
+    read_parameters_from_file("J25", "RCP"),
+    read_parameters_from_file("J25", "VIS"),
+    read_parameters_from_file("J26", "LCP"),
+    read_parameters_from_file("J26", "RCP"),
+    read_parameters_from_file("J26", "VIS"),
+    read_parameters_from_file("F01", "LCP"),
+    read_parameters_from_file("F01", "RCP"),
+    read_parameters_from_file("F01", "VIS"),
+    read_parameters_from_file("F04", "LCP"),
+    read_parameters_from_file("F04", "RCP"),
+    read_parameters_from_file("F04", "VIS")
   )
-
 ```
 
 The regression uses 4 parameters a, b, c, and d. We obtained one value for each parameter, on each channel (R,G, B) for each type of filter (VIS = Visible, LCP =left handed circularly polarized and RCP= right circularly polarized) on each camera configuration (camera_cat)
 
 ```{r}
 
-parameter <- 
-  parameter0 %>% filter(Channel != "Gy") %>% # keep only the channels R, G, B.
-  select(-5) %>% # this column is the % of fitting (ideally) above 0.99)
-  gather(key = parameter, 
-         value = value,
-         - Channel, -type, -camera_cat) #re-arrange: All parameters in 1 column
+parameter <-
+  parameter0 %>% dplyr::filter(Channel != "Gy") %>% # keep only the channels R, G, B.
+  dplyr::select(-5) %>% # this column is the % of fitting (ideally) above 0.99)
+  gather(
+    key = parameter,
+    value = value,
+    -Channel, -type, -camera_cat
+  ) # re-arrange: All parameters in 1 column
 
 head(parameter)
-
 ```
 
 ## Grey Standard
@@ -119,7 +103,6 @@ This is the known reflectance (from manufacturer) of the 40% grey placed next to
 ```{r}
 
 grey_standard_refl <- read.csv("../Data/12_knownGreyStdReflectance.csv")
-
 ```
 
 ## Raw RGB values
@@ -130,17 +113,17 @@ These are the RGB valuyes extracted from the calibrated photographs. We consider
 RGB_raw <- read.csv("../Data/10_Polarization.csv")
 
 # simplify
-RGB_raw_transform <- 
-  RGB_raw %>% 
+RGB_raw_transform <-
+  RGB_raw %>%
   # remove these columns that we do not need:
-  select(-Pic_code,-ANIC,-SpeciesName, -area, -min, -max) %>% 
+  dplyr::select(-Pic_code, -ANIC, -SpeciesName, -area, -min, -max) %>%
   # Change names
-  rename("type" = Filter, # This means VIS, Left polarize, or right polarized
-         "Channel" = label, # This means R, G or B
-         "value" = mean) %>% # This refers to the value of each channel
-  filter(ind != "pind03") # removed because values were repeated accidentally
-
-
+  dplyr::rename(
+    "type" = Filter, # This means VIS, Left polarize, or right polarized
+    "Channel" = label, # This means R, G or B
+    "value" = mean
+  ) %>% # This refers to the value of each channel
+  dplyr::filter(ind != "pind03") # removed because values were repeated accidentally
 ```
 
 
@@ -151,26 +134,26 @@ We separated the RGB values of the elytra and the grey standard but kept a uniqu
 ```{r}
 
 RGBElytraNGrey <-
-  RGB_raw_transform %>% 
-  filter(tr != "Pronotum") %>% # remove data for the pronotum
+  RGB_raw_transform %>%
+  dplyr::filter(tr != "Pronotum") %>% # remove data for the pronotum
   unite("PhotoID", # Create a unique code
-        c(1,2,4), # which contains the individual_Filter_Channel
-        remove=FALSE) # still keep all the original columns
+    c(1, 2, 4), # which contains the individual_Filter_Channel
+    remove = FALSE
+  ) # still keep all the original columns
 
-# Each beetle sample has a grey standard in the same photo.  
-levels(as.factor(RGBElytraNGrey$tr)) 
+# Each beetle sample has a grey standard in the same photo.
+levels(as.factor(RGBElytraNGrey$tr))
 
 # We will separate the elytra and grey
 # but they will still share the unique PhotoID to pair them later
 
 RGBElytra <-
-  RGBElytraNGrey %>% 
-  filter(tr == "Elytra")
-  
-RGBElGrey <-
-  RGBElytraNGrey %>% 
-  filter(tr == "Grey")
+  RGBElytraNGrey %>%
+  dplyr::filter(tr == "Elytra")
 
+RGBElGrey <-
+  RGBElytraNGrey %>%
+  dplyr::filter(tr == "Grey")
 ```
 
 
@@ -182,17 +165,18 @@ Pronotum data was not available for the following beetles:
 ```{r}
 
 RGBPronot1 <-
-  RGB_raw_transform %>% 
-  filter(tr != "Elytra") %>%  # remove data for the elytra
+  RGB_raw_transform %>%
+  dplyr::filter(tr != "Elytra") %>% # remove data for the elytra
   unite("PhotoID", # Create a unique code
-        c(1,2,4), # which contains the individual_Filter_Channel
-        remove=FALSE) # still keep all the original columns
+    c(1, 2, 4), # which contains the individual_Filter_Channel
+    remove = FALSE
+  ) # still keep all the original columns
 
-inPGind <- levels(as.factor(RGBPronot1[RGBPronot1$tr=="Grey",]$ind))
-inPRind <- levels(as.factor(RGBPronot1[RGBPronot1$tr=="Pronotum",]$ind))
+inPGind <- levels(as.factor(RGBPronot1[RGBPronot1$tr == "Grey", ]$ind))
+inPRind <- levels(as.factor(RGBPronot1[RGBPronot1$tr == "Pronotum", ]$ind))
 
-setdiff(inPGind,inPRind)
-setdiff(inPRind,inPGind)
+setdiff(inPGind, inPRind)
+setdiff(inPRind, inPGind)
 # Note pronotum missing for these: "ecry03" "mcla02" "roci02"
 ```
 
@@ -203,19 +187,18 @@ We separated the RGB values of the pronotum and the grey standard but kept a uni
 ```{r}
 
 RGBPronot1 <-
-  RGBPronot1 %>% 
-  filter(ind != "ecry03" &
-         ind != "mcla02" &
-         ind != "roci02") # Remove these species because pronotum unavailable
+  RGBPronot1 %>%
+  dplyr::filter(ind != "ecry03" &
+    ind != "mcla02" &
+    ind != "roci02") # Remove these species because pronotum unavailable
 
-RGBPronot <- 
-  RGBPronot1 %>% 
-  filter(tr == "Pronotum")
+RGBPronot <-
+  RGBPronot1 %>%
+  dplyr::filter(tr == "Pronotum")
 
-RGBPrGrey <- 
-  RGBPronot1 %>% 
-  filter(tr == "Grey")
-
+RGBPrGrey <-
+  RGBPronot1 %>%
+  dplyr::filter(tr == "Grey")
 ```
 
 
@@ -236,35 +219,31 @@ Where a, b c and d are the parameters obtained from MatLab. x is the raw RGB val
 
 ```{r}
 
-#The arguments of this functions are: 
+# The arguments of this functions are:
 # a DataFrame: containing the RGB values that we want to linearise
 # a ParameterData: a data frame containing the parameters a,b,c,d from MatLab
 
-lin_equ_RGB <- function(DataFrame,ParameterData){ 
+lin_equ_RGB <- function(DataFrame, ParameterData) {
   Result <- DataFrame # keep the original data, results will be added to it
-  Result$Linearized <- rep("NA",length(DataFrame[1])) # add an empty column
- 
+  Result$Linearized <- rep("NA", length(DataFrame[1])) # add an empty column
+
   for (i in 1:length(DataFrame$PhotoID)) {
-    
     para <- ParameterData %>% # the data frame with the parameters
-      
+
       # For each line in the DataFrame to linearise, we need to find
       # the correspondent set of parameters:
-      filter(type == DataFrame$type[i] &  # VIS, LCP, or RCP
-             Channel == DataFrame$Channel[i] & # R, G or B
-             camera_cat == DataFrame$camera_cat[i]) %>% # Camera conditions
-             arrange(.,parameter) # arranged alphabetically
-    
+      dplyr::filter(type == DataFrame$type[i] & # VIS, LCP, or RCP
+        Channel == DataFrame$Channel[i] & # R, G or B
+        camera_cat == DataFrame$camera_cat[i]) %>% # Camera conditions
+      dplyr::arrange(., parameter) # arranged alphabetically
+
     # Apply the formula
-     Result$Linearized[i]<- 
-       para$value[1] * exp(para$value[2] * Result$value[i]) +
-       para$value[3] * exp(para$value[4] * Result$value[i]) 
-    
+    Result$Linearized[i] <-
+      para$value[1] * exp(para$value[2] * Result$value[i]) +
+      para$value[3] * exp(para$value[4] * Result$value[i])
   }
   return(Result)
 }
-
-
 ```
 
 
@@ -284,18 +263,17 @@ We applied the function defined in the previous step
 
 ```{r}
 
-LinearizedElytra <- lin_equ_RGB(RGBElytra,parameter) %>% 
-  select(PhotoID, tr, Linearized) # apply function
+LinearizedElytra <- lin_equ_RGB(RGBElytra, parameter) %>%
+  dplyr::select(PhotoID, tr, Linearized) # apply function
 
 head(LinearizedElytra)
 
 LinearizedElytra$Linearized <- round(as.numeric
-                                     (LinearizedElytra$Linearized),4 ) # round
+(LinearizedElytra$Linearized), 4) # round
 
-LinearizedElytraSpr <- 
-  LinearizedElytra %>% 
-  spread(tr,Linearized)
-
+LinearizedElytraSpr <-
+  LinearizedElytra %>%
+  spread(tr, Linearized)
 ```
 
 #### Equalise
@@ -304,17 +282,19 @@ And then equalised following the equation
 
 ```{r}
 
-RGBElGreys <- 
-  RGBElGrey %>% 
-  select(PhotoID,value) # select the relevant columns of the raw grey values
+RGBElGreys <-
+  RGBElGrey %>%
+  dplyr::select(PhotoID, value) # select the relevant columns of the raw grey values
 
 EQElytra <-
-  merge(RGBElGreys,LinearizedElytraSpr,
-        all=FALSE) %>% 
-  rename(RawGrey = value) %>% 
-  mutate(Equalized = 
-           Elytra/(RawGrey/(grey_standard_refl[1,2]*255)))  
-
+  merge(RGBElGreys, LinearizedElytraSpr,
+    all = FALSE
+  ) %>%
+  dplyr::rename(RawGrey = value) %>%
+  dplyr::mutate(
+    Equalized =
+      Elytra / (RawGrey / (grey_standard_refl[1, 2] * 255))
+  )
 ```
 
 
@@ -324,20 +304,19 @@ We averaged the RGB values of the three channels for each filter.
 
 ```{r}
 
-RGB_ave <- EQElytra %>% 
-  select(PhotoID,Equalized) %>% 
-  mutate(Reflectance = Equalized * 100) %>% 
-  select(-Equalized) %>% 
-  separate(PhotoID,c("ind","Type","Channel"), sep="_") %>% 
-  group_by(ind, Type) %>% 
-  mutate(RGB_ave = mean(Reflectance)) %>% 
-  select(ind, Type ,RGB_ave) %>% 
-  distinct() %>%  # leave only the one row for each individual
-  filter(!grepl('ambl', ind)) %>% 
-  filter(!grepl('sqzb', ind)) # remove, absent in the phylogeny
+RGB_ave <- EQElytra %>%
+  dplyr::select(PhotoID, Equalized) %>%
+  dplyr::mutate(Reflectance = Equalized * 100) %>%
+  dplyr::select(-Equalized) %>%
+  separate(PhotoID, c("ind", "Type", "Channel"), sep = "_") %>%
+  dplyr::group_by(ind, Type) %>%
+  dplyr::mutate(RGB_ave = mean(Reflectance)) %>%
+  dplyr::select(ind, Type, RGB_ave) %>%
+  dplyr::distinct() %>% # leave only the one row for each individual
+  dplyr::filter(!grepl("ambl", ind)) %>%
+  dplyr::filter(!grepl("sqzb", ind)) # remove, absent in the phylogeny
 
 head(RGB_ave)
-
 ```
 
 
@@ -348,18 +327,17 @@ head(RGB_ave)
 We applied the function defined in the previous step
 
 ```{r}
-LinearizedPron <- lin_equ_RGB(RGBPronot,parameter) %>% 
+LinearizedPron <- lin_equ_RGB(RGBPronot, parameter) %>%
   select(PhotoID, tr, Linearized) # apply function
 
 head(LinearizedPron)
 
 LinearizedPron$Linearized <- round(as.numeric
-                                   (LinearizedPron$Linearized),4 ) # round
+(LinearizedPron$Linearized), 4) # round
 
-LinearizedPronSpr <- 
-  LinearizedPron %>% 
-  spread(tr,Linearized)
-
+LinearizedPronSpr <-
+  LinearizedPron %>%
+  spread(tr, Linearized)
 ```
 
 #### Equalise
@@ -368,17 +346,19 @@ And then equalised following the equation
 
 ```{r}
 
-RGBPrGreys <- 
-  RGBPrGrey %>% 
-  select(PhotoID,value) # select the relevant columns of the raw grey values
+RGBPrGreys <-
+  RGBPrGrey %>%
+  dplyr::select(PhotoID, value) # select the relevant columns of the raw grey values
 
 EQPronot <-
-  merge(RGBPrGreys,LinearizedPronSpr,
-        all=FALSE) %>% 
-  rename(RawGrey = value) %>% 
-  mutate(Equalized = 
-           Pronotum/(RawGrey/(grey_standard_refl[1,2]*255)))  
-
+  merge(RGBPrGreys, LinearizedPronSpr,
+    all = FALSE
+  ) %>%
+  dplyr::rename(RawGrey = value) %>%
+  dplyr::mutate(
+    Equalized =
+      Pronotum / (RawGrey / (grey_standard_refl[1, 2] * 255))
+  )
 ```
 
 
@@ -388,20 +368,19 @@ We averaged the RGB values of the three channels for each filter.
 
 ```{r}
 
-RGB_avePr <- EQPronot %>% 
-  select(PhotoID,Equalized) %>% 
-  mutate(Reflectance = Equalized * 100) %>% 
-  select(-Equalized) %>% 
-  separate(PhotoID,c("ind","Type","Channel"), sep="_") %>% 
-  group_by(ind, Type) %>% 
-  mutate(RGB_aveP = mean(Reflectance)) %>% 
-  select(ind, Type ,RGB_aveP) %>% 
-  distinct() %>%  # leave only the one row for each individual
-  filter(!grepl('ambl', ind)) %>% 
-  filter(!grepl('sqzb', ind)) # remove, absent in the phylogeny
+RGB_avePr <- EQPronot %>%
+  dplyr::select(PhotoID, Equalized) %>%
+  dplyr::mutate(Reflectance = Equalized * 100) %>%
+  dplyr::select(-Equalized) %>%
+  separate(PhotoID, c("ind", "Type", "Channel"), sep = "_") %>%
+  dplyr::group_by(ind, Type) %>%
+  dplyr::mutate(RGB_aveP = mean(Reflectance)) %>%
+  dplyr::select(ind, Type, RGB_aveP) %>%
+  dplyr::distinct() %>% # leave only the one row for each individual
+  dplyr::filter(!grepl("ambl", ind)) %>%
+  dplyr::filter(!grepl("sqzb", ind)) # remove, absent in the phylogeny
 
 head(RGB_avePr)
-
 ```
 
 
@@ -420,10 +399,10 @@ Thus we obtained the polarization values for the elytron ROI by individual:
 ```{r}
 
 # Calculate the polarization:
-ElyPol <- 
-  RGB_ave %>% 
-  spread(Type,RGB_ave) %>% 
-  mutate(Polarization =  (LCP - RCP) / (LCP + RCP))
+ElyPol <-
+  RGB_ave %>%
+  spread(Type, RGB_ave) %>%
+  dplyr::mutate(Polarization = (LCP - RCP) / (LCP + RCP))
 
 head(ElyPol) # by individual
 ```
@@ -434,17 +413,16 @@ And by species:
 
 # Average: One polarization value by spp
 ElyPolbysp <-
-  ElyPol %>% 
-  select(ind, Polarization) %>%  
-  mutate(spp= substr(ind,1,4)) # Add column for spp
+  ElyPol %>%
+  dplyr::select(ind, Polarization) %>%
+  dplyr::mutate(spp = substr(ind, 1, 4)) # Add column for spp
 
-EPolbs <- 
-  ElyPolbysp[2:3] %>% 
-  group_by(spp) %>% 
-  summarise(Pol = mean(Polarization)) # by species
+EPolbs <-
+  ElyPolbysp[2:3] %>%
+  dplyr::group_by(spp) %>%
+  dplyr::summarise(Pol = mean(Polarization)) # by species
 
 head(EPolbs)
-
 ```
 
 
@@ -454,13 +432,12 @@ Thus we obtained the polarization values for the pronotum ROI by individual:
 
 ```{r}
 # Calculate the polarization:
-ProPol <- 
-  RGB_avePr %>% 
-  spread(Type,RGB_aveP) %>% 
-  mutate(Polarization =  (LCP - RCP) / (LCP + RCP))
+ProPol <-
+  RGB_avePr %>%
+  spread(Type, RGB_aveP) %>%
+  dplyr::mutate(Polarization = (LCP - RCP) / (LCP + RCP))
 
 head(ProPol) #  by individual
-
 ```
 
 And by species:
@@ -469,17 +446,16 @@ And by species:
 
 # Average: One polarization value by spp
 ProPolbysp <-
-  ProPol %>% 
-  select(ind, Polarization) %>%  
-  mutate(spp= substr(ind,1,4)) # Add column for spp
+  ProPol %>%
+  dplyr::select(ind, Polarization) %>%
+  dplyr::mutate(spp = substr(ind, 1, 4)) # Add column for spp
 
-PPolbs <- 
-  ProPolbysp[2:3] %>% 
-  group_by(spp) %>% 
-  summarise(Pol = mean(Polarization)) # by species
-  
+PPolbs <-
+  ProPolbysp[2:3] %>%
+  dplyr::group_by(spp) %>%
+  dplyr::summarise(Pol = mean(Polarization)) # by species
+
 head(PPolbs)
-
 ```
 
 
@@ -493,25 +469,24 @@ First make sure the two data frames contain the same number of species, thus the
 ```{r}
 ProPol <-
   ProPol %>%
-  rename(PronotPol = Polarization)
+  dplyr::rename(PronotPol = Polarization)
 
 ElyPol <-
-  ElyPol %>% 
-  rename(ElytrPol = Polarization) #Keep all spp for other tests
+  ElyPol %>%
+  dplyr::rename(ElytrPol = Polarization) # Keep all spp for other tests
 
 
 ElyPolEP <-
-  ElyPol %>% 
+  ElyPol %>%
   filter(ind != "ecry03" &
-         ind != "mcla02" &
-         ind != "roci02") # Removed, pronotum unavailable
+    ind != "mcla02" &
+    ind != "roci02") # Removed, pronotum unavailable
 
 inelytra <- levels(as.factor(ElyPolEP$ind))
-inpronotum <- levels (as.factor(ProPol$ind))
+inpronotum <- levels(as.factor(ProPol$ind))
 
-setdiff(inelytra,inpronotum)
-setdiff(inpronotum,inelytra)
-
+setdiff(inelytra, inpronotum)
+setdiff(inpronotum, inelytra)
 ```
 
 Merge
@@ -520,19 +495,18 @@ Merge
 
 # simplify Data frames
 Elysimple <-
-  ElyPolEP %>% 
-  select(ind, ElytrPol )
+  ElyPolEP %>%
+  select(ind, ElytrPol)
 
-Prosimple <- 
-  ProPol %>% 
+Prosimple <-
+  ProPol %>%
   select(ind, PronotPol)
 
-BeetlePol <- 
-  merge (Elysimple,Prosimple) %>%   # Combine the two data frames
-  mutate(Difference = ElytrPol-PronotPol)
+BeetlePol <-
+  merge(Elysimple, Prosimple) %>% # Combine the two data frames
+  dplyr::mutate(Difference = ElytrPol - PronotPol)
 
 head(BeetlePol)
-
 ```
 
 ### Ecological variables
@@ -545,54 +519,51 @@ First compare the dimensions of the two data frames (Reflectance and polarizatio
 ```{r}
 
 Cons1 <-
-  Cons1 %>% 
-  mutate(spp = substr(ind,1,4)) 
+  Cons1 %>%
+  mutate(spp = substr(ind, 1, 4))
 
 inTree <- levels(as.factor(Cons1$spp))
-inRGB <- levels (as.factor(EPolbs$spp))
+inRGB <- levels(as.factor(EPolbs$spp))
 
-setdiff(inTree,inRGB)
-setdiff(inRGB,inTree)
-
+setdiff(inTree, inRGB)
+setdiff(inRGB, inTree)
 ```
 
 Both contain the same species
 
 ```{r}
 
-#Compare length:
+# Compare length:
 length(Cons1$ind)
-length(ElyPol$ind) 
+length(ElyPol$ind)
 
 # subset the consolidated by the ind in polariz data frame
-Refbyind <- Cons1[Cons1$ind %in% ElyPol$ind, ] 
-
+Refbyind <- Cons1[Cons1$ind %in% ElyPol$ind, ]
 ```
 
 But since they had different numbers of individuals we only considered the ones that were common for both data frames to combine them into one larger data frame
 
 ```{r}
 # Simplify the polarization data
-ElyPolbyind <- 
-  ElyPol %>% 
-  select(1,5) # keep only one column and the individual
+ElyPolbyind <-
+  ElyPol %>%
+  select(1, 5) # keep only one column and the individual
 
-RPData <- 
-  merge (Refbyind,ElyPolbyind) # Combine the two
+RPData <-
+  merge(Refbyind, ElyPolbyind) # Combine the two
 
 head(RPData)
-
 ```
 
 We also summarised this data by species 
 
 ```{r}
 RPDataAgg <-
-  RPData %>% 
-  dplyr::select (-ind,-spp) %>%# remove individual id
-  dplyr::select (phylogeny_name, everything ()) %>% # order columns
-  group_by (phylogeny_name) %>%  # group
-  summarise (across(everything(), list(mean))) # mean
+  RPData %>%
+  dplyr::select(-ind, -spp) %>% # remove individual id
+  dplyr::select(phylogeny_name, everything()) %>% # order columns
+  dplyr::group_by(phylogeny_name) %>% # group
+  dplyr::summarise(across(everything(), list(mean))) # mean
 
 head(RPDataAgg)
 ```
@@ -619,7 +590,6 @@ A paired t-test to compare the mean of the difference to 0.A negative difference
 ```{r}
 # Paired t test
 t.test(BeetlePol$Difference)
-
 ```
 
 The mean difference in polarization between the two body parts is not significantly different than 0.  
@@ -629,16 +599,15 @@ The mean difference in polarization between the two body parts is not significan
 
 ```{r}
 
-hist(BeetlePol$Difference, breaks =20, xlab="Difference in polarization (Elytra-Pronot)", ylab="Frequency")
-
+hist(BeetlePol$Difference, breaks = 20, xlab = "Difference in polarization (Elytra-Pronot)", ylab = "Frequency")
 ```
 
 These beetles with higher polarization in their elytra are:
 
 ```{r}
 ElytraMoreP <-
-  BeetlePol %>% 
-  filter (Difference > 0.1)
+  BeetlePol %>%
+  dplyr::filter(Difference > 0.1)
 
 ElytraMoreP$ind
 ```
@@ -647,8 +616,8 @@ These beetles with higher polarization in their pronotum are:
 
 ```{r}
 PronotumMoreP <-
-  BeetlePol %>% 
-  filter (Difference < -0.1)
+  BeetlePol %>%
+  dplyr::filter(Difference < -0.1)
 
 PronotumMoreP$ind
 ```
@@ -671,17 +640,17 @@ There is a positive correlation between the degree of polarization and the amoun
 
 Individual level:
 ```{r}
-cor.test(RPData$R_VIS,RPData$ElytrPol) # by individual
+cor.test(RPData$R_VIS, RPData$ElytrPol) # by individual
 
-modPol1 <- lm(RPData$R_VIS~RPData$ElytrPol) #by individual
+modPol1 <- lm(RPData$R_VIS ~ RPData$ElytrPol) # by individual
 summary(modPol1)
 ```
 
 Species level:
 ```{r}
-cor.test(RPDataAgg$R_VIS_1,RPDataAgg$ElytrPol_1) # by spp
+cor.test(RPDataAgg$R_VIS_1, RPDataAgg$ElytrPol_1) # by spp
 
-modPol3 <- lm(RPDataAgg$R_VIS_1~RPDataAgg$ElytrPol_1) # by spp
+modPol3 <- lm(RPDataAgg$R_VIS_1 ~ RPDataAgg$ElytrPol_1) # by spp
 summary(modPol3)
 ```
 
@@ -691,52 +660,58 @@ summary(modPol3)
 
 ```{r message=FALSE, fig.cap = "Relationship between polarization and VIS reflectivity by individual"}
 
-ggplot(RPData, aes(ElytrPol,R_VIS)) +
-     geom_point(pch=21, bg="turquoise", col="black", alpha=0.5, size=2)+
-     ylab("VIS Reflectivity (400 to 700 nm) (%)")+ 
-     xlab("Polarization (L-R)/(L+R)")+
-     theme_bw() + 
-  geom_smooth(method=lm, alpha=0.4, col="#226D7A", fill="grey")
- 
+ggplot(RPData, aes(ElytrPol, R_VIS)) +
+  geom_point(pch = 21, bg = "turquoise", col = "black", alpha = 0.5, size = 2) +
+  ylab("VIS Reflectivity (400 to 700 nm) (%)") +
+  xlab("Polarization (L-R)/(L+R)") +
+  theme_bw() +
+  geom_smooth(method = lm, alpha = 0.4, col = "#226D7A", fill = "grey")
 ```
 
 ```{r}
-ToPlotPolbsp <- 
-  RPData %>% 
-  dplyr::select (-phylogeny_name) %>% 
-  mutate("spp" = substr(ind,1,4)) %>% 
-  select(-1) %>% 
-  group_by(spp) %>% 
-  summarise(meanAll = mean(R_ALL),
-            meanVIS = mean(R_VIS),
-            meanNIR = mean(R_NIR),
-            meanRes = mean(Res),
-            meanPol = mean(ElytrPol),
-            meanSize = mean(size),
-            sdAll = sd(R_ALL),
-            sdVIS = sd(R_VIS),
-            sdNIR = sd(R_NIR),
-            sdRes = sd(Res),
-            sdPol = sd(ElytrPol),
-            sdSize = sd(size))
+ToPlotPolbsp <-
+  RPData %>%
+  dplyr::select(-phylogeny_name) %>%
+  dplyr::mutate("spp" = substr(ind, 1, 4)) %>%
+  dplyr::select(-1) %>%
+  dplyr::group_by(spp) %>%
+  dplyr::summarise(
+    meanAll = mean(R_ALL),
+    meanVIS = mean(R_VIS),
+    meanNIR = mean(R_NIR),
+    meanRes = mean(Res),
+    meanPol = mean(ElytrPol),
+    meanSize = mean(size),
+    sdAll = sd(R_ALL),
+    sdVIS = sd(R_VIS),
+    sdNIR = sd(R_NIR),
+    sdRes = sd(Res),
+    sdPol = sd(ElytrPol),
+    sdSize = sd(size)
+  )
 ```
 
 
 ```{r message=FALSE, fig.cap = "Relationship between polarization and VIS reflectivity by species"}
- 
-ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanVIS))+
-    geom_errorbar(aes(ymin = meanVIS - sdVIS,
-                    ymax = meanVIS + sdVIS), 
-                col="#cecec2") + 
-  geom_errorbarh(aes(xmin = meanPol - sdPol,
-                     xmax = meanPol + sdPol),
-                 col="#cecec2") +
-  geom_smooth (method="lm", color="#593876", fill="#D7A1F9", alpha=0.3)+
-  geom_point(size=2, alpha=0.4, colour= "#593876")+
-  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
-  theme_minimal()+
-  theme(legend.position = "none")
 
+ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanVIS)) +
+  geom_errorbar(aes(
+    ymin = meanVIS - sdVIS,
+    ymax = meanVIS + sdVIS
+  ),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = meanPol - sdPol,
+    xmax = meanPol + sdPol
+  ),
+  col = "#cecec2"
+  ) +
+  geom_smooth(method = "lm", color = "#593876", fill = "#D7A1F9", alpha = 0.3) +
+  geom_point(size = 2, alpha = 0.4, colour = "#593876") +
+  geom_point(size = 2, pch = 21, colour = "black", alpha = 0.7) +
+  theme_minimal() +
+  theme(legend.position = "none")
 ```
 
 
@@ -763,15 +738,15 @@ There is a negative correlation between the NIR reflectivity and polarization.
 
 Individual level:
 ```{r}
-cor.test(RPData$R_NIR,RPData$ElytrPol) # by individual
+cor.test(RPData$R_NIR, RPData$ElytrPol) # by individual
 
-modPol2 <- lm(RPData$R_NIR~RPData$ElytrPol) # by individual
+modPol2 <- lm(RPData$R_NIR ~ RPData$ElytrPol) # by individual
 summary(modPol2)
 ```
 
 Species level:
 ```{r}
-cor.test(RPDataAgg$R_NIR_1,RPDataAgg$ElytrPol_1) # by species
+cor.test(RPDataAgg$R_NIR_1, RPDataAgg$ElytrPol_1) # by species
 ```
 (Correlation is lost when considering the average per species)
 
@@ -780,32 +755,34 @@ cor.test(RPDataAgg$R_NIR_1,RPDataAgg$ElytrPol_1) # by species
 
 ```{r message=FALSE, fig.cap = "Relationship between polarization and NIR reflectivity by individual"}
 
-ggplot(RPData, aes(ElytrPol,R_NIR)) +
-     geom_point(pch=21, bg="turquoise", col="black", alpha=0.5, size=2)+
-     ylab("NIR Reflectivity (700 to 1400 nm) (%)")+ 
-     xlab("Polarization (L-R)/(L+R)")+
-     theme_bw() + 
-  geom_smooth(method=lm, alpha=0.4, col="#226D7A", fill="grey") 
-
-
+ggplot(RPData, aes(ElytrPol, R_NIR)) +
+  geom_point(pch = 21, bg = "turquoise", col = "black", alpha = 0.5, size = 2) +
+  ylab("NIR Reflectivity (700 to 1400 nm) (%)") +
+  xlab("Polarization (L-R)/(L+R)") +
+  theme_bw() +
+  geom_smooth(method = lm, alpha = 0.4, col = "#226D7A", fill = "grey")
 ```
 
 ```{r message=FALSE, fig.cap = "Relationship between polarization and NIR reflectivity by species"}
- 
-ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanNIR))+
-  geom_errorbar(aes(ymin = meanNIR - sdNIR,
-                    ymax = meanNIR + sdNIR), 
-                col="#cecec2") + 
-  geom_errorbarh(aes(xmin = meanPol - sdPol,
-                     xmax = meanPol + sdPol),
-                 col="#cecec2") +
-  #geom_smooth (method="lm", color="#593876", fill="#D7A1F9", alpha=0.3)+
-  geom_point(size=2, alpha=0.4, colour= "#593876")+
-  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
-  theme_minimal()+
+
+ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanNIR)) +
+  geom_errorbar(aes(
+    ymin = meanNIR - sdNIR,
+    ymax = meanNIR + sdNIR
+  ),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = meanPol - sdPol,
+    xmax = meanPol + sdPol
+  ),
+  col = "#cecec2"
+  ) +
+  # geom_smooth (method="lm", color="#593876", fill="#D7A1F9", alpha=0.3)+
+  geom_point(size = 2, alpha = 0.4, colour = "#593876") +
+  geom_point(size = 2, pch = 21, colour = "black", alpha = 0.7) +
+  theme_minimal() +
   theme(legend.position = "none")
-
-
 ```
 
 <span style="color: #04C799"> **Conclusion** </span>  <br/>
@@ -831,14 +808,14 @@ There is no correlation between polarization and total reflectivity
 
 Individual level:
 ```{r}
-cor.test(RPData$R_ALL,RPData$ElytrPol)
+cor.test(RPData$R_ALL, RPData$ElytrPol)
 ```
 
 Species level:
 ```{r}
-cor.test(RPDataAgg$R_ALL_1,RPDataAgg$ElytrPol_1)
+cor.test(RPDataAgg$R_ALL_1, RPDataAgg$ElytrPol_1)
 
-modPol4 <- lm(RPDataAgg$R_ALL_1~RPDataAgg$ElytrPol_1)
+modPol4 <- lm(RPDataAgg$R_ALL_1 ~ RPDataAgg$ElytrPol_1)
 summary(modPol4)
 ```
 
@@ -846,28 +823,32 @@ summary(modPol4)
 
 ```{r message=FALSE, fig.cap = "Relationship between polarization and ALL reflectivity by individual"}
 
-ggplot(RPData, aes(ElytrPol,R_ALL)) +
-     geom_point(pch=21, bg="turquoise", col="black", alpha=0.5, size=2)+
-     ylab("ALL Reflectivity (400 to 1400 nm) (%)")+ 
-     xlab("Polarization (L-R)/(L+R)")+
-     theme_bw()
-
+ggplot(RPData, aes(ElytrPol, R_ALL)) +
+  geom_point(pch = 21, bg = "turquoise", col = "black", alpha = 0.5, size = 2) +
+  ylab("ALL Reflectivity (400 to 1400 nm) (%)") +
+  xlab("Polarization (L-R)/(L+R)") +
+  theme_bw()
 ```
 
 ```{r message=FALSE, fig.cap = "Relationship between polarization and ALL reflectivity by species"}
 
-ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanAll))+
-    geom_errorbar(aes(ymin = meanAll - sdAll,
-                    ymax = meanAll + sdAll), 
-                col="#cecec2") + 
-  geom_errorbarh(aes(xmin = meanPol - sdPol,
-                     xmax = meanPol + sdPol),
-                 col="#cecec2") +
-  geom_point(size=2, alpha=0.4, colour= "#593876")+
-  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
-  theme_minimal()+
+ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanAll)) +
+  geom_errorbar(aes(
+    ymin = meanAll - sdAll,
+    ymax = meanAll + sdAll
+  ),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = meanPol - sdPol,
+    xmax = meanPol + sdPol
+  ),
+  col = "#cecec2"
+  ) +
+  geom_point(size = 2, alpha = 0.4, colour = "#593876") +
+  geom_point(size = 2, pch = 21, colour = "black", alpha = 0.7) +
+  theme_minimal() +
   theme(legend.position = "none")
-
 ```
 
 <span style="color: #04C799"> **Conclusion** </span>  <br/>
@@ -897,25 +878,23 @@ We removed 17 individuals belonging to the species _A. prasinus_, _Xylonichus sp
 ```{r}
 
 # remove the species that contain a white underlay
-nounderlay <- 
-  RPData %>% 
-  filter (phylogeny_name != "Paraschizognathus_ocularis" &   
-          phylogeny_name != "Paraschizognathus_prasinus"  & 
-          phylogeny_name != "Paraschizognathus_olivaceous"  &
-          phylogeny_name != "Anoplognathus_prasinus" &
-          phylogeny_name != "Xylonichus_sp")
-
+nounderlay <-
+  RPData %>%
+  dplyr::filter(phylogeny_name != "Paraschizognathus_ocularis" &
+    phylogeny_name != "Paraschizognathus_prasinus" &
+    phylogeny_name != "Paraschizognathus_olivaceous" &
+    phylogeny_name != "Anoplognathus_prasinus" &
+    phylogeny_name != "Xylonichus_sp")
 ```
 
 Removing these species does not alter the correlation between polarization and visible reflectivity.
 
 ```{r}
 
-cor.test(nounderlay$R_VIS,nounderlay$ElytrPol) #Vis
+cor.test(nounderlay$R_VIS, nounderlay$ElytrPol) # Vis
 
-modPol5 <- lm(nounderlay$R_VIS~nounderlay$ElytrPol) #by individual
+modPol5 <- lm(nounderlay$R_VIS ~ nounderlay$ElytrPol) # by individual
 summary(modPol5)
-
 ```
 
 In fact, the estimate for the effect of polarization on reflectivity in our previous analysis was `r summary(modPol1)$coefficients[2]` and it is `r summary(modPol5)$coefficients[2]` after removing the species with the white underlay.
@@ -923,7 +902,7 @@ In fact, the estimate for the effect of polarization on reflectivity in our prev
 In contrast, removing these species disrupts the negative correlation between polarization and NIR.
 
 ```{r}
-cor.test(nounderlay$R_NIR,nounderlay$ElytrPol) # nir
+cor.test(nounderlay$R_NIR, nounderlay$ElytrPol) # nir
 ```
 
 This is evidenced by the change in the confidence interval: It is negative when considering all species `r cor.test(RPData$R_NIR,RPData$ElytrPol)$conf.int[1:2]` but it overlaps 0 when removing the species with a white underlay `r cor.test(nounderlay$R_NIR,nounderlay$ElytrPol)$conf.int[1:2]`
@@ -934,20 +913,22 @@ Visually, it is also noticeable that the points excluded from the graph were tho
 
 RPData2 <- RPData
 # vector describing whether the beetle could potentially have a chiral cuticle
-RPData2$chiral <- RPData2$ind %in% nounderlay$ind 
+RPData2$chiral <- RPData2$ind %in% nounderlay$ind
 
 ggplot() +
-     geom_point(data = RPData2, 
-                mapping = aes(ElytrPol,R_NIR),
-                pch=21, bg="turquoise", col="black", alpha=0.5, size=2.5)+
-     geom_point(data = RPData2[RPData2$chiral=="FALSE",], 
-                mapping = aes(ElytrPol,R_NIR),
-                pch=21, bg="red", col="black", alpha=0.5, size=2.5)+
-     ylab("NIR Reflectivity (700 to 1400 nm) (%)")+ 
-     xlab("Polarization (L-R)/(L+R)")+
-     theme_bw() 
-     
-
+  geom_point(
+    data = RPData2,
+    mapping = aes(ElytrPol, R_NIR),
+    pch = 21, bg = "turquoise", col = "black", alpha = 0.5, size = 2.5
+  ) +
+  geom_point(
+    data = RPData2[RPData2$chiral == "FALSE", ],
+    mapping = aes(ElytrPol, R_NIR),
+    pch = 21, bg = "red", col = "black", alpha = 0.5, size = 2.5
+  ) +
+  ylab("NIR Reflectivity (700 to 1400 nm) (%)") +
+  xlab("Polarization (L-R)/(L+R)") +
+  theme_bw()
 ```
 
 <span style="color: #04C799"> **Conclusion** </span>  <br/>
@@ -967,13 +948,13 @@ ggplot() +
 We obtained a data frame useful to compare the degree of polarization between two body parts, elytron and pronotum
 
 ```{r}
-write.csv(BeetlePol,"../Data/FromCode/PolarzElytraPronot.csv")
+write.csv(BeetlePol, "../Data/FromCode/PolarzElytraPronot.csv")
 ```
 
 And we also added the polarization of the elytra to a subset of the dataframe with the ecological variables and reflectance. Note that this subset may have fewer individuals that the one we will use for the phylogenetic analysis of the reflectance, but they both have the same number of species.
 
 ```{r}
-write.csv(RPData,"../Data/FromCode/PolarzElytraRefl.csv")
+write.csv(RPData, "../Data/FromCode/PolarzElytraRefl.csv")
 ```
 
 

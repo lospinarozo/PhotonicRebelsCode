@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Calculation of optical properties</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Shady Xmas Beetles</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="MacroEcol_1_SettingUp.html">Setting up</a>
+</li>
+<li>
+  <a href="MacroEcol_2_OpticalProperties.html">Optical properties</a>
+</li>
+<li>
+  <a href="MacroEcol_3_EcologicalVariables.html">Ecological variables</a>
+</li>
+<li>
+  <a href="MacroEcol_5_Polarization.html">Polarisation</a>
+</li>
+<li>
+  <a href="MacroEcol_5_Polarization2.html">Polarisation PGLS</a>
+</li>
+<li>
+  <a href="MacroEcol_6_ManuscriptStats.html">Reflectivity PGLS</a>
+</li>
+<li>
+  <a href="MacroEcol_7_ManuscriptFigures.html">Figures</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Calculation of optical properties</h1>
+
+</div>
+
+
+<div id="setting-up" class="section level1">
+<h1>Setting up</h1>
+<p>Load Libraries and Data sets</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;./MacroEcol_1_Libraries.R&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data Sets</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>Reflectance <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/FromCode/Reflectance_PData.csv&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.rspec</span>()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Transmitance <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/FromCode/Transmitance_PData.csv&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.rspec</span>()</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>theorySun <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/4_SunIrradiance.csv&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># Sun irradiance</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a> <span class="fu">as.rspec</span>()</span></code></pre></div>
+</div>
+<div id="calculate-optical-properties" class="section level1">
+<h1>Calculate Optical Properties</h1>
+<div id="reflectivity" class="section level2">
+<h2>Reflectivity</h2>
+<p>In the field of Biophysical Ecology Reflectivity is defined as the
+ratio of total reflected to total incident radiation, and is a
+proportion ranging from 0 to 1 (i.e. not wavelength resolved). It is
+calculating by combining the hemispherical reflectance of each beetle
+and the sun irradiance in 4 steps: <br> Note: In the field of Physics
+reflectivity corresponds to the angle-integrated reflectance (%
+reflectance per nm, i.e. it is wavelength resolved), but this is not the
+definition we used <br> <br></p>
+<p><span style="color: #04C799"> <strong>1) Multiplication</strong>
+</span> <br/></p>
+<p>We created a function to multiply the irradiance of the sun * the
+reflectance at each wavelength</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Define the following function to find the multiplication</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>Find.multiplication<span class="ot">&lt;-</span><span class="cf">function</span>(s){</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  vector2<span class="ot">&lt;-</span><span class="fu">rep</span>(<span class="st">&quot;NA&quot;</span>, <span class="fu">length</span>(s[ , <span class="dv">1</span>]))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>( i <span class="cf">in</span> <span class="dv">2</span> <span class="sc">:</span> <span class="fu">length</span>(s) <span class="sc">-</span> <span class="dv">1</span>){</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (y <span class="cf">in</span> <span class="dv">1</span> <span class="sc">:</span> <span class="fu">length</span>(s[ , <span class="dv">1</span>])){</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      vector2[y] <span class="ot">&lt;-</span> s[y, i] <span class="sc">*</span> s[y, <span class="st">&quot;Sun&quot;</span>] <span class="co"># multiply each column by the last one</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    s[i] <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(vector2) </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(s)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Apply </span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>PrelValuesRefl <span class="ot">&lt;-</span> <span class="fu">Find.multiplication</span>(Reflectance) </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Clean up preliminary values for reflectivity</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>PrelValuesRefl <span class="ot">&lt;-</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  PrelValuesRefl <span class="sc">%&gt;%</span> </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (<span class="sc">-</span>wl, <span class="co"># the wavelengths were altered, eliminate</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>          <span class="sc">-</span>Sun) <span class="sc">%&gt;%</span> <span class="co"># Sun irradiance not required anymore, eliminate</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span> (<span class="at">wl =</span> Reflectance<span class="sc">$</span>wl) <span class="sc">%&gt;%</span>  <span class="co"># add the correct wavelength column</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(wl, <span class="fu">everything</span>()) <span class="sc">%&gt;%</span> <span class="co"># set the wl column as column 1</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.rspec</span>(.) <span class="co"># convert to rspec object</span></span></code></pre></div>
+<p><span style="color: #04C799"> <strong>2) Subset</strong> </span>
+<br/></p>
+<p>Then, we separated the data into different subsets according to the
+spectral band: visible (VIS), NIR or Visible+NIR (ALL)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Refl_VIS <span class="ot">&lt;-</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  PrelValuesRefl <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(wl <span class="sc">&lt;=</span> <span class="dv">700</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>Refl_NIR <span class="ot">&lt;-</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  PrelValuesRefl <span class="sc">%&gt;%</span> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(wl <span class="sc">&gt;=</span> <span class="dv">700</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>Refl_ALL <span class="ot">&lt;-</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  PrelValuesRefl</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>Sun_VIS <span class="ot">&lt;-</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  theorySun <span class="sc">%&gt;%</span> </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(wl <span class="sc">&lt;=</span> <span class="dv">700</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>Sun_NIR <span class="ot">&lt;-</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  theorySun <span class="sc">%&gt;%</span> </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(wl <span class="sc">&gt;=</span> <span class="dv">700</span>)</span></code></pre></div>
+<p><span style="color: #04C799"> <strong>3) Area under the
+curve</strong> </span> <br/></p>
+<p>Afterwards, we found the area under the curve for each beetle on each
+spectral band</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the AUC for the samples</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># &quot;Full&quot; spectrum 400 to 1700 nm</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>Sumdf1 <span class="ot">&lt;-</span> <span class="fu">summary</span>(Refl_ALL)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>B1ALL <span class="ot">&lt;-</span> Sumdf1<span class="sc">$</span>B1</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># VIS 400 to 700 nm</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>Sumdf2 <span class="ot">&lt;-</span> <span class="fu">summary</span>(Refl_VIS)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>B1VIS <span class="ot">&lt;-</span> Sumdf2<span class="sc">$</span>B1</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># NIR 700 to 1700 nm</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>Sumdf3 <span class="ot">&lt;-</span> <span class="fu">summary</span>(Refl_NIR)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>B1NIR <span class="ot">&lt;-</span> Sumdf3<span class="sc">$</span>B1</span></code></pre></div>
+<p>As well as the area under the curve for the sun irradiance on each
+spectral band</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the AUC for the sun irradiance</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>B1SunALL <span class="ot">&lt;-</span> <span class="fu">summary</span>(theorySun)<span class="sc">$</span>B1</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>B1SunVIS <span class="ot">&lt;-</span> <span class="fu">summary</span>(Sun_VIS)<span class="sc">$</span>B1</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>B1SunNIR <span class="ot">&lt;-</span> <span class="fu">summary</span>(Sun_NIR)<span class="sc">$</span>B1</span></code></pre></div>
+<p><span style="color: #04C799"> <strong>4) Standarisation</strong>
+</span> <br/></p>
+<p>We divided the vectors containing the AUC per species, by the AUC of
+the sun for each spectral range.</p>
+<p>This step is useful to express reflectivity as the percentage of
+light coming from the sun, reflected by the beetle on each spectral
+range</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Reflectivity <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;ind&quot;</span><span class="ot">=</span> <span class="fu">names</span>(PrelValuesRefl[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(PrelValuesRefl)]),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;R_ALL&quot;</span><span class="ot">=</span> B1ALL<span class="sc">/</span>B1SunALL,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;R_VIS&quot;</span><span class="ot">=</span> B1VIS<span class="sc">/</span>B1SunVIS,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;R_NIR&quot;</span><span class="ot">=</span> B1NIR<span class="sc">/</span>B1SunNIR)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Reflectivity)</span></code></pre></div>
+<pre><code>##      ind    R_ALL     R_VIS    R_NIR
+## 1 abno01 24.36959 15.194950 32.37499
+## 2 abno02 30.17203 17.865117 40.90967
+## 3 ambl01 22.33334  2.957921 39.18562
+## 4 ambl02 20.48484  8.754453 30.69513
+## 5 anom01 17.25955  2.229028 30.33292
+## 6 anom02 19.93132  7.888188 30.40910</code></pre>
+<p><br> <br></p>
+</div>
+<div id="transmissivity" class="section level2">
+<h2>Transmissivity</h2>
+<p>The process and rationale to calculate transmissivity is similar to
+reflectivity. We combined the hemispherical reflectance of each beetle
+and the sun irradiance in 4 steps:</p>
+<p><span style="color: #04C799"> <strong>1) Multiplication</strong>
+</span> <br/></p>
+<p>This function multiplies the irradiance of the sun * the reflectance
+at each wavelength</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1)  The function has already been defined in the previous section</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Apply </span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>PrelValuesTrans <span class="ot">&lt;-</span> <span class="fu">Find.multiplication</span>(Transmitance) </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Clean up preliminary values for reflectivity</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>PrelValuesTrans <span class="ot">&lt;-</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  PrelValuesTrans <span class="sc">%&gt;%</span> </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (<span class="sc">-</span>wl, <span class="co"># the wavelengths were altered, eliminate</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>          <span class="sc">-</span>Sun) <span class="sc">%&gt;%</span> <span class="co"># Sun irradiance not required anymore, eliminate</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span> (<span class="at">wl =</span> Transmitance<span class="sc">$</span>wl) <span class="sc">%&gt;%</span>  <span class="co"># add the correct wavelength column</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(wl, <span class="fu">everything</span>()) <span class="sc">%&gt;%</span> <span class="co"># set the wl column as column 1</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.rspec</span>(.) <span class="co"># convert to rspec object</span></span></code></pre></div>
+<p><span style="color: #04C799"> <strong>2) Subset</strong> </span>
+<br/></p>
+<p>We separated the data into different subsets according to the
+spectral band: visible (VIS), NIR or Visible+NIR (ALL)</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>Tran_VIS <span class="ot">&lt;-</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  PrelValuesTrans <span class="sc">%&gt;%</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(wl <span class="sc">&lt;=</span> <span class="dv">700</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>Tran_NIR <span class="ot">&lt;-</span> </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  PrelValuesTrans <span class="sc">%&gt;%</span> </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(wl <span class="sc">&gt;=</span> <span class="dv">700</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>Tran_ALL <span class="ot">&lt;-</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  PrelValuesTrans</span></code></pre></div>
+<p><span style="color: #04C799"> <strong>3) Area under the
+curve</strong> </span> <br/></p>
+<p>Afterwards, we found the area under the curve for each beetle on each
+spectral band</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the AUC for the samples</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># &quot;Full&quot; spectrum 400 to 1700 nm</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>Sumdf4 <span class="ot">&lt;-</span> <span class="fu">summary</span>(Tran_ALL)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>TB1ALL <span class="ot">&lt;-</span> Sumdf4<span class="sc">$</span>B1</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># VIS 400 to 700 nm</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>Sumdf5 <span class="ot">&lt;-</span> <span class="fu">summary</span>(Tran_VIS)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>TB1VIS <span class="ot">&lt;-</span> Sumdf5<span class="sc">$</span>B1</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># NIR 700 to 1700 nm</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>Sumdf6 <span class="ot">&lt;-</span> <span class="fu">summary</span>(Tran_NIR)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>TB1NIR <span class="ot">&lt;-</span> Sumdf6<span class="sc">$</span>B1</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the AUC for the sun irradiance calculated in the reflectivity section.</span></span></code></pre></div>
+<p><span style="color: #04C799"> <strong>4) Standarisation</strong>
+</span> <br/></p>
+<p>We divided the vectors with the AUC per species, by the AUC of the
+sun for each spectral range.</p>
+<p>This step is useful to express Transmissivity as the percentage of
+light coming from the sun, that passes through a beetle elytra on each
+spectral range</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Transmissivity <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;ind&quot;</span><span class="ot">=</span> <span class="fu">names</span>(PrelValuesTrans[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(PrelValuesTrans)]),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;T_ALL&quot;</span><span class="ot">=</span> TB1ALL<span class="sc">/</span>B1SunALL,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;T_VIS&quot;</span><span class="ot">=</span> TB1VIS<span class="sc">/</span>B1SunVIS,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;T_NIR&quot;</span><span class="ot">=</span> TB1NIR<span class="sc">/</span>B1SunNIR) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(ind)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Transmissivity)</span></code></pre></div>
+<pre><code>##      ind     T_ALL      T_VIS    T_NIR
+## 1 anom02  9.512246  2.7395752 15.41344
+## 2 anom03 33.611240  8.8468523 55.18522
+## 3 atki03 20.263098  3.8712518 34.53250
+## 4 atki04  6.401844  0.4059584 11.61628
+## 5 aurs03 21.665178 10.2313243 31.62811
+## 6 aurs04 21.522242 10.0386596 31.52977</code></pre>
+<p><br> <br></p>
+</div>
+<div id="absorptivity" class="section level2">
+<h2>Absorptivity</h2>
+<p>We assumed that all the light that is neither reflected nor absorbed
+by the elytra must be absorbed by it. Thus, we calculated the
+absorptivity as Abs = 100 - (Reflectivity + Transmissivity)</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Reflect_sub <span class="ot">&lt;-</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  Reflectivity <span class="sc">%&gt;%</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ind <span class="sc">%in%</span> (Transmissivity<span class="sc">$</span>ind)) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(ind)</span></code></pre></div>
+</div>
+<div id="consolidated" class="section level2">
+<h2>Consolidated</h2>
+<p>Finally we created a data frame containing the three optical
+properties reflectvity (R), transmissivity (T) and absorptivity (A) for
+each beetle on each of the three spectral bands: visible (VIS= 400 to
+700 nm), near infrared (NIR= 700 to 1400nm) and both combined (ALL= 400
+to 1400nm)</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Optical <span class="ot">&lt;-</span> <span class="co"># A data frame with the 3 optical properties</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(Reflect_sub,Transmissivity) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>ind<span class="fl">.1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">A_ALL =</span> <span class="dv">100</span> <span class="sc">-</span> (R_ALL <span class="sc">+</span> T_ALL), <span class="co"># Absorptivity for VIS+NIR </span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">A_VIS =</span> <span class="dv">100</span> <span class="sc">-</span> (R_VIS <span class="sc">+</span> T_VIS), <span class="co"># Absorptivity for VIS</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">A_NIR =</span> <span class="dv">100</span> <span class="sc">-</span> (R_NIR <span class="sc">+</span> T_NIR) <span class="co"># Absorptivity for NIR</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Optical)</span></code></pre></div>
+<pre><code>##      ind    R_ALL     R_VIS    R_NIR     T_ALL      T_VIS    T_NIR    A_ALL    A_VIS     A_NIR
+## 1 anom02 19.93132  7.888188 30.40910  9.512246  2.7395752 15.41344 70.55643 89.37224 54.177463
+## 2 anom03 14.52110  3.528614 24.07742 33.611240  8.8468523 55.18522 51.86766 87.62453 20.737362
+## 3 atki03 13.67959  6.224032 20.15399 20.263098  3.8712518 34.53250 66.05731 89.90472 45.313505
+## 4 atki04 17.16810  8.277483 24.89057  6.401844  0.4059584 11.61628 76.43006 91.31656 63.493152
+## 5 aurs03 48.16895 33.673214 60.82711 21.665178 10.2313243 31.62811 30.16588 56.09546  7.544777
+## 6 aurs04 46.31421 34.197305 56.89950 21.522242 10.0386596 31.52977 32.16355 55.76404 11.570735</code></pre>
+<p><br> <br></p>
+</div>
+<div id="nirvis-residuals" class="section level2">
+<h2>NIR/VIS Residuals</h2>
+<p>We included this step because visible and NIR reflectivity are
+expected to be correlated. Considering the residuals of the correlation
+between these two properties is useful to explore if NIR reflectivity is
+driven by pressures different than the ones affecting visible (mainly
+thermoregulation)</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot of the correlation between NIR and VIS reflectivity</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> Reflectivity, <span class="fu">aes</span>(<span class="at">x =</span> R_VIS, <span class="at">y =</span> R_NIR))<span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">3</span>,<span class="at">alpha=</span><span class="fl">0.4</span>, <span class="at">pch=</span><span class="dv">21</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill=</span> <span class="st">&quot;#39BEB1&quot;</span>)<span class="sc">+</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span> (<span class="at">method=</span><span class="st">&quot;lm&quot;</span>, <span class="at">col=</span><span class="st">&quot;black&quot;</span>)<span class="sc">+</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Reflectivity in VIS (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Reflectivity in NIR (%)&quot;</span>)</span></code></pre></div>
+<p><img src="MacroEcol_2_OpticalProperties_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Linear model</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>NIRVISMod1 <span class="ot">&lt;-</span> <span class="fu">lm</span> (Reflectivity<span class="sc">$</span>R_NIR <span class="sc">~</span> Reflectivity<span class="sc">$</span>R_VIS)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">export_summs</span>(NIRVISMod1, <span class="at">error_format =</span> <span class="st">&quot;SE = {std.error}&quot;</span>)</span></code></pre></div>
+<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:unnamed-chunk-14">
+<col><col><tr>
+<th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Model 1</th></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(Intercept)</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">27.25 ***</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">SE = 1.27&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Reflectivity$R_VIS</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.98 ***</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">SE = 0.08&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">N</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">275&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">R2</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.35&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th colspan="2" style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"> *** p &lt; 0.001;  ** p &lt; 0.01;  * p &lt; 0.05.</th></tr>
+</table>
+
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Include Residuals in the data frame</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>Reflectivity<span class="sc">$</span>Res <span class="ot">&lt;-</span> NIRVISMod1<span class="sc">$</span>residuals </span></code></pre></div>
+<p>Relationship between reflectivity in NIR and the residuals:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ForResNIRPlot <span class="ot">&lt;-</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  Reflectivity <span class="sc">%&gt;%</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (ind, Res, R_NIR) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span> (R_NIR) </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> ForResNIRPlot, <span class="fu">aes</span>(<span class="at">x=</span> R_NIR ,<span class="at">y =</span> Res))<span class="sc">+</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">3</span>,<span class="at">alpha=</span><span class="fl">0.4</span>, <span class="at">pch=</span><span class="dv">21</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill=</span> <span class="st">&quot;#39BEB1&quot;</span>)<span class="sc">+</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">subset</span> (ForResNIRPlot, Res <span class="sc">&gt;</span> <span class="dv">10</span> <span class="sc">|</span> Res <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">15</span>), </span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">label=</span>ind),<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_nudge</span>(<span class="at">x =</span> <span class="sc">+</span><span class="fl">1.8</span>),</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">alpha=</span>.<span class="dv">3</span>, <span class="at">size=</span><span class="fl">2.5</span>)<span class="sc">+</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Reflectivity in NIR (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Residuals from NIR-VIS correlation (%)&quot;</span>)</span></code></pre></div>
+<p><img src="MacroEcol_2_OpticalProperties_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>Relationship between reflectivity in VIS and the residuals:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ForResVISPlot <span class="ot">&lt;-</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  Reflectivity <span class="sc">%&gt;%</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (ind, Res, R_VIS) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span> (R_VIS) </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> ForResVISPlot, <span class="fu">aes</span>(<span class="at">x=</span> R_VIS ,<span class="at">y =</span> Res))<span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">3</span>,<span class="at">alpha=</span><span class="fl">0.4</span>, <span class="at">pch=</span><span class="dv">21</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill=</span> <span class="st">&quot;#39BEB1&quot;</span>)<span class="sc">+</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">subset</span> (ForResVISPlot, Res <span class="sc">&gt;</span> <span class="dv">10</span> <span class="sc">|</span> Res <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">15</span>), </span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">label=</span>ind),<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_nudge</span>(<span class="at">x =</span> <span class="sc">+</span><span class="fl">0.8</span>),</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">alpha=</span>.<span class="dv">3</span>, <span class="at">size=</span><span class="fl">2.5</span>)<span class="sc">+</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Reflectivity in VIS (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Residuals from NIR-VIS correlation (%)&quot;</span>)</span></code></pre></div>
+<p><img src="MacroEcol_2_OpticalProperties_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><br> <br></p>
+</div>
+</div>
+<div id="notes" class="section level1">
+<h1>Notes</h1>
+<p><span style="color: #04C799"> <strong>On phylogeny:</strong> </span>
+<br/></p>
+<p>Some beetles were removed from the analysis because their position on
+the phylogeny is uncertain.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>Reflectivity <span class="ot">&lt;-</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  Reflectivity <span class="sc">%&gt;%</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span> (<span class="at">spp =</span> <span class="fu">substr</span>(ind, <span class="dv">1</span>, <span class="dv">4</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span> (spp <span class="sc">!=</span> <span class="st">&quot;ambl&quot;</span><span class="sc">&amp;</span> <span class="co"># Amblyterus cicatricosus</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;psqz&quot;</span><span class="sc">&amp;</span> <span class="co"># Pseudoschizongnatus schoenfeldti</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;saul&quot;</span><span class="sc">&amp;</span> <span class="co"># Saulostomus villosus</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;sqzb&quot;</span><span class="sc">&amp;</span> <span class="co"># Schizognathus burmeisteri</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;sqzc&quot;</span><span class="sc">&amp;</span> <span class="co"># Schizognathus compressicornis</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;sqzm&quot;</span>  <span class="co"># Schizognathus mesosternalis</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>            ) <span class="sc">%&gt;%</span> <span class="co"># These species were removed. No phylogenetic info</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (<span class="sc">-</span>spp)</span></code></pre></div>
+<p><br> <br></p>
+<p><span style="color: #04C799"> <strong>Data frames from code:</strong>
+</span> <br/></p>
+<p><code>Reflectivity</code> contains the standardized values of
+Reflectivity for 261 individuals (those from wich we had sufficient
+phylogenetic information).</p>
+<p><code>Optical</code> contains the standardized values for three
+optical properties Reflectivity, Transmissivity and Absorptivity for a
+subset of 51 individuals form the previous sample (correspondent to the
+same set of individuals analyzed in the heating rates chapter).</p>
+<p><br> <br></p>
+</div>
+<div id="additional-variables" class="section level1">
+<h1>Additional variables</h1>
+<p>Finally we created data frames that contain the optical properties,
+size and phylogeny name for each beetle</p>
+<p><span style="color: #04C799"> <strong>Size:</strong> </span>
+<br/></p>
+<p>We measured the length between the frontal edge of the head to the
+end of the abdomen from calibrated photographs of the specimens.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Size <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/8_Size.csv&quot;</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>Size <span class="ot">&lt;-</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  Size <span class="sc">%&gt;%</span> </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span> (<span class="at">spp =</span> <span class="fu">substr</span>(ind, <span class="dv">1</span>, <span class="dv">4</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span> (spp <span class="sc">!=</span> <span class="st">&quot;ambl&quot;</span><span class="sc">&amp;</span> <span class="co"># Amblyterus cicatricosus</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;psqz&quot;</span><span class="sc">&amp;</span> <span class="co"># Pseudoschizongnatus schoenfeldti</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;saul&quot;</span><span class="sc">&amp;</span> <span class="co"># Saulostomus villosus</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;sqzb&quot;</span><span class="sc">&amp;</span> <span class="co"># Schizognathus burmeisteri</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;sqzc&quot;</span><span class="sc">&amp;</span> <span class="co"># Schizognathus compressicornis</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;sqzm&quot;</span>  <span class="co"># Schizognathus mesosternalis</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>            ) <span class="sc">%&gt;%</span> <span class="co"># These species were removed. No phylogenetic info</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (<span class="sc">-</span>spp)</span></code></pre></div>
+<p><br></p>
+<p><span style="color: #04C799"> <strong>Phylogeny name:</strong>
+</span> <br/></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>SppNames <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/9_CodesAndSpecies.csv&quot;</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>SppNames <span class="ot">&lt;-</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  SppNames <span class="sc">%&gt;%</span> </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span> (<span class="at">spp =</span> <span class="fu">substr</span>(Ind, <span class="dv">1</span>, <span class="dv">4</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span> (spp <span class="sc">!=</span> <span class="st">&quot;ambl&quot;</span><span class="sc">&amp;</span> <span class="co"># Amblyterus cicatricosus</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;psqz&quot;</span><span class="sc">&amp;</span> <span class="co"># Pseudoschizongnatus schoenfeldti</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;saul&quot;</span><span class="sc">&amp;</span> <span class="co"># Saulostomus villosus</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;sqzb&quot;</span><span class="sc">&amp;</span> <span class="co"># Schizognathus burmeisteri</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;sqzc&quot;</span><span class="sc">&amp;</span> <span class="co"># Schizognathus compressicornis</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>          spp <span class="sc">!=</span> <span class="st">&quot;sqzm&quot;</span>  <span class="co"># Schizognathus mesosternalis</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>            ) <span class="sc">%&gt;%</span> <span class="co"># These species were removed. No phylogenetic info</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (<span class="sc">-</span>spp) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Ind)</span></code></pre></div>
+<p><br> <br></p>
+</div>
+<div id="final-data-frames" class="section level1">
+<h1>Final Data Frames</h1>
+<p><span style="color: #04C799"> <strong>Reflectivity by
+individual</strong> </span> <br/></p>
+<p>Consolidated file with reflectivity on each spectral band, size and
+phylogeny name for each beetle.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Cons1oo <span class="ot">&lt;-</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(Reflectivity, Size, SppNames) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>ind<span class="fl">.1</span>,<span class="sc">-</span>Ind)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons1oo,<span class="st">&quot;../Data/FromCode/ConsolidatedReflectivityInd.csv&quot;</span>)</span></code></pre></div>
+<p><span style="color: #04C799"> <strong>Absorptivity by
+individual</strong> </span> <br/></p>
+<p>Consolidated file with absorptivity on each spectral band, size and
+phylogeny name for each beetle.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>Cons2oo <span class="ot">&lt;-</span> </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  Cons1oo <span class="sc">%&gt;%</span> </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ind <span class="sc">%in%</span> (Optical<span class="sc">$</span>ind)) <span class="sc">%&gt;%</span> <span class="co"># Subset the reflectivity set</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(ind) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(size) <span class="sc">%&gt;%</span> <span class="co"># Keep only the size</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(. , Optical) <span class="sc">%&gt;%</span> <span class="co"># join with the &#39;Optical&#39; Data frame</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ind, <span class="fu">everything</span>()) <span class="co"># rearrange the column order</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons2oo,<span class="st">&quot;../Data/FromCode/ConsolidatedAbsoptivityInd.csv&quot;</span>)</span></code></pre></div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

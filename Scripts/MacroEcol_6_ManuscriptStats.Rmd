@@ -1,19 +1,7 @@
 ---
-title: "6_PhylogeneticComparativeAnalysis_Reflectivity"
-author: "Laura Ospina-Rozo"
-date: "25/04/2022"
-output:
-  html_document: 
-    toc: yes
-    toc_float: yes
-    toc_depth: 5
-    highlight: kate
-    theme: paper
-    self_contained: yes
-    mode: selfcontained
-    code_folding: hide
-editor_options: 
-  chunk_output_type: console
+title: "Reflectivity PGLS"
+# author: "Laura Ospina-Rozo"
+# date: "25/04/2022"
 ---
 
 # Libraries
@@ -40,7 +28,7 @@ Cons2 <- read.csv("../Data/FromCode/ConsAbsEcolInd.csv")[-1]
 Phylogeny (multiple trees)
 
 ```{r}
-trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk ")
+trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
 ```
 
 
