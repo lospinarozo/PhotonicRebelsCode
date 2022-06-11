@@ -1,0 +1,33 @@
+name: Shady Christmas Beetles
+output_dir: "../docs"
+navbar:
+  title: Shady Xmas Beetles
+  left:
+   - text: Home
+     href: index.html
+   - text: Setting up
+     href: MacroEcol_1_SettingUp.html
+   - text: Optical properties
+     href: MacroEcol_2_OpticalProperties.html
+   - text: Ecological variables
+     href: MacroEcol_3_EcologicalVariables.html
+   - text: Polarisation
+     href: MacroEcol_5_Polarization.html
+   - text: Polarisation PGLS
+     href: MacroEcol_5_Polarization2.html
+   - text: Reflectivity PGLS
+     href: MacroEcol_6_ManuscriptStats.html
+   - text: Figures
+     href: MacroEcol_7_ManuscriptFigures.html
+#   - text: Supplementary
+#     href: MacroEcol_8_Supplementary.html
+output:
+  html_document:
+   highlight: kate
+   theme: paper
+   code_folding: hide
+   toc: yes
+   toc_float: yes
+   toc_depth: 5
+editor_options:
+  chunk_output_type: console

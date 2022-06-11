@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Calculating degree of polarisation</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Shady Xmas Beetles</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="MacroEcol_1_SettingUp.html">Setting up</a>
+</li>
+<li>
+  <a href="MacroEcol_2_OpticalProperties.html">Optical properties</a>
+</li>
+<li>
+  <a href="MacroEcol_3_EcologicalVariables.html">Ecological variables</a>
+</li>
+<li>
+  <a href="MacroEcol_5_Polarization.html">Polarisation</a>
+</li>
+<li>
+  <a href="MacroEcol_5_Polarization2.html">Polarisation PGLS</a>
+</li>
+<li>
+  <a href="MacroEcol_6_ManuscriptStats.html">Reflectivity PGLS</a>
+</li>
+<li>
+  <a href="MacroEcol_7_ManuscriptFigures.html">Figures</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Calculating degree of polarisation</h1>
+
+</div>
+
+
+<p>In this file, we calculate the reflectance of the beetles from the
+RGB values measured from calibrated photographs to find the degree of
+circular polarization.</p>
+<p>Specifically, we first linearise the RBGs using the parameters
+derived from the MATLAB code adapted from Stevens et al 2007 (Biological
+Journal of the Linnean society, 90(2), 211-237).</p>
+<p>Next we equalise the RGB values with the grey standard with known
+reflectance.</p>
+<p>Then we calculate the difference between the two polarizations
+standardized by their sum.</p>
+<p>Finally we correlate the polarization with reflectivity obtained in
+previous scripts</p>
+<div id="setting-up" class="section level1">
+<h1>Setting up</h1>
+<div id="general" class="section level2">
+<h2>General</h2>
+<p>Libraries sourced from an additional script</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;./MacroEcol_1_Libraries.R&quot;</span>)</span></code></pre></div>
+<p>We included an overall option to keep as many decimals as possible in
+our data, which is important for our calculations</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">100</span>)</span></code></pre></div>
+<p>We imported the data set containing ecological and phylogeny data
+obtained in previous steps.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Cons1 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/FromCode/ConsReflEcolInd.csv&quot;</span>)[<span class="sc">-</span><span class="dv">1</span>]</span></code></pre></div>
+</div>
+<div id="parameters" class="section level2">
+<h2>Parameters</h2>
+<p>To calibrate, we photographed a set of 2%, 20%, 40%, 60%, 80% and 99%
+and standards. Then, we fitted a polynomial regression between the RGB
+values the standards display in our set up and their expected
+reflectance on each channel (obtained from the manufacturer), using a
+custom made function in MatLab.</p>
+<p>Since the pictures were not taken on the same day, we calibrated the
+beetle photographs to the photographs of the standards taken on the same
+day. That means we had one set of parameters for each camera
+configuration (in the code this is called camera_cat)</p>
+<p>The parameters obtained from these curves were stored in .txt files,
+so we wrote a function to import them directly.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>read_parameters_from_file <span class="ot">&lt;-</span> <span class="cf">function</span>(camera_cat, type) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  param <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">paste0</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;../Data/ParametersMatLab/StandardParams&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    camera_cat, type, <span class="st">&quot;.txt&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">header =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">7</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">camera_cat =</span> <span class="fu">rep</span>(camera_cat)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">rep</span>(type))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(param)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>parameter0 <span class="ot">&lt;-</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;J21&quot;</span>, <span class="st">&quot;LCP&quot;</span>),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;J21&quot;</span>, <span class="st">&quot;RCP&quot;</span>),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;J21&quot;</span>, <span class="st">&quot;VIS&quot;</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;J25&quot;</span>, <span class="st">&quot;LCP&quot;</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;J25&quot;</span>, <span class="st">&quot;RCP&quot;</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;J25&quot;</span>, <span class="st">&quot;VIS&quot;</span>),</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;J26&quot;</span>, <span class="st">&quot;LCP&quot;</span>),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;J26&quot;</span>, <span class="st">&quot;RCP&quot;</span>),</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;J26&quot;</span>, <span class="st">&quot;VIS&quot;</span>),</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;F01&quot;</span>, <span class="st">&quot;LCP&quot;</span>),</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;F01&quot;</span>, <span class="st">&quot;RCP&quot;</span>),</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;F01&quot;</span>, <span class="st">&quot;VIS&quot;</span>),</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;F04&quot;</span>, <span class="st">&quot;LCP&quot;</span>),</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;F04&quot;</span>, <span class="st">&quot;RCP&quot;</span>),</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_parameters_from_file</span>(<span class="st">&quot;F04&quot;</span>, <span class="st">&quot;VIS&quot;</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>The regression uses 4 parameters a, b, c, and d. We obtained one
+value for each parameter, on each channel (R,G, B) for each type of
+filter (VIS = Visible, LCP =left handed circularly polarized and RCP=
+right circularly polarized) on each camera configuration
+(camera_cat)</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>parameter <span class="ot">&lt;-</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  parameter0 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(Channel <span class="sc">!=</span> <span class="st">&quot;Gy&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># keep only the channels R, G, B.</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="dv">5</span>) <span class="sc">%&gt;%</span> <span class="co"># this column is the % of fitting (ideally) above 0.99)</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">key =</span> parameter,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> value,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span>Channel, <span class="sc">-</span>type, <span class="sc">-</span>camera_cat</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="co"># re-arrange: All parameters in 1 column</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(parameter)</span></code></pre></div>
+<pre><code>##   Channel camera_cat type parameter             value
+## 1       R        J21  LCP         a 2384.835490000000
+## 2       G        J21  LCP         a    0.000543537042
+## 3       B        J21  LCP         a    0.027512358400
+## 4       R        J21  RCP         a    0.010489709500
+## 5       G        J21  RCP         a    0.000006682114
+## 6       B        J21  RCP         a    0.000202935085</code></pre>
+</div>
+<div id="grey-standard" class="section level2">
+<h2>Grey Standard</h2>
+<p>This is the known reflectance (from manufacturer) of the 40% grey
+placed next to each beetle in the photographs</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>grey_standard_refl <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/12_knownGreyStdReflectance.csv&quot;</span>)</span></code></pre></div>
+</div>
+<div id="raw-rgb-values" class="section level2">
+<h2>Raw RGB values</h2>
+<p>These are the RGB valuyes extracted from the calibrated photographs.
+We considered one region of interest (ROI) in one elytron and one in the
+pronotum. We also sampled the 40% grey as a reference.</p>
+<p><strong>Elytra</strong></p>
+<p>We separated the RGB values of the elytra and the grey standard but
+kept a unique identifier called PhotoID. This helps pairing the sample
+with the grey that was in that picture further in the analysis (required
+to run the linearisation function).</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>RGBElytraNGrey <span class="ot">&lt;-</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  RGB_raw_transform <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(tr <span class="sc">!=</span> <span class="st">&quot;Pronotum&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># remove data for the pronotum</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(<span class="st">&quot;PhotoID&quot;</span>, <span class="co"># Create a unique code</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>), <span class="co"># which contains the individual_Filter_Channel</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">remove =</span> <span class="cn">FALSE</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="co"># still keep all the original columns</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Each beetle sample has a grey standard in the same photo.</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(<span class="fu">as.factor</span>(RGBElytraNGrey<span class="sc">$</span>tr))</span></code></pre></div>
+<pre><code>## [1] &quot;Elytra&quot; &quot;Grey&quot;</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We will separate the elytra and grey</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># but they will still share the unique PhotoID to pair them later</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>RGBElytra <span class="ot">&lt;-</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  RGBElytraNGrey <span class="sc">%&gt;%</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(tr <span class="sc">==</span> <span class="st">&quot;Elytra&quot;</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>RGBElGrey <span class="ot">&lt;-</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  RGBElytraNGrey <span class="sc">%&gt;%</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(tr <span class="sc">==</span> <span class="st">&quot;Grey&quot;</span>)</span></code></pre></div>
+<p><strong>Pronotum</strong></p>
+<p>Pronotum data was not available for the following beetles:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>RGBPronot1 <span class="ot">&lt;-</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  RGB_raw_transform <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(tr <span class="sc">!=</span> <span class="st">&quot;Elytra&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># remove data for the elytra</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(<span class="st">&quot;PhotoID&quot;</span>, <span class="co"># Create a unique code</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>), <span class="co"># which contains the individual_Filter_Channel</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">remove =</span> <span class="cn">FALSE</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="co"># still keep all the original columns</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>inPGind <span class="ot">&lt;-</span> <span class="fu">levels</span>(<span class="fu">as.factor</span>(RGBPronot1[RGBPronot1<span class="sc">$</span>tr <span class="sc">==</span> <span class="st">&quot;Grey&quot;</span>, ]<span class="sc">$</span>ind))</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>inPRind <span class="ot">&lt;-</span> <span class="fu">levels</span>(<span class="fu">as.factor</span>(RGBPronot1[RGBPronot1<span class="sc">$</span>tr <span class="sc">==</span> <span class="st">&quot;Pronotum&quot;</span>, ]<span class="sc">$</span>ind))</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(inPGind, inPRind)</span></code></pre></div>
+<pre><code>## [1] &quot;ecry03&quot; &quot;mcla02&quot; &quot;roci02&quot;</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(inPRind, inPGind)</span></code></pre></div>
+<pre><code>## character(0)</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Note pronotum missing for these: &quot;ecry03&quot; &quot;mcla02&quot; &quot;roci02&quot;</span></span></code></pre></div>
+<p>They are considered for the overall polarization analysis but not in
+the correlations elytra-pronotum.</p>
+<p>We separated the RGB values of the pronotum and the grey standard but
+kept a unique identifier called PhotoID. This helps pairing the sample
+with the grey that was in that picture further in the analysis (required
+to run the linearisation function).</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>RGBPronot1 <span class="ot">&lt;-</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  RGBPronot1 <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(ind <span class="sc">!=</span> <span class="st">&quot;ecry03&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    ind <span class="sc">!=</span> <span class="st">&quot;mcla02&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    ind <span class="sc">!=</span> <span class="st">&quot;roci02&quot;</span>) <span class="co"># Remove these species because pronotum unavailable</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>RGBPronot <span class="ot">&lt;-</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  RGBPronot1 <span class="sc">%&gt;%</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(tr <span class="sc">==</span> <span class="st">&quot;Pronotum&quot;</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>RGBPrGrey <span class="ot">&lt;-</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  RGBPronot1 <span class="sc">%&gt;%</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(tr <span class="sc">==</span> <span class="st">&quot;Grey&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="calibrations" class="section level1">
+<h1>Calibrations</h1>
+<p>Here we linearise and equalise RGBs for each camera setting and each
+channel separately.</p>
+<p>First we defined the functions as follows: <br></p>
+<p><span style="color: #04C799"> <strong>Linearization</strong> </span>
+<br/></p>
+<p><span class="math display">\[\ Y = a*exp(b*x) + c*exp(d*x)\]</span>
+Where a, b c and d are the parameters obtained from MatLab. x is the raw
+RGB value for the ROI and Y is the linearised value</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The arguments of this functions are:</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># a DataFrame: containing the RGB values that we want to linearise</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># a ParameterData: a data frame containing the parameters a,b,c,d from MatLab</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>lin_equ_RGB <span class="ot">&lt;-</span> <span class="cf">function</span>(DataFrame, ParameterData) {</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  Result <span class="ot">&lt;-</span> DataFrame <span class="co"># keep the original data, results will be added to it</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  Result<span class="sc">$</span>Linearized <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;NA&quot;</span>, <span class="fu">length</span>(DataFrame[<span class="dv">1</span>])) <span class="co"># add an empty column</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(DataFrame<span class="sc">$</span>PhotoID)) {</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    para <span class="ot">&lt;-</span> ParameterData <span class="sc">%&gt;%</span> <span class="co"># the data frame with the parameters</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>      <span class="co"># For each line in the DataFrame to linearise, we need to find</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>      <span class="co"># the correspondent set of parameters:</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">filter</span>(type <span class="sc">==</span> DataFrame<span class="sc">$</span>type[i] <span class="sc">&amp;</span> <span class="co"># VIS, LCP, or RCP</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>        Channel <span class="sc">==</span> DataFrame<span class="sc">$</span>Channel[i] <span class="sc">&amp;</span> <span class="co"># R, G or B</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>        camera_cat <span class="sc">==</span> DataFrame<span class="sc">$</span>camera_cat[i]) <span class="sc">%&gt;%</span> <span class="co"># Camera conditions</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">arrange</span>(., parameter) <span class="co"># arranged alphabetically</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply the formula</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    Result<span class="sc">$</span>Linearized[i] <span class="ot">&lt;-</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>      para<span class="sc">$</span>value[<span class="dv">1</span>] <span class="sc">*</span> <span class="fu">exp</span>(para<span class="sc">$</span>value[<span class="dv">2</span>] <span class="sc">*</span> Result<span class="sc">$</span>value[i]) <span class="sc">+</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>      para<span class="sc">$</span>value[<span class="dv">3</span>] <span class="sc">*</span> <span class="fu">exp</span>(para<span class="sc">$</span>value[<span class="dv">4</span>] <span class="sc">*</span> Result<span class="sc">$</span>value[i])</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(Result)</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><span style="color: #04C799"> <strong>Equalisation</strong> </span>
+<br/></p>
+<p><span class="math display">\[\ E = l / (rg /(kg*255))\]</span> Where
+rg is the raw RGB values for the grey in the photo, kg is the known
+reflectance of the gray standard (from the fabricator), l is the
+linearised value of the ROI and E is the equalised value of the ROI.</p>
+<p>For this part we did not use and equation, rather we obtained the
+calculations directly form the data frames.</p>
+<div id="elytra" class="section level2">
+<h2>Elytra</h2>
+<div id="linearise" class="section level4">
+<h4>Linearise</h4>
+<p>We applied the function defined in the previous step</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>LinearizedElytra <span class="ot">&lt;-</span> <span class="fu">lin_equ_RGB</span>(RGBElytra, parameter) <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(PhotoID, tr, Linearized) <span class="co"># apply function</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(LinearizedElytra)</span></code></pre></div>
+<pre><code>##        PhotoID     tr         Linearized
+## 1 abno01_VIS_B Elytra 0.0433459224340714
+## 2 abno01_LCP_B Elytra   0.06478427380179
+## 3 abno01_RCP_B Elytra 0.0491076172571187
+## 4 abno01_VIS_G Elytra 0.0739528114682013
+## 5 abno01_LCP_G Elytra 0.0978269786698409
+## 6 abno01_RCP_G Elytra 0.0954403321081553</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>LinearizedElytra<span class="sc">$</span>Linearized <span class="ot">&lt;-</span> <span class="fu">round</span>(as.numeric</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>(LinearizedElytra<span class="sc">$</span>Linearized), <span class="dv">4</span>) <span class="co"># round</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>LinearizedElytraSpr <span class="ot">&lt;-</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  LinearizedElytra <span class="sc">%&gt;%</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(tr, Linearized)</span></code></pre></div>
+</div>
+<div id="equalise" class="section level4">
+<h4>Equalise</h4>
+<p>And then equalised following the equation</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>RGBElGreys <span class="ot">&lt;-</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  RGBElGrey <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(PhotoID, value) <span class="co"># select the relevant columns of the raw grey values</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>EQElytra <span class="ot">&lt;-</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">merge</span>(RGBElGreys, LinearizedElytraSpr,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">all =</span> <span class="cn">FALSE</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">RawGrey =</span> value) <span class="sc">%&gt;%</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">Equalized =</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>      Elytra <span class="sc">/</span> (RawGrey <span class="sc">/</span> (grey_standard_refl[<span class="dv">1</span>, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">255</span>))</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+<div id="average" class="section level4">
+<h4>Average</h4>
+<p>We averaged the RGB values of the three channels for each filter.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>RGB_ave <span class="ot">&lt;-</span> EQElytra <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(PhotoID, Equalized) <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Reflectance =</span> Equalized <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>Equalized) <span class="sc">%&gt;%</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(PhotoID, <span class="fu">c</span>(<span class="st">&quot;ind&quot;</span>, <span class="st">&quot;Type&quot;</span>, <span class="st">&quot;Channel&quot;</span>), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(ind, Type) <span class="sc">%&gt;%</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">RGB_ave =</span> <span class="fu">mean</span>(Reflectance)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ind, Type, RGB_ave) <span class="sc">%&gt;%</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>() <span class="sc">%&gt;%</span> <span class="co"># leave only the one row for each individual</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;ambl&quot;</span>, ind)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;sqzb&quot;</span>, ind)) <span class="co"># remove, absent in the phylogeny</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RGB_ave)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 3
+## # Groups:   ind, Type [6]
+##   ind    Type  RGB_ave
+##   &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;
+## 1 abno01 LCP      7.40
+## 2 abno01 RCP      6.61
+## 3 abno01 VIS      5.31
+## 4 abno02 LCP      5.95
+## 5 abno02 RCP      5.15
+## 6 abno02 VIS      4.15</code></pre>
+</div>
+</div>
+<div id="pronotum" class="section level2">
+<h2>Pronotum</h2>
+<div id="linearise-1" class="section level4">
+<h4>Linearise</h4>
+<p>We applied the function defined in the previous step</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>LinearizedPron <span class="ot">&lt;-</span> <span class="fu">lin_equ_RGB</span>(RGBPronot, parameter) <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(PhotoID, tr, Linearized) <span class="co"># apply function</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(LinearizedPron)</span></code></pre></div>
+<pre><code>##        PhotoID       tr         Linearized
+## 1 rept01_VIS_R Pronotum 0.0486138501955103
+## 2 rept01_VIS_G Pronotum 0.0493577182264623
+## 3 rept01_VIS_B Pronotum  0.039301457688771
+## 4 rept01_LCP_R Pronotum 0.0519620880912811
+## 5 rept01_LCP_G Pronotum 0.0636280773901934
+## 6 rept01_LCP_B Pronotum 0.0439852217645462</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>LinearizedPron<span class="sc">$</span>Linearized <span class="ot">&lt;-</span> <span class="fu">round</span>(as.numeric</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>(LinearizedPron<span class="sc">$</span>Linearized), <span class="dv">4</span>) <span class="co"># round</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>LinearizedPronSpr <span class="ot">&lt;-</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  LinearizedPron <span class="sc">%&gt;%</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(tr, Linearized)</span></code></pre></div>
+</div>
+<div id="equalise-1" class="section level4">
+<h4>Equalise</h4>
+<p>And then equalised following the equation</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>RGBPrGreys <span class="ot">&lt;-</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  RGBPrGrey <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(PhotoID, value) <span class="co"># select the relevant columns of the raw grey values</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>EQPronot <span class="ot">&lt;-</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">merge</span>(RGBPrGreys, LinearizedPronSpr,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">all =</span> <span class="cn">FALSE</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">RawGrey =</span> value) <span class="sc">%&gt;%</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">Equalized =</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>      Pronotum <span class="sc">/</span> (RawGrey <span class="sc">/</span> (grey_standard_refl[<span class="dv">1</span>, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">255</span>))</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+<div id="average-1" class="section level4">
+<h4>Average</h4>
+<p>We averaged the RGB values of the three channels for each filter.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>RGB_avePr <span class="ot">&lt;-</span> EQPronot <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(PhotoID, Equalized) <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Reflectance =</span> Equalized <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>Equalized) <span class="sc">%&gt;%</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(PhotoID, <span class="fu">c</span>(<span class="st">&quot;ind&quot;</span>, <span class="st">&quot;Type&quot;</span>, <span class="st">&quot;Channel&quot;</span>), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(ind, Type) <span class="sc">%&gt;%</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">RGB_aveP =</span> <span class="fu">mean</span>(Reflectance)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ind, Type, RGB_aveP) <span class="sc">%&gt;%</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>() <span class="sc">%&gt;%</span> <span class="co"># leave only the one row for each individual</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;ambl&quot;</span>, ind)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;sqzb&quot;</span>, ind)) <span class="co"># remove, absent in the phylogeny</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RGB_avePr)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 3
+## # Groups:   ind, Type [6]
+##   ind    Type  RGB_aveP
+##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;
+## 1 abno01 LCP       6.60
+## 2 abno01 RCP       5.68
+## 3 abno01 VIS       4.68
+## 4 abno02 LCP       5.76
+## 5 abno02 RCP       4.81
+## 6 abno02 VIS       4.01</code></pre>
+</div>
+</div>
+</div>
+<div id="polarization" class="section level1">
+<h1>Polarization</h1>
+<p>We calculated the polarization as <span class="math display">\[\ P \
+= \frac{l - r}{l + r}\]</span></p>
+<p>where <span class="math inline">\(l\)</span> represents the mean
+reflectance under the filter for left handed circular polarization and
+<span class="math inline">\(r\)</span> represents the mean reflectance
+under the filter for right handed circular polarization.</p>
+<div id="elytra-1" class="section level2">
+<h2>Elytra</h2>
+<p>Thus we obtained the polarization values for the elytron ROI by
+individual:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the polarization:</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>ElyPol <span class="ot">&lt;-</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  RGB_ave <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(Type, RGB_ave) <span class="sc">%&gt;%</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Polarization =</span> (LCP <span class="sc">-</span> RCP) <span class="sc">/</span> (LCP <span class="sc">+</span> RCP))</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ElyPol) <span class="co"># by individual</span></span></code></pre></div>
+<pre><code>## # A tibble: 6 × 5
+## # Groups:   ind [6]
+##   ind      LCP   RCP   VIS Polarization
+##   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
+## 1 abno01  7.40  6.61  5.31       0.0563
+## 2 abno02  5.95  5.15  4.15       0.0723
+## 3 anom01  4.18  3.17  2.52       0.136 
+## 4 anom02  3.81  2.62  2.43       0.185 
+## 5 atki01  7.53  4.00  5.17       0.306 
+## 6 atki02  7.04  3.76  4.85       0.304</code></pre>
+<p>And by species:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Average: One polarization value by spp</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>ElyPolbysp <span class="ot">&lt;-</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  ElyPol <span class="sc">%&gt;%</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ind, Polarization) <span class="sc">%&gt;%</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">spp =</span> <span class="fu">substr</span>(ind, <span class="dv">1</span>, <span class="dv">4</span>)) <span class="co"># Add column for spp</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>EPolbs <span class="ot">&lt;-</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  ElyPolbysp[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>] <span class="sc">%&gt;%</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(spp) <span class="sc">%&gt;%</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">Pol =</span> <span class="fu">mean</span>(Polarization)) <span class="co"># by species</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(EPolbs)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 2
+##   spp      Pol
+##   &lt;chr&gt;  &lt;dbl&gt;
+## 1 abno  0.0643
+## 2 anom  0.161 
+## 3 atki  0.305 
+## 4 aurs  0.206 
+## 5 boid  0.0885
+## 6 brev  0.0871</code></pre>
+</div>
+<div id="pronotum-1" class="section level2">
+<h2>Pronotum</h2>
+<p>Thus we obtained the polarization values for the pronotum ROI by
+individual:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the polarization:</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>ProPol <span class="ot">&lt;-</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  RGB_avePr <span class="sc">%&gt;%</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(Type, RGB_aveP) <span class="sc">%&gt;%</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Polarization =</span> (LCP <span class="sc">-</span> RCP) <span class="sc">/</span> (LCP <span class="sc">+</span> RCP))</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ProPol) <span class="co">#  by individual</span></span></code></pre></div>
+<pre><code>## # A tibble: 6 × 5
+## # Groups:   ind [6]
+##   ind      LCP   RCP   VIS Polarization
+##   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
+## 1 abno01  6.60  5.68  4.68       0.0749
+## 2 abno02  5.76  4.81  4.01       0.0891
+## 3 anom01  4.15  3.01  2.60       0.160 
+## 4 anom02  4.30  3.12  2.88       0.159 
+## 5 atki01  3.28  2.65  2.41       0.107 
+## 6 atki02  3.60  2.75  2.56       0.135</code></pre>
+<p>And by species:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Average: One polarization value by spp</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>ProPolbysp <span class="ot">&lt;-</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  ProPol <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ind, Polarization) <span class="sc">%&gt;%</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">spp =</span> <span class="fu">substr</span>(ind, <span class="dv">1</span>, <span class="dv">4</span>)) <span class="co"># Add column for spp</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>PPolbs <span class="ot">&lt;-</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  ProPolbysp[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>] <span class="sc">%&gt;%</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(spp) <span class="sc">%&gt;%</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">Pol =</span> <span class="fu">mean</span>(Polarization)) <span class="co"># by species</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(PPolbs)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 2
+##   spp      Pol
+##   &lt;chr&gt;  &lt;dbl&gt;
+## 1 abno  0.0820
+## 2 anom  0.160 
+## 3 atki  0.121 
+## 4 aurs  0.410 
+## 5 boid  0.116 
+## 6 brev  0.0606</code></pre>
+</div>
+<div id="consolidates" class="section level2">
+<h2>Consolidates</h2>
+<div id="body-part" class="section level3">
+<h3>Body Part</h3>
+<p>First make sure the two data frames contain the same number of
+species, thus the differences between the individuals in both data
+frames should be 0</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>ProPol <span class="ot">&lt;-</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  ProPol <span class="sc">%&gt;%</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">PronotPol =</span> Polarization)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>ElyPol <span class="ot">&lt;-</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  ElyPol <span class="sc">%&gt;%</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">ElytrPol =</span> Polarization) <span class="co"># Keep all spp for other tests</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>ElyPolEP <span class="ot">&lt;-</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  ElyPol <span class="sc">%&gt;%</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ind <span class="sc">!=</span> <span class="st">&quot;ecry03&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>    ind <span class="sc">!=</span> <span class="st">&quot;mcla02&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    ind <span class="sc">!=</span> <span class="st">&quot;roci02&quot;</span>) <span class="co"># Removed, pronotum unavailable</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>inelytra <span class="ot">&lt;-</span> <span class="fu">levels</span>(<span class="fu">as.factor</span>(ElyPolEP<span class="sc">$</span>ind))</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>inpronotum <span class="ot">&lt;-</span> <span class="fu">levels</span>(<span class="fu">as.factor</span>(ProPol<span class="sc">$</span>ind))</span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(inelytra, inpronotum)</span></code></pre></div>
+<pre><code>## character(0)</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(inpronotum, inelytra)</span></code></pre></div>
+<pre><code>## character(0)</code></pre>
+<p>Merge</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># simplify Data frames</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>Elysimple <span class="ot">&lt;-</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  ElyPolEP <span class="sc">%&gt;%</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ind, ElytrPol)</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>Prosimple <span class="ot">&lt;-</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  ProPol <span class="sc">%&gt;%</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ind, PronotPol)</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>BeetlePol <span class="ot">&lt;-</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">merge</span>(Elysimple, Prosimple) <span class="sc">%&gt;%</span> <span class="co"># Combine the two data frames</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Difference =</span> ElytrPol <span class="sc">-</span> PronotPol)</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(BeetlePol)</span></code></pre></div>
+<pre><code>##      ind   ElytrPol  PronotPol  Difference
+## 1 abno01 0.05631758 0.07485419 -0.01853661
+## 2 abno02 0.07228979 0.08905251 -0.01676271
+## 3 anom01 0.13646753 0.15996365 -0.02349612
+## 4 anom02 0.18547191 0.15926191  0.02621000
+## 5 atki01 0.30583122 0.10721581  0.19861541
+## 6 atki02 0.30355419 0.13451403  0.16904016</code></pre>
+</div>
+<div id="ecological-variables" class="section level3">
+<h3>Ecological variables</h3>
+<p>We merged the polarization data with the data frames obtained in
+previous steps that contain ecological variables, reflectivity, size and
+the species name as follows:</p>
+<p>First compare the dimensions of the two data frames (Reflectance and
+polarization):</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>Cons1 <span class="ot">&lt;-</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  Cons1 <span class="sc">%&gt;%</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">spp =</span> <span class="fu">substr</span>(ind, <span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>inTree <span class="ot">&lt;-</span> <span class="fu">levels</span>(<span class="fu">as.factor</span>(Cons1<span class="sc">$</span>spp))</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>inRGB <span class="ot">&lt;-</span> <span class="fu">levels</span>(<span class="fu">as.factor</span>(EPolbs<span class="sc">$</span>spp))</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(inTree, inRGB)</span></code></pre></div>
+<pre><code>## character(0)</code></pre>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(inRGB, inTree)</span></code></pre></div>
+<pre><code>## character(0)</code></pre>
+<p>Both contain the same species</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare length:</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(Cons1<span class="sc">$</span>ind)</span></code></pre></div>
+<pre><code>## [1] 261</code></pre>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(ElyPol<span class="sc">$</span>ind)</span></code></pre></div>
+<pre><code>## [1] 177</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># subset the consolidated by the ind in polariz data frame</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>Refbyind <span class="ot">&lt;-</span> Cons1[Cons1<span class="sc">$</span>ind <span class="sc">%in%</span> ElyPol<span class="sc">$</span>ind, ]</span></code></pre></div>
+<p>But since they had different numbers of individuals we only
+considered the ones that were common for both data frames to combine
+them into one larger data frame</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simplify the polarization data</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>ElyPolbyind <span class="ot">&lt;-</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  ElyPol <span class="sc">%&gt;%</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">1</span>, <span class="dv">5</span>) <span class="co"># keep only one column and the individual</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>RPData <span class="ot">&lt;-</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">merge</span>(Refbyind, ElyPolbyind) <span class="co"># Combine the two</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPData)</span></code></pre></div>
+<pre><code>##      ind    R_ALL     R_VIS    R_NIR        Res   size         phylogeny_name        PC1         PC2  spp   ElytrPol
+## 1 abno01 24.36959 15.194950 32.37499 -9.8258343 1.5390 Anoplognathus_abnormis -2.1441633  0.07156382 abno 0.05631758
+## 2 abno02 30.17203 17.865117 40.90967 -3.9177421 1.6120 Anoplognathus_abnormis -1.8227362  0.16083346 abno 0.07228979
+## 3 anom01 17.25955  2.229028 30.33292  0.8864166 1.7630        Anomala_antigua -2.3016135 -2.27652672 anom 0.13646753
+## 4 anom02 19.93132  7.888188 30.40910 -4.6042095 1.7675        Anomala_antigua -0.3855034 -1.15167811 anom 0.18547191
+## 5 atki01 15.52166  6.194366 23.61734 -9.7297912 2.4590   Calloodes_atkinsonii -2.7414058  1.08031739 atki 0.30583122
+## 6 atki02 18.73437  6.636925 29.23785 -4.5446134 2.0180   Calloodes_atkinsonii -2.7414058  1.08031739 atki 0.30355419</code></pre>
+<p>We also summarised this data by species</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>RPDataAgg <span class="ot">&lt;-</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  RPData <span class="sc">%&gt;%</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>ind, <span class="sc">-</span>spp) <span class="sc">%&gt;%</span> <span class="co"># remove individual id</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(phylogeny_name, <span class="fu">everything</span>()) <span class="sc">%&gt;%</span> <span class="co"># order columns</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(phylogeny_name) <span class="sc">%&gt;%</span> <span class="co"># group</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="fu">list</span>(mean))) <span class="co"># mean</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPDataAgg)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 9
+##   phylogeny_name            R_ALL_1 R_VIS_1 R_NIR_1   Res_1 size_1 PC1_1  PC2_1 ElytrPol_1
+##   &lt;chr&gt;                       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Anomala_antigua              18.6    5.06    30.4  -1.86    1.77 -1.34 -1.71      0.161 
+## 2 Anoplognathus_abnormis       27.3   16.5     36.6  -6.87    1.58 -1.98  0.116     0.0643
+## 3 Anoplognathus_aeneus         22.1   10.4     32.3  -5.22    3.11 -1.90  0.419     0.112 
+## 4 Anoplognathus_aureus         42.6   34.7     49.5 -11.9     1.71 -3.49 -0.434     0.206 
+## 5 Anoplognathus_boisduvalii    31.1   17.3     43.2  -1.06    2.61 -1.64 -0.922     0.0885
+## 6 Anoplognathus_brevicollis    27.4   12.9     40.1   0.236   2.51 -1.15 -3.63      0.0871</code></pre>
+<p>This way we can conduct the analysis at both individual and species
+level</p>
+</div>
+</div>
+</div>
+<div id="questions" class="section level1">
+<h1>Questions</h1>
+<div id="body-part-1" class="section level2">
+<h2>Body part</h2>
+<p><span style="color: #04C799"> <strong>Question</strong> </span>
+<br/></p>
+<p>It is possible that different selective pressures apply to the elytra
+than to other parts of the beetle body. There are various species that
+seem to have stronger structural coloration in the pronotum. They may
+have lost the polarization in their elytra.</p>
+<p><strong>Are there differences in the polarization between the elytra
+and pronotum of the same individual?</strong></p>
+<p><span style="color: #04C799"> <strong>Setting up</strong> </span>
+<br/></p>
+<p><span style="color: #04C799"> <strong>Model</strong> </span>
+<br/></p>
+<p>A paired t-test to compare the mean of the difference to 0.A negative
+difference would mean that in general the pronotum is more polarized
+than the elytra.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Paired t test</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(BeetlePol<span class="sc">$</span>Difference)</span></code></pre></div>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  BeetlePol$Difference
+## t = -1.2468, df = 173, p-value = 0.2142
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  -0.019894362  0.004490845
+## sample estimates:
+##    mean of x 
+## -0.007701759</code></pre>
+<p>The mean difference in polarization between the two body parts is not
+significantly different than 0.</p>
+<p><span style="color: #04C799"> <strong>Plots</strong> </span>
+<br/></p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(BeetlePol<span class="sc">$</span>Difference, <span class="at">breaks =</span> <span class="dv">20</span>, <span class="at">xlab =</span> <span class="st">&quot;Difference in polarization (Elytra-Pronot)&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Frequency&quot;</span>)</span></code></pre></div>
+<p><img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p>These beetles with higher polarization in their elytra are:</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>ElytraMoreP <span class="ot">&lt;-</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  BeetlePol <span class="sc">%&gt;%</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Difference <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>ElytraMoreP<span class="sc">$</span>ind</span></code></pre></div>
+<pre><code>##  [1] &quot;atki01&quot; &quot;atki02&quot; &quot;brun01&quot; &quot;brun04&quot; &quot;brun05&quot; &quot;ecry01&quot; &quot;fchi01&quot; &quot;fchi02&quot; &quot;hirs03&quot; &quot;lats01&quot; &quot;lats03&quot; &quot;pvul02&quot; &quot;pvul03&quot;
+## [14] &quot;pvul04&quot; &quot;rayn01&quot; &quot;rayn03&quot; &quot;smgr01&quot;</code></pre>
+<p>These beetles with higher polarization in their pronotum are:</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>PronotumMoreP <span class="ot">&lt;-</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  BeetlePol <span class="sc">%&gt;%</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Difference <span class="sc">&lt;</span> <span class="sc">-</span><span class="fl">0.1</span>)</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>PronotumMoreP<span class="sc">$</span>ind</span></code></pre></div>
+<pre><code>##  [1] &quot;aurs01&quot; &quot;aurs02&quot; &quot;clor09&quot; &quot;meli02&quot; &quot;meli03&quot; &quot;neus01&quot; &quot;oliv03&quot; &quot;opal01&quot; &quot;pvul01&quot; &quot;rubi01&quot; &quot;rubi02&quot; &quot;vrdi01&quot; &quot;vrdi03&quot;</code></pre>
+<p><br> <br> <br></p>
+</div>
+<div id="vis-reflectivity" class="section level2">
+<h2>VIS Reflectivity</h2>
+<p><span style="color: #04C799"> <strong>Question</strong> </span>
+<br/></p>
+<p>It has been hypothesized that the chiral structures associated to
+polarization sensitivity are more effective reflecting light than
+pigments or other structures. This may be true considering that they can
+produce broad band metallic colours. However, it is also possible that
+chiral structures produce highly saturated angle-dependent colours which
+would mean reflecting a very narrow section of the spectrum.</p>
+<p><strong>Is more polarization correlated with more reflectivity in the
+visible spectrum?</strong></p>
+<p><span style="color: #04C799"> <strong>Tests</strong> </span>
+<br/></p>
+<p>There is a positive correlation between the degree of polarization
+and the amount of visible light reflected (reflectivity)</p>
+<p>Individual level:</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(RPData<span class="sc">$</span>R_VIS, RPData<span class="sc">$</span>ElytrPol) <span class="co"># by individual</span></span></code></pre></div>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  RPData$R_VIS and RPData$ElytrPol
+## t = 3.0233, df = 172, p-value = 0.002884
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.07848249 0.36132464
+## sample estimates:
+##       cor 
+## 0.2246296</code></pre>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>modPol1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(RPData<span class="sc">$</span>R_VIS <span class="sc">~</span> RPData<span class="sc">$</span>ElytrPol) <span class="co"># by individual</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modPol1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = RPData$R_VIS ~ RPData$ElytrPol)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -13.268  -4.616  -1.074   4.329  19.567 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)      13.8982     0.5864  23.701 &lt; 0.0000000000000002 ***
+## RPData$ElytrPol  11.7168     3.8756   3.023              0.00288 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.008 on 172 degrees of freedom
+## Multiple R-squared:  0.05046,    Adjusted R-squared:  0.04494 
+## F-statistic:  9.14 on 1 and 172 DF,  p-value: 0.002884</code></pre>
+<p>Species level:</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(RPDataAgg<span class="sc">$</span>R_VIS_1, RPDataAgg<span class="sc">$</span>ElytrPol_1) <span class="co"># by spp</span></span></code></pre></div>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  RPDataAgg$R_VIS_1 and RPDataAgg$ElytrPol_1
+## t = 1.2718, df = 45, p-value = 0.21
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  -0.1065918  0.4494039
+## sample estimates:
+##       cor 
+## 0.1862769</code></pre>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>modPol3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(RPDataAgg<span class="sc">$</span>R_VIS_1 <span class="sc">~</span> RPDataAgg<span class="sc">$</span>ElytrPol_1) <span class="co"># by spp</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modPol3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = RPDataAgg$R_VIS_1 ~ RPDataAgg$ElytrPol_1)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.4306  -5.5192  -0.0809   4.5235  19.0338 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept)            13.743      1.227  11.204 0.0000000000000131 ***
+## RPDataAgg$ElytrPol_1    9.486      7.458   1.272               0.21    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.123 on 45 degrees of freedom
+## Multiple R-squared:  0.0347, Adjusted R-squared:  0.01325 
+## F-statistic: 1.618 on 1 and 45 DF,  p-value: 0.21</code></pre>
+<p><span style="color: #04C799"> <strong>Plots</strong> </span>
+<br/></p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(RPData, <span class="fu">aes</span>(ElytrPol, R_VIS)) <span class="sc">+</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">pch =</span> <span class="dv">21</span>, <span class="at">bg =</span> <span class="st">&quot;turquoise&quot;</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;VIS Reflectivity (400 to 700 nm) (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Polarization (L-R)/(L+R)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">col =</span> <span class="st">&quot;#226D7A&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-33-1.png" alt="Relationship between polarization and VIS reflectivity by individual" width="672" />
+<p class="caption">
+Relationship between polarization and VIS reflectivity by individual
+</p>
+</div>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>ToPlotPolbsp <span class="ot">&lt;-</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  RPData <span class="sc">%&gt;%</span></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>phylogeny_name) <span class="sc">%&gt;%</span></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">&quot;spp&quot;</span> <span class="ot">=</span> <span class="fu">substr</span>(ind, <span class="dv">1</span>, <span class="dv">4</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(spp) <span class="sc">%&gt;%</span></span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">meanAll =</span> <span class="fu">mean</span>(R_ALL),</span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">meanVIS =</span> <span class="fu">mean</span>(R_VIS),</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">meanNIR =</span> <span class="fu">mean</span>(R_NIR),</span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">meanRes =</span> <span class="fu">mean</span>(Res),</span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">meanPol =</span> <span class="fu">mean</span>(ElytrPol),</span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">meanSize =</span> <span class="fu">mean</span>(size),</span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdAll =</span> <span class="fu">sd</span>(R_ALL),</span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdVIS =</span> <span class="fu">sd</span>(R_VIS),</span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdNIR =</span> <span class="fu">sd</span>(R_NIR),</span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdRes =</span> <span class="fu">sd</span>(Res),</span>
+<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdPol =</span> <span class="fu">sd</span>(ElytrPol),</span>
+<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdSize =</span> <span class="fu">sd</span>(size)</span>
+<span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ToPlotPolbsp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanVIS)) <span class="sc">+</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanVIS <span class="sc">-</span> sdVIS,</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanVIS <span class="sc">+</span> sdVIS</span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
+<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> meanPol <span class="sc">-</span> sdPol,</span>
+<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> meanPol <span class="sc">+</span> sdPol</span>
+<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#593876&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#D7A1F9&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">colour =</span> <span class="st">&quot;#593876&quot;</span>) <span class="sc">+</span></span>
+<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb74-18"><a href="#cb74-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 3 rows containing missing values (geom_errorbarh).</code></pre>
+<div class="figure">
+<img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-35-1.png" alt="Relationship between polarization and VIS reflectivity by species" width="672" />
+<p class="caption">
+Relationship between polarization and VIS reflectivity by species
+</p>
+</div>
+<p><span style="color: #04C799"> <strong>Conclusion</strong> </span>
+<br/></p>
+<p><strong>Yes, Beetles with more polarization reflect more visible
+light</strong></p>
+<p><br> <br> <br></p>
+</div>
+<div id="nir-reflectivity" class="section level2">
+<h2>NIR Reflectivity</h2>
+<p><span style="color: #04C799"> <strong>Question</strong> </span>
+<br/></p>
+<p>The relationship between polarization and NIR is unknown. It has been
+observed that some beetles produce iridescence in NIR which could mean
+they have multilayers or a chiral structure to reflect long wavelengths.
+Considering that reflectance in visible and NIR are often correlated, it
+is reasonable to expect a similar pattern that the one observed for
+visible light.</p>
+<p><strong>Is more polarization correlated with more reflectivity in the
+NIR?</strong></p>
+<p><span style="color: #04C799"> <strong>Tests</strong> </span>
+<br/></p>
+<p>There is a negative correlation between the NIR reflectivity and
+polarization.</p>
+<p>Individual level:</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(RPData<span class="sc">$</span>R_NIR, RPData<span class="sc">$</span>ElytrPol) <span class="co"># by individual</span></span></code></pre></div>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  RPData$R_NIR and RPData$ElytrPol
+## t = -2.384, df = 172, p-value = 0.01821
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  -0.31912578 -0.03089924
+## sample estimates:
+##        cor 
+## -0.1788469</code></pre>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>modPol2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(RPData<span class="sc">$</span>R_NIR <span class="sc">~</span> RPData<span class="sc">$</span>ElytrPol) <span class="co"># by individual</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modPol2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = RPData$R_NIR ~ RPData$ElytrPol)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -24.088  -7.564  -1.795   5.471  38.229 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)       41.953      0.930  45.112 &lt;0.0000000000000002 ***
+## RPData$ElytrPol  -14.653      6.146  -2.384              0.0182 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 11.11 on 172 degrees of freedom
+## Multiple R-squared:  0.03199,    Adjusted R-squared:  0.02636 
+## F-statistic: 5.683 on 1 and 172 DF,  p-value: 0.01821</code></pre>
+<p>Species level:</p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(RPDataAgg<span class="sc">$</span>R_NIR_1, RPDataAgg<span class="sc">$</span>ElytrPol_1) <span class="co"># by species</span></span></code></pre></div>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  RPDataAgg$R_NIR_1 and RPDataAgg$ElytrPol_1
+## t = -1.7956, df = 45, p-value = 0.07928
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  -0.50801220  0.03089468
+## sample estimates:
+##        cor 
+## -0.2585661</code></pre>
+<p>(Correlation is lost when considering the average per species)</p>
+<p><span style="color: #04C799"> <strong>Plots</strong> </span>
+<br/></p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(RPData, <span class="fu">aes</span>(ElytrPol, R_NIR)) <span class="sc">+</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">pch =</span> <span class="dv">21</span>, <span class="at">bg =</span> <span class="st">&quot;turquoise&quot;</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;NIR Reflectivity (700 to 1400 nm) (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Polarization (L-R)/(L+R)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">col =</span> <span class="st">&quot;#226D7A&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-38-1.png" alt="Relationship between polarization and NIR reflectivity by individual" width="672" />
+<p class="caption">
+Relationship between polarization and NIR reflectivity by individual
+</p>
+</div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ToPlotPolbsp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanNIR)) <span class="sc">+</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanNIR <span class="sc">-</span> sdNIR,</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanNIR <span class="sc">+</span> sdNIR</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
+<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> meanPol <span class="sc">-</span> sdPol,</span>
+<span id="cb83-10"><a href="#cb83-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> meanPol <span class="sc">+</span> sdPol</span>
+<span id="cb83-11"><a href="#cb83-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb83-12"><a href="#cb83-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb83-13"><a href="#cb83-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb83-14"><a href="#cb83-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># geom_smooth (method=&quot;lm&quot;, color=&quot;#593876&quot;, fill=&quot;#D7A1F9&quot;, alpha=0.3)+</span></span>
+<span id="cb83-15"><a href="#cb83-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">colour =</span> <span class="st">&quot;#593876&quot;</span>) <span class="sc">+</span></span>
+<span id="cb83-16"><a href="#cb83-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb83-17"><a href="#cb83-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb83-18"><a href="#cb83-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 3 rows containing missing values (geom_errorbarh).</code></pre>
+<div class="figure">
+<img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-39-1.png" alt="Relationship between polarization and NIR reflectivity by species" width="672" />
+<p class="caption">
+Relationship between polarization and NIR reflectivity by species
+</p>
+</div>
+<p><span style="color: #04C799"> <strong>Conclusion</strong> </span>
+<br/></p>
+<p><strong>No, contrary to the hypothesis, Beetles with more
+polarization reflect less NIR light</strong><br />
+The reason for this could be that the mechanisms used to produce high
+NIR reflection are different than the chiral array, and that the two
+mechanisms can not be present in the same beetle.</p>
+<p><br> <br> <br></p>
+</div>
+<div id="tot-reflectivity" class="section level2">
+<h2>TOT Reflectivity</h2>
+<p><span style="color: #04C799"> <strong>Question</strong> </span>
+<br/></p>
+<p>Often the total reflectivity (including both NIR and VIS) determines
+the potential for passive thermoregulation in ectoterms since the body
+is permanently exposed to both types of radiation in roughly 50-50%
+proportion. If polarization is correlated with total reflectance, it
+could have been developed as a strategy for passive
+thermoregulation.</p>
+<p><strong>Is more polarization correlated with more reflectivity in
+total?</strong></p>
+<p><span style="color: #04C799"> <strong>Tests</strong> </span>
+<br/></p>
+<p>There is no correlation between polarization and total
+reflectivity</p>
+<p>Individual level:</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(RPData<span class="sc">$</span>R_ALL, RPData<span class="sc">$</span>ElytrPol)</span></code></pre></div>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  RPData$R_ALL and RPData$ElytrPol
+## t = -0.50713, df = 172, p-value = 0.6127
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  -0.1863381  0.1107671
+## sample estimates:
+##         cor 
+## -0.03863945</code></pre>
+<p>Species level:</p>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(RPDataAgg<span class="sc">$</span>R_ALL_1, RPDataAgg<span class="sc">$</span>ElytrPol_1)</span></code></pre></div>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  RPDataAgg$R_ALL_1 and RPDataAgg$ElytrPol_1
+## t = -0.74234, df = 45, p-value = 0.4617
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  -0.3849963  0.1829558
+## sample estimates:
+##        cor 
+## -0.1099898</code></pre>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>modPol4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(RPDataAgg<span class="sc">$</span>R_ALL_1 <span class="sc">~</span> RPDataAgg<span class="sc">$</span>ElytrPol_1)</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modPol4)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = RPDataAgg$R_ALL_1 ~ RPDataAgg$ElytrPol_1)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -16.617  -5.935  -1.022   3.406  18.736 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)            28.851      1.467  19.669 &lt;0.0000000000000002 ***
+## RPDataAgg$ElytrPol_1   -6.620      8.918  -0.742               0.462    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 8.518 on 45 degrees of freedom
+## Multiple R-squared:  0.0121, Adjusted R-squared:  -0.009856 
+## F-statistic: 0.5511 on 1 and 45 DF,  p-value: 0.4617</code></pre>
+<p><span style="color: #04C799"> <strong>Plots</strong> </span>
+<br/></p>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(RPData, <span class="fu">aes</span>(ElytrPol, R_ALL)) <span class="sc">+</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">pch =</span> <span class="dv">21</span>, <span class="at">bg =</span> <span class="st">&quot;turquoise&quot;</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;ALL Reflectivity (400 to 1400 nm) (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Polarization (L-R)/(L+R)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="figure">
+<img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-42-1.png" alt="Relationship between polarization and ALL reflectivity by individual" width="672" />
+<p class="caption">
+Relationship between polarization and ALL reflectivity by individual
+</p>
+</div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ToPlotPolbsp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanAll)) <span class="sc">+</span></span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanAll <span class="sc">-</span> sdAll,</span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanAll <span class="sc">+</span> sdAll</span>
+<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb92-7"><a href="#cb92-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb92-8"><a href="#cb92-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
+<span id="cb92-9"><a href="#cb92-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> meanPol <span class="sc">-</span> sdPol,</span>
+<span id="cb92-10"><a href="#cb92-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> meanPol <span class="sc">+</span> sdPol</span>
+<span id="cb92-11"><a href="#cb92-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb92-12"><a href="#cb92-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb92-13"><a href="#cb92-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb92-14"><a href="#cb92-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">colour =</span> <span class="st">&quot;#593876&quot;</span>) <span class="sc">+</span></span>
+<span id="cb92-15"><a href="#cb92-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb92-16"><a href="#cb92-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb92-17"><a href="#cb92-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 3 rows containing missing values (geom_errorbarh).</code></pre>
+<div class="figure">
+<img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-43-1.png" alt="Relationship between polarization and ALL reflectivity by species" width="672" />
+<p class="caption">
+Relationship between polarization and ALL reflectivity by species
+</p>
+</div>
+<p><span style="color: #04C799"> <strong>Conclusion</strong> </span>
+<br/></p>
+<p><strong>No, there is no correlation between polarization and total
+reflectiviy</strong><br />
+This could be the result of the fact that visible and NIR reflectivity
+have opposite correlations to polarization.</p>
+<p><br> <br> <br></p>
+</div>
+<div id="mechanism" class="section level2">
+<h2>Mechanism</h2>
+<p><span style="color: #04C799"> <strong>Question</strong> </span>
+<br/></p>
+<p>In our previous studies we discovered that some species have an
+unusual bilayered composite material in their elytra. This material
+consist in a white underlay that reflects visible and NIR light with a
+thin cuticle on top that acts like a pigment-based filter only in the
+visible. As a result they produce a unique pattern of broadband NIR
+reflectance. This mechanism does not coexist with chiral nanostructures
+in the cuticle.</p>
+<p><strong>Is it possible that the correlations with VIS and NIR are
+mainly driven by the species with white underlay?</strong></p>
+<p><span style="color: #04C799"> <strong>Tests</strong> </span>
+<br/></p>
+<p>If so, removing the species with white underlay should disrupt the
+correlations we found in previous steps.</p>
+<p>We removed 17 individuals belonging to the species <em>A.
+prasinus</em>, <em>Xylonichus sp.</em> and all three in the genus
+Paraschizognathus because in our previous studies we have confirmed they
+have a white underlay that reflects high NIR.</p>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="co"># remove the species that contain a white underlay</span></span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>nounderlay <span class="ot">&lt;-</span></span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>  RPData <span class="sc">%&gt;%</span></span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Paraschizognathus_ocularis&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Paraschizognathus_prasinus&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Paraschizognathus_olivaceous&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb94-7"><a href="#cb94-7" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplognathus_prasinus&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb94-8"><a href="#cb94-8" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Xylonichus_sp&quot;</span>)</span></code></pre></div>
+<p>Removing these species does not alter the correlation between
+polarization and visible reflectivity.</p>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(nounderlay<span class="sc">$</span>R_VIS, nounderlay<span class="sc">$</span>ElytrPol) <span class="co"># Vis</span></span></code></pre></div>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  nounderlay$R_VIS and nounderlay$ElytrPol
+## t = 2.9222, df = 155, p-value = 0.003996
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.07453685 0.37183613
+## sample estimates:
+##       cor 
+## 0.2285071</code></pre>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>modPol5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(nounderlay<span class="sc">$</span>R_VIS <span class="sc">~</span> nounderlay<span class="sc">$</span>ElytrPol) <span class="co"># by individual</span></span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modPol5)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = nounderlay$R_VIS ~ nounderlay$ElytrPol)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -13.304  -4.665  -1.125   4.346  19.558 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)          13.9066     0.6458  21.535 &lt;0.0000000000000002 ***
+## nounderlay$ElytrPol  11.9198     4.0791   2.922               0.004 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.116 on 155 degrees of freedom
+## Multiple R-squared:  0.05222,    Adjusted R-squared:  0.0461 
+## F-statistic: 8.539 on 1 and 155 DF,  p-value: 0.003996</code></pre>
+<p>In fact, the estimate for the effect of polarization on reflectivity
+in our previous analysis was 11.7168456 and it is 11.9198239 after
+removing the species with the white underlay.</p>
+<p>In contrast, removing these species disrupts the negative correlation
+between polarization and NIR.</p>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(nounderlay<span class="sc">$</span>R_NIR, nounderlay<span class="sc">$</span>ElytrPol) <span class="co"># nir</span></span></code></pre></div>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  nounderlay$R_NIR and nounderlay$ElytrPol
+## t = -1.1831, df = 155, p-value = 0.2386
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  -0.24757548  0.06296507
+## sample estimates:
+##         cor 
+## -0.09460615</code></pre>
+<p>This is evidenced by the change in the confidence interval: It is
+negative when considering all species -0.3191258, -0.0308992 but it
+overlaps 0 when removing the species with a white underlay -0.2475755,
+0.0629651</p>
+<p>Visually, it is also noticeable that the points excluded from the
+graph were those with NIR reflectivity above 60%</p>
+<div class="sourceCode" id="cb101"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>RPData2 <span class="ot">&lt;-</span> RPData</span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a><span class="co"># vector describing whether the beetle could potentially have a chiral cuticle</span></span>
+<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>RPData2<span class="sc">$</span>chiral <span class="ot">&lt;-</span> RPData2<span class="sc">$</span>ind <span class="sc">%in%</span> nounderlay<span class="sc">$</span>ind</span>
+<span id="cb101-4"><a href="#cb101-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-5"><a href="#cb101-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb101-6"><a href="#cb101-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb101-7"><a href="#cb101-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> RPData2,</span>
+<span id="cb101-8"><a href="#cb101-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(ElytrPol, R_NIR),</span>
+<span id="cb101-9"><a href="#cb101-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">bg =</span> <span class="st">&quot;turquoise&quot;</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">2.5</span></span>
+<span id="cb101-10"><a href="#cb101-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb101-11"><a href="#cb101-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb101-12"><a href="#cb101-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> RPData2[RPData2<span class="sc">$</span>chiral <span class="sc">==</span> <span class="st">&quot;FALSE&quot;</span>, ],</span>
+<span id="cb101-13"><a href="#cb101-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(ElytrPol, R_NIR),</span>
+<span id="cb101-14"><a href="#cb101-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">bg =</span> <span class="st">&quot;red&quot;</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">2.5</span></span>
+<span id="cb101-15"><a href="#cb101-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb101-16"><a href="#cb101-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;NIR Reflectivity (700 to 1400 nm) (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb101-17"><a href="#cb101-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Polarization (L-R)/(L+R)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb101-18"><a href="#cb101-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="figure">
+<img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-47-1.png" alt="Relationship between polarization and NIR reflectivity by individual. The beetles with white underlay are shown in red." width="672" />
+<p class="caption">
+Relationship between polarization and NIR reflectivity by individual.
+The beetles with white underlay are shown in red.
+</p>
+</div>
+<p><span style="color: #04C799"> <strong>Conclusion</strong> </span>
+<br/></p>
+<p><strong>More polarization correlates with more VIS reflectiviy even
+after removing the beetles with non-chiral composite
+materials</strong></p>
+<p><br></p>
+<p><strong>Polarization does not reduce NIR reflectance. However,
+beetles with very high NIR reflectance seem to have developed an
+alternate mechanism that does not involve chiral structures
+(i.e. absence of circular polarization).</strong></p>
+<p><br> <br> <br></p>
+</div>
+</div>
+<div id="results-from-this-step" class="section level1">
+<h1>Results from this step</h1>
+<p>We obtained a data frame useful to compare the degree of polarization
+between two body parts, elytron and pronotum</p>
+<div class="sourceCode" id="cb102"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(BeetlePol, <span class="st">&quot;../Data/FromCode/PolarzElytraPronot.csv&quot;</span>)</span></code></pre></div>
+<p>And we also added the polarization of the elytra to a subset of the
+dataframe with the ecological variables and reflectance. Note that this
+subset may have fewer individuals that the one we will use for the
+phylogenetic analysis of the reflectance, but they both have the same
+number of species.</p>
+<div class="sourceCode" id="cb103"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(RPData, <span class="st">&quot;../Data/FromCode/PolarzElytraRefl.csv&quot;</span>)</span></code></pre></div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,17 +1,11 @@
 ---
-title: "MacroEcol_1_SettingUp"
-author: "Laura Ospina-Rozo"
-date: "25/04/2022"
+title: "Libraries and raw data"
+# author: "Laura Ospina-Rozo"
+# date: "25/04/2022"
 output:
   html_document: 
-    toc: yes
-    toc_float: yes
-    toc_depth: 5
-    highlight: kate
-    theme: paper
-    self_contained: yes
-    mode: selfcontained
-    editor_options: 
+    code_folding: show
+editor_options:
   chunk_output_type: console
 ---
 
@@ -27,34 +21,33 @@ Install
 
 ```{r eval=FALSE}
 
-#For PCA
+# For PCA
 install.packages("Hmisc")
 install.packages("psych")
 install.packages("plot.matrix")
 
 
-#For plots
+# For plots
 install.packages("ggplot2")
 install.packages("RColorBrewer")
 install.packages("gridExtra")
 install.packages("devtools")
-devtools::install_github("eliocamp/ggnewscale") 
+devtools::install_github("eliocamp/ggnewscale")
 
 # spectral Data
 install.packages("pavo")
 
 
-#For MCMCglmm
+# For MCMCglmm
 install.packages("MCMCglmm")
-install.packages("ggtree")
-install.packages("geiger") 
-install.packages("ggnewscale") 
-install.packages("phangorn") 
+devtools::install_github("YuLab-SMU/ggtree")
+install.packages("geiger")
+install.packages("phangorn")
 
 
 # For PGLS
-install.packages("caper") 
-install.packages("phytools") 
+install.packages("caper")
+install.packages("phytools")
 install.packages("coda")
 
 # Data wrangling
@@ -67,7 +60,6 @@ install.packages("reshape2")
 install.packages("kableExtra")
 install.packages("ggExtra")
 install.packages("jtools")
-
 ```
 
 Load
@@ -83,23 +75,25 @@ source("./MacroEcol_1_Libraries.R")
 # Data Frames
 
 ```{r message=FALSE, warning=FALSE}
-#Import data
-refl1<-read.csv("../Data/1_Reflectance_HRBatch.csv") # HR batch
-refl2<-read.csv("../Data/2_Reflectance_FirstBatch.csv") # original
-TopTrans<-read.csv("../Data/3_Transmittance_HRBatch.csv") # transmittance
-theorySun<-read.csv("../Data/4_SunIrradiance.csv") # Sun irradiance
+# Import data
+refl1 <- read.csv("../Data/1_Reflectance_HRBatch.csv") # HR batch
+refl2 <- read.csv("../Data/2_Reflectance_FirstBatch.csv") # original
+TopTrans <- read.csv("../Data/3_Transmittance_HRBatch.csv") # transmittance
+theorySun <- read.csv("../Data/4_SunIrradiance.csv") # Sun irradiance
 
 
-#Fix the column names and convert to rspec object
+# Fix the column names and convert to rspec object
 refl1 <-
-  refl1 %>% 
-  dplyr::select(sort(tidyselect::peek_vars())) %>% 
-  dplyr::select(wl, everything()) %>% 
-  filter(wl >= 400 & wl <= 1700) %>% 
-  dplyr::select(-clor2, #same as clor 12 in refl2
-         -rpmt1, -vrid1, -vrid2, -ocul1, # locality missing
-         -rose1) %>% # no ecol variables available 
-  rename (
+  refl1 %>%
+  dplyr::select(sort(tidyselect::peek_vars())) %>%
+  dplyr::select(wl, everything()) %>%
+  filter(wl >= 400 & wl <= 1700) %>%
+  dplyr::select(
+    -clor2, # same as clor 12 in refl2
+    -rpmt1, -vrid1, -vrid2, -ocul1, # locality missing
+    -rose1
+  ) %>% # no ecol variables available
+  dplyr::rename(
     anom03 = anom1,
     anom02 = anom2,
     atki03 = atki1,
@@ -149,42 +143,49 @@ refl1 <-
     tars06 = tars2,
     xyle07 = xyln1,
     xyle08 = xyln2,
-    xyle09 = xyln3 ) %>%  #rename to fuse with the other data set
-  as.rspec(.) %>% 
-  procspec(.,fixneg = "zero") 
+    xyle09 = xyln3
+  ) %>% # rename to fuse with the other data set
+  as.rspec(.) %>%
+  procspec(., fixneg = "zero")
 
 
 refl2 <-
-  refl2 %>% 
-  dplyr::select(sort(tidyselect::peek_vars())) %>% 
-  dplyr::select(wl, everything()) %>% 
-  filter(wl >= 400 & wl <= 1700) %>% 
-  dplyr::select(-ambl03, -anom02, -black, -mima03,
-         -oliv03, -para01, -para02, -saul03,
-         -velu00, -vrdi01, -xyle03) %>% #removed. Location not available
-  rename (velu05 = flin01,
-          velu04 = flin02,
-          narm03 = namr03,
-          rept01 = rep201,
-          rept02 = rep202,
-          rept03 = rep203,
-          rubi03 = sutr01,
-          rubi04 = sutr02,
-          rubi05 = sutr03,
-          rubi06 = sutr04) %>%  # renamed
-  as.rspec(.) %>% 
-  procspec(.,fixneg = "zero") 
+  refl2 %>%
+  dplyr::select(sort(tidyselect::peek_vars())) %>%
+  dplyr::select(wl, everything()) %>%
+  filter(wl >= 400 & wl <= 1700) %>%
+  dplyr::select(
+    -ambl03, -anom02, -black, -mima03,
+    -oliv03, -para01, -para02, -saul03,
+    -velu00, -vrdi01, -xyle03
+  ) %>% # removed. Location not available
+  dplyr::rename(
+    velu05 = flin01,
+    velu04 = flin02,
+    narm03 = namr03,
+    rept01 = rep201,
+    rept02 = rep202,
+    rept03 = rep203,
+    rubi03 = sutr01,
+    rubi04 = sutr02,
+    rubi05 = sutr03,
+    rubi06 = sutr04
+  ) %>% # renamed
+  as.rspec(.) %>%
+  procspec(., fixneg = "zero")
 
 
 TopTrans <-
-  TopTrans %>% 
-  dplyr::select(sort(tidyselect::peek_vars())) %>% 
-  dplyr::select(wl, everything()) %>% 
-  filter(wl >= 400 & wl <= 1700) %>% 
-  dplyr::select(-clor2t, #same as clor 12 in refl2
-         -rpmt1t, -vrid1t, -vrid2t, -ocul1t, # locality missing
-         -rose1t) %>%   # no ecol variables available 
-  rename (
+  TopTrans %>%
+  dplyr::select(sort(tidyselect::peek_vars())) %>%
+  dplyr::select(wl, everything()) %>%
+  filter(wl >= 400 & wl <= 1700) %>%
+  dplyr::select(
+    -clor2t, # same as clor 12 in refl2
+    -rpmt1t, -vrid1t, -vrid2t, -ocul1t, # locality missing
+    -rose1t
+  ) %>% # no ecol variables available
+  dplyr::rename(
     anom03 = anom1t,
     anom02 = anom2t,
     atki03 = atki1t,
@@ -234,43 +235,41 @@ TopTrans <-
     tars06 = tars2t,
     xyle07 = xyln1t,
     xyle08 = xyln2t,
-    xyle09 = xyln3t ) %>%  #rename to fuse with the other data set
-  as.rspec(.) %>% 
-  procspec(.,fixneg = "zero") 
+    xyle09 = xyln3t
+  ) %>% # rename to fuse with the other data set
+  as.rspec(.) %>%
+  procspec(., fixneg = "zero")
 
 
 # Convert the sun irradiance into an rspec object
 
 theorySun <-
-  theorySun %>% 
-  filter(wl >= 400 & wl <= 1700) %>% 
-  as.rspec(.) %>% 
-  procspec(.,fixneg = "zero") 
+  theorySun %>%
+  filter(wl >= 400 & wl <= 1700) %>%
+  as.rspec(.) %>%
+  procspec(., fixneg = "zero")
 
 
 # Produce the final data frames for calculating irradiance
 
-Transmitance <- 
-  TopTrans %>% 
+Transmitance <-
+  TopTrans %>%
   mutate(Sun = theorySun$irradiance) # Add Sun irradiance as the last column
 
-Reflectance <- 
-  data.frame (refl1,refl2[,2:length(refl2)]) %>% 
-  dplyr::select(sort(tidyselect::peek_vars())) %>% 
-  select(wl, everything()) %>% 
-  as.rspec(.) %>% 
-  procspec(.,fixneg = "zero") %>% 
+Reflectance <-
+  data.frame(refl1, refl2[, 2:length(refl2)]) %>%
+  dplyr::select(sort(tidyselect::peek_vars())) %>%
+  select(wl, everything()) %>%
+  as.rspec(.) %>%
+  procspec(., fixneg = "zero") %>%
   mutate(Sun = theorySun$irradiance) # Add Sun irradiance as the last column
-
-
 ```
 
 Create files
 
 ```{r}
 
-write.csv(Reflectance,"../Data/FromCode/Reflectance_PData.csv")
-write.csv(Transmitance,"../Data/FromCode/Transmitance_PData.csv")
-
+write.csv(Reflectance, "../Data/FromCode/Reflectance_PData.csv")
+write.csv(Transmitance, "../Data/FromCode/Transmitance_PData.csv")
 ```
 
