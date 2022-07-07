@@ -666,6 +666,8 @@ ggplot(RPData, aes(ElytrPol, R_VIS)) +
   xlab("Polarization (L-R)/(L+R)") +
   theme_bw() +
   geom_smooth(method = lm, alpha = 0.4, col = "#226D7A", fill = "grey")
+
+
 ```
 
 ```{r}
@@ -689,6 +691,10 @@ ToPlotPolbsp <-
     sdPol = sd(ElytrPol),
     sdSize = sd(size)
   )
+
+ToPlotPolbsp <- as.data.frame(ToPlotPolbsp)
+rownames(ToPlotPolbsp) <- ToPlotPolbsp$spp
+
 ```
 
 
@@ -707,19 +713,25 @@ ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanVIS)) +
   ),
   col = "#cecec2"
   ) +
-  geom_smooth(method = "lm", color = "#593876", fill = "#D7A1F9", alpha = 0.3) +
-  geom_point(size = 2, alpha = 0.4, colour = "#593876") +
-  geom_point(size = 2, pch = 21, colour = "black", alpha = 0.7) +
+  geom_smooth(method = "lm", color = "#ff9400", fill = "#fe6100", alpha = 0.08) +
+  geom_text(
+    label=rownames(ToPlotPolbsp), 
+    nudge_x = 0.02, nudge_y = -0.04, 
+    col="gray", size=2
+  ) +
+  geom_point(size = 2.2, alpha = 0.6, colour = "#fe6100") +
+  geom_point(size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
   theme_minimal() +
   theme(legend.position = "none")
+
+
 ```
 
 
 <span style="color: #04C799"> **Conclusion** </span>  <br/>
 
 **Yes, Beetles with more polarization reflect more visible light** 
-
-
+<br>
 <br>
 <br>
 <br>
@@ -860,7 +872,7 @@ This could be the result of the fact that visible and NIR reflectivity have oppo
 <br>
 <br>
 
-## Mechanism
+## Mechanism 1
 
 
 <span style="color: #04C799"> **Question** </span>  <br/>
@@ -943,7 +955,206 @@ ggplot() +
 <br>
 <br>
 
+## Mechanisms 2
+
+Can we extend that analysis even further? Perhaps we can identify three mechanisms in total: a traditional chiral mechanism, the white underlay and a white/gold chiral structure.
+
+We can analyze what happens with VIS and NIR reflectance when excluding the last two 
+<br>
+
+### VIS
+
+But this pattern seems to be driven by only a few species, lets explore what happens if we remove some species: Aurs, ecry, opal, lats, rose, pvul
+
+```{r}
+nospecialcases <- 
+  RPData %>% 
+  dplyr::select(-phylogeny_name) %>%
+  dplyr::mutate("spp" = substr(ind, 1, 4)) %>%
+  dplyr::select(-1) %>%
+  dplyr::filter(spp != "ecry" &
+                spp != "opal" &
+                spp != "lats" &
+                spp != "rose" &
+                spp != "pvul" &
+                spp != "aurs" &
+                spp != "xyls" &
+                spp != "xyle" & 
+                spp != "pczo" &
+                spp != "pczp" &
+                spp != "pczv" &
+                spp != "prsi" ) 
+
+
+dummydum1 <- lm(nospecialcases$R_VIS ~ nospecialcases$ElytrPol)
+summary(dummydum1)
+
+
+nospecialcasesspp <- 
+  ToPlotPolbsp %>%
+  dplyr::filter(spp != "ecry" &
+                spp != "opal" &
+                spp != "lats" &
+                spp != "rose" &
+                spp != "pvul" &
+                spp != "aurs" &
+                spp != "xyls" &
+                spp != "xyle" & 
+                spp != "pczo" &
+                spp != "pczp" &
+                spp != "pczv" &
+                spp != "prsi" ) 
+  
+
+dummydum2 <- lm(nospecialcasesspp$meanVIS ~ nospecialcasesspp$meanPol)
+summary(dummydum2)
+
+WhiteUnderlay <- 
+  ToPlotPolbsp %>%
+  dplyr::filter(spp == "xyls" |
+                spp == "xyle" | 
+                spp == "pczo" |
+                spp == "pczp" |
+                spp == "pczv" |
+                spp == "prsi") 
+  
+WhiteAndGold <- 
+  ToPlotPolbsp %>%
+  dplyr::filter(spp == "opal" |
+                spp == "ecry" |
+                spp == "lats" | 
+                spp == "rose" |
+                spp == "pvul" |
+                spp == "aurs" ) 
+
+```
+
+Yes, in both cases, the analysis by species and individuals the slope becomes negative when removing those 6 gold and pearly species. 
+
+
+New plot with three groups:
+
+```{r}
+
+ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanVIS),
+             size = 2.2, alpha = 0.6, colour = "white") +
+  geom_text(
+    label=rownames(ToPlotPolbsp), 
+    nudge_x = 0.02, nudge_y = -0.04, 
+    col="gray", size=2
+  ) +
+  # error bars
+  geom_errorbar(aes(
+                ymin = meanVIS - sdVIS,
+                ymax = meanVIS + sdVIS),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = meanPol - sdPol,
+    xmax = meanPol + sdPol
+  ),
+  col = "#cecec2"
+  ) +
+  
+  # Almost all species
+  geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanVIS),
+             size = 2.2, alpha = 0.6, colour = "#ffc100") +
+  geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanVIS),
+             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+  
+  # White underlay
+  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanVIS),
+             size = 2.2, alpha = 0.6, colour = "#785ef0") +
+  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanVIS),
+             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+  
+  # White and Gold polarized
+  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanVIS),
+             size = 2.2, alpha = 0.8, colour = "#fe6100") +
+  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanVIS),
+             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+  
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  xlab("Degree of Polarization (L - R)/(L + R)")+
+  ylab("Visible reflectivity (%)")
+
+
+```
+
+<br>
+### NIR
+
+
+But we need to check if this relationship is driven only by non polarized beetles:
+<br>
+
+These are the models excluding gold, pearl and white underlay
+
+```{r}
+dummydum3 <- lm(nospecialcases$R_NIR ~ nospecialcases$ElytrPol)
+summary(dummydum3)
+
+dummydum4 <- lm(nospecialcasesspp$meanNIR ~ nospecialcasesspp$meanPol)
+summary(dummydum4)
+```
+
+
+```{r}
+
+ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanNIR),
+             size = 2.2, alpha = 0.6, colour = "white") +
+  geom_text(
+    label=rownames(ToPlotPolbsp), 
+    nudge_x = 0.02, nudge_y = -0.04, 
+    col="gray", size=2
+  ) +
+  # error bars
+  geom_errorbar(aes(
+                ymin = meanNIR - sdNIR,
+                ymax = meanNIR + sdNIR),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = meanPol - sdPol,
+    xmax = meanPol + sdPol
+  ),
+  col = "#cecec2"
+  ) +
+  
+  # Almost all species
+  geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanNIR),
+             size = 2.2, alpha = 0.6, colour = "#ffc100") +
+  geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanNIR),
+             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+  
+  # White underlay
+  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanNIR),
+             size = 2.2, alpha = 0.6, colour = "#785ef0") +
+  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanNIR),
+             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+  
+  # White and Gold polarized
+  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanNIR),
+             size = 2.2, alpha = 0.8, colour = "#fe6100") +
+  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanNIR),
+             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+  
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  xlab("Degree of Polarization (L - R)/(L + R)")+
+  ylab("NIR reflectivity (%)")
+
+
+```
+
+
+
+
 # Results from this step
+
+As a general conclusion it does seem that there can be three mechanisms: White underlay, chiral and broadband chiral. 
+
 
 We obtained a data frame useful to compare the degree of polarization between two body parts, elytron and pronotum
 

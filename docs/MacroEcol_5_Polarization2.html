@@ -13,7 +13,7 @@
 
 <title>Polarisation PGLS</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -43,7 +43,6 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
-
 
 
 <style type="text/css">
@@ -180,9 +179,6 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
-}
-details > summary > p:only-child {
-  display: inline;
 }
 pre code {
   padding: 0;
@@ -411,7 +407,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -442,7 +438,7 @@ div.tocify {
   <a href="MacroEcol_6_ManuscriptStats.html">Reflectivity PGLS</a>
 </li>
 <li>
-  <a href="MacroEcol_7_ManuscriptFigures.html">Figures</a>
+  <a href="MacroEcol_7_Summary.html">Summary</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -455,7 +451,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -480,13 +476,20 @@ phylogeny.</p>
 value per species for each variable</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>RPDataAgg <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/FromCode/PolarzElytraRefl.csv&quot;</span>)[<span class="sc">-</span><span class="dv">1</span>]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPDataAgg)</span></code></pre></div>
-<pre><code>##      ind    R_ALL     R_VIS    R_NIR        Res   size         phylogeny_name        PC1         PC2  spp   ElytrPol
-## 1 abno01 24.36959 15.194950 32.37499 -9.8258343 1.5390 Anoplognathus_abnormis -2.1441633  0.07156382 abno 0.05631758
-## 2 abno02 30.17203 17.865117 40.90967 -3.9177421 1.6120 Anoplognathus_abnormis -1.8227362  0.16083346 abno 0.07228979
-## 3 anom01 17.25955  2.229028 30.33292  0.8864166 1.7630        Anomala_antigua -2.3016135 -2.27652672 anom 0.13646753
-## 4 anom02 19.93132  7.888188 30.40910 -4.6042095 1.7675        Anomala_antigua -0.3855034 -1.15167811 anom 0.18547191
-## 5 atki01 15.52166  6.194366 23.61734 -9.7297912 2.4590   Calloodes_atkinsonii -2.7414058  1.08031739 atki 0.30583122
-## 6 atki02 18.73437  6.636925 29.23785 -4.5446134 2.0180   Calloodes_atkinsonii -2.7414058  1.08031739 atki 0.30355419</code></pre>
+<pre><code>##      ind    R_ALL     R_VIS    R_NIR        Res   size         phylogeny_name        PC1
+## 1 abno01 24.36959 15.194950 32.37499 -9.8258343 1.5390 Anoplognathus_abnormis -2.1441633
+## 2 abno02 30.17203 17.865117 40.90967 -3.9177421 1.6120 Anoplognathus_abnormis -1.8227362
+## 3 anom01 17.25955  2.229028 30.33292  0.8864166 1.7630        Anomala_antigua -2.3016135
+## 4 anom02 19.93132  7.888188 30.40910 -4.6042095 1.7675        Anomala_antigua -0.3855034
+## 5 atki01 15.52166  6.194366 23.61734 -9.7297912 2.4590   Calloodes_atkinsonii -2.7414058
+## 6 atki02 18.73437  6.636925 29.23785 -4.5446134 2.0180   Calloodes_atkinsonii -2.7414058
+##           PC2  spp   ElytrPol
+## 1  0.07156382 abno 0.05631758
+## 2  0.16083346 abno 0.07228979
+## 3 -2.27652672 anom 0.13646753
+## 4 -1.15167811 anom 0.18547191
+## 5  1.08031739 atki 0.30583122
+## 6  1.08031739 atki 0.30355419</code></pre>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>RPDAgg1 <span class="ot">&lt;-</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  RPDataAgg <span class="sc">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>ind, <span class="sc">-</span>spp) <span class="sc">%&gt;%</span></span>
@@ -497,13 +500,20 @@ value per species for each variable</p>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to a data frame for the comparative.data function</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>RPDAgg1 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(RPDAgg1)</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPDAgg1)</span></code></pre></div>
-<pre><code>##              phylogeny_name  R_ALL_1   R_VIS_1  R_NIR_1       Res_1  size_1     PC1_1      PC2_1 ElytrPol_1
-## 1           Anomala_antigua 18.59543  5.058608 30.37101  -1.8588965 1.76525 -1.343558 -1.7141024 0.16096972
-## 2    Anoplognathus_abnormis 27.27081 16.530033 36.64233  -6.8717882 1.57550 -1.983450  0.1161986 0.06430368
-## 3      Anoplognathus_aeneus 22.10221 10.404140 32.27222  -5.2159832 3.11250 -1.903878  0.4191886 0.11204259
-## 4      Anoplognathus_aureus 42.63349 34.727230 49.54375 -11.8705985 1.71400 -3.493997 -0.4335432 0.20560559
-## 5 Anoplognathus_boisduvalii 31.14445 17.303047 43.21203  -1.0624889 2.60540 -1.635325 -0.9220386 0.08846901
-## 6 Anoplognathus_brevicollis 27.43900 12.869292 40.14934   0.2362219 2.51400 -1.145208 -3.6269193 0.08712699</code></pre>
+<pre><code>##              phylogeny_name  R_ALL_1   R_VIS_1  R_NIR_1       Res_1  size_1     PC1_1      PC2_1
+## 1           Anomala_antigua 18.59543  5.058608 30.37101  -1.8588965 1.76525 -1.343558 -1.7141024
+## 2    Anoplognathus_abnormis 27.27081 16.530033 36.64233  -6.8717882 1.57550 -1.983450  0.1161986
+## 3      Anoplognathus_aeneus 22.10221 10.404140 32.27222  -5.2159832 3.11250 -1.903878  0.4191886
+## 4      Anoplognathus_aureus 42.63349 34.727230 49.54375 -11.8705985 1.71400 -3.493997 -0.4335432
+## 5 Anoplognathus_boisduvalii 31.14445 17.303047 43.21203  -1.0624889 2.60540 -1.635325 -0.9220386
+## 6 Anoplognathus_brevicollis 27.43900 12.869292 40.14934   0.2362219 2.51400 -1.145208 -3.6269193
+##   ElytrPol_1
+## 1 0.16096972
+## 2 0.06430368
+## 3 0.11204259
+## 4 0.20560559
+## 5 0.08846901
+## 6 0.08712699</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(RPDAgg1) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;phylogeny_name&quot;</span>,</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;TOT&quot;</span>, <span class="st">&quot;VIS&quot;</span>, <span class="st">&quot;NIR&quot;</span>, <span class="st">&quot;Res&quot;</span>, <span class="st">&quot;size&quot;</span>,</span>
@@ -662,7 +672,7 @@ in these traits would be high</p>
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -5.0788 -1.9751 -0.3024  1.0711  5.3094 
+## -5.3094 -2.0179 -0.5717  0.6327  4.3905 
 ## 
 ## Branch length transformations:
 ## 
@@ -778,16 +788,17 @@ frame that we are using</p>
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
+## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH</code></pre>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dfPol1 <span class="ot">&lt;-</span> <span class="fu">ldply</span>(runsPol1, data.frame)</span></code></pre></div>
 <p>Get results</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">as.mcmc</span>(dfPol1))</span></code></pre></div>
 <pre><code>##                lower      upper
-## estimateP1 4.3324183 11.6600721
-## ts1        0.4183389  1.2995120
-## ps1        0.1748163  0.6345859
+## estimateP1 4.3130270 11.6583362
+## ts1        0.4160769  1.2995120
+## ps1        0.1740678  0.6345859
 ## attr(,&quot;Probability&quot;)
-## [1] 0.9499234</code></pre>
+## [1] 0.9498978</code></pre>
 </div>
 </div>
 <div id="ecology" class="section level2">
@@ -808,13 +819,20 @@ variables?</strong></p>
 <span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPDAgg1)</span></code></pre></div>
-<pre><code>##              phylogeny_name      TOT       VIS      NIR         Res    size       PC1        PC2        Pol
-## 1           Anomala_antigua 18.59543  5.058608 30.37101  -1.8588965 1.76525 -1.343558 -1.7141024 0.16096972
-## 2    Anoplognathus_abnormis 27.27081 16.530033 36.64233  -6.8717882 1.57550 -1.983450  0.1161986 0.06430368
-## 3      Anoplognathus_aeneus 22.10221 10.404140 32.27222  -5.2159832 3.11250 -1.903878  0.4191886 0.11204259
-## 4      Anoplognathus_aureus 42.63349 34.727230 49.54375 -11.8705985 1.71400 -3.493997 -0.4335432 0.20560559
-## 5 Anoplognathus_boisduvalii 31.14445 17.303047 43.21203  -1.0624889 2.60540 -1.635325 -0.9220386 0.08846901
-## 6 Anoplognathus_brevicollis 27.43900 12.869292 40.14934   0.2362219 2.51400 -1.145208 -3.6269193 0.08712699</code></pre>
+<pre><code>##              phylogeny_name      TOT       VIS      NIR         Res    size       PC1        PC2
+## 1           Anomala_antigua 18.59543  5.058608 30.37101  -1.8588965 1.76525 -1.343558 -1.7141024
+## 2    Anoplognathus_abnormis 27.27081 16.530033 36.64233  -6.8717882 1.57550 -1.983450  0.1161986
+## 3      Anoplognathus_aeneus 22.10221 10.404140 32.27222  -5.2159832 3.11250 -1.903878  0.4191886
+## 4      Anoplognathus_aureus 42.63349 34.727230 49.54375 -11.8705985 1.71400 -3.493997 -0.4335432
+## 5 Anoplognathus_boisduvalii 31.14445 17.303047 43.21203  -1.0624889 2.60540 -1.635325 -0.9220386
+## 6 Anoplognathus_brevicollis 27.43900 12.869292 40.14934   0.2362219 2.51400 -1.145208 -3.6269193
+##          Pol
+## 1 0.16096972
+## 2 0.06430368
+## 3 0.11204259
+## 4 0.20560559
+## 5 0.08846901
+## 6 0.08712699</code></pre>
 <p>Establish the model</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>pglsPDPol <span class="ot">&lt;-</span> <span class="fu">pgls</span>(Pol <span class="sc">~</span> PC1 <span class="sc">+</span> PC2 <span class="sc">+</span> size <span class="sc">+</span> PC1 <span class="sc">*</span> size <span class="sc">+</span> PC2 <span class="sc">*</span> size,</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> comp_data2, <span class="at">param.CI =</span> <span class="fl">0.95</span>, <span class="at">lambda =</span> <span class="st">&quot;ML&quot;</span></span>
@@ -828,7 +846,7 @@ variables?</strong></p>
 ## 
 ## Residuals:
 ##       Min        1Q    Median        3Q       Max 
-## -0.076669 -0.018655 -0.003206  0.018720  0.076145 
+## -0.073277 -0.022585 -0.000383  0.021845  0.061326 
 ## 
 ## Branch length transformations:
 ## 
@@ -911,9 +929,6 @@ frame that we are using</p>
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
-## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
-## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
-## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH</code></pre>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>dfPol2 <span class="ot">&lt;-</span> <span class="fu">ldply</span>(runsPol2, data.frame)</span></code></pre></div>
 <p>Get results</p>
@@ -921,21 +936,21 @@ frame that we are using</p>
 <pre><code>##                   lower        upper
 ## estimateP1 -0.025690717  0.008274889
 ## ts1        -0.509394426  0.155718334
-## ps1         0.632422595  0.999820279
-## estimateP2 -0.133289276 -0.057155922
-## tP2        -1.944207101 -0.863323134
-## pP2         0.023944017  0.300134620
+## ps1         0.633248869  0.999820279
+## estimateP2 -0.133125990 -0.057155922
+## tP2        -2.005107771 -0.934519892
+## pP2         0.032154158  0.307340151
 ## estimateP3 -0.001541629  0.045712709
 ## tP3        -0.045144640  0.841368889
 ## pP3         0.442754212  0.994823859
 ## estimateP4 -0.012606851  0.001696777
 ## tP4        -0.588644372  0.082999720
-## pP4         0.612056124  0.999859216
-## estimateP5  0.016492367  0.046450548
-## tP5         0.638198137  1.714495069
-## pP5         0.061421402  0.442753811
+## pP4         0.613639989  0.999859216
+## estimateP5  0.016492367  0.046320502
+## tP5         0.662117534  1.725602999
+## pP5         0.061421402  0.441443841
 ## attr(,&quot;Probability&quot;)
-## [1] 0.9497717</code></pre>
+## [1] 0.949848</code></pre>
 </div>
 </div>
 </div>

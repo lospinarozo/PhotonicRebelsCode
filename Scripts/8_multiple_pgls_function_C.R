@@ -20,7 +20,7 @@ library(phytools)
   ## dataset =  A data frame with the predictors and response variables per each species
 
 
-pgls_run=function(x, model, dataset) 
+pgls_runC=function(x, model, dataset) 
   
 {tryCatch(
   {

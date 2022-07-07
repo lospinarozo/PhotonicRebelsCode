@@ -20,7 +20,7 @@ library(phytools)
   ## dataset =  A data frame with the predictors and response variables per each species
 
 
-pgls_run=function(x, model, dataset) 
+pgls_runD=function(x, model, dataset) 
   
 {tryCatch(
   {
@@ -55,7 +55,7 @@ pgls_run=function(x, model, dataset)
     # We are using max likelihood to estimate the lambda (phylogenetic signal) of the link, and with that info it runs de model 
     model.results<-summary(modA)
    
-    if (nrow(model.results[["coefficients"]]) == 6) #5 predictors plus intercept
+    if (nrow(model.results[["coefficients"]]) == 7) #6 predictors plus intercept
       
     {
       
@@ -79,10 +79,13 @@ pgls_run=function(x, model, dataset)
       coef.res5[1,2]<-coefficients(model.results)[6,3]
       coef.res5[1,3]<-coefficients(model.results)[6,4]
       
+      coef.res6[1,1]<-coefficients(model.results)[7,1]  ### estimates for predictor 6
+      coef.res6[1,2]<-coefficients(model.results)[7,3]
+      coef.res6[1,3]<-coefficients(model.results)[7,4]
       
       
       final.results1<-data.frame(coef.res1)  #### result for predictor 1
-      colnames(final.results1)<-c("estimateP1", "ts1", "ps1")
+      colnames(final.results1)<-c("estimateP1", "ts1", "pP1")
       
       final.results2<-data.frame(coef.res2)  #### result for predictor 2
       colnames(final.results2)<-c("estimateP2", "tP2", "pP2")
@@ -96,9 +99,13 @@ pgls_run=function(x, model, dataset)
       final.results5<-data.frame(coef.res5)  #### result for predictor 5
       colnames(final.results5)<-c("estimateP5", "tP5", "pP5")
       
+      final.results6<-data.frame(coef.res6)  #### result for predictor 6
+      colnames(final.results6)<-c("estimateP6", "tP6", "pP6")
       
       
-      total_results=cbind(final.results1, final.results2, final.results3,final.results4, final.results5)
+      total_results=cbind(final.results1, final.results2, 
+                          final.results3, final.results4, 
+                          final.results5, final.results6)
       
       return(total_results)
       
@@ -142,5 +149,6 @@ coef.res2<-matrix(data=NA, nrow=1, ncol=3)
 coef.res3<-matrix(data=NA, nrow=1, ncol=3)
 coef.res4<-matrix(data=NA, nrow=1, ncol=3)
 coef.res5<-matrix(data=NA, nrow=1, ncol=3)
+coef.res6<-matrix(data=NA, nrow=1, ncol=3)
 
 

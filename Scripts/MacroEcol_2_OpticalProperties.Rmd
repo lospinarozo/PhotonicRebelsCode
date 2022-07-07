@@ -288,17 +288,49 @@ head(Optical)
 
 We included this step because visible and NIR reflectivity are expected to be correlated. Considering the residuals of the correlation between these two properties is useful to explore if NIR reflectivity is driven by pressures different than the ones affecting visible (mainly thermoregulation)
 
+
+Visualization
+
 ```{r message=FALSE}
+
+# Subsets for interesting points: 
+NVLabels <- 
+  Reflectivity %>% 
+  dplyr::filter(R_VIS > 27 |
+                R_NIR > 55)
+
+Underlay <- 
+  Reflectivity %>% 
+  dplyr:: filter (., grepl("xyl", ind)|
+                     grepl("prsi", ind) |
+                     grepl("pcz", ind))
 
 #Plot of the correlation between NIR and VIS reflectivity
 ggplot(data = Reflectivity, aes(x = R_VIS, y = R_NIR))+
   geom_point(size=3,alpha=0.4, pch=21,
              col="black",
-             fill= "#39BEB1")+
+             fill= "#648fff")+
   geom_smooth (method="lm", col="black")+
   theme_bw() +
   xlab("Reflectivity in VIS (%)") +
-  ylab("Reflectivity in NIR (%)")
+  ylab("Reflectivity in NIR (%)")+
+
+  geom_text(data = NVLabels, 
+            aes(label=ind),col="black",
+            position = position_nudge(x = +1.8),
+            alpha=.3, size=2.5)+ # Add labels 
+  
+  geom_point(data = Underlay, 
+             aes(x = R_VIS, y = R_NIR),
+             size=3,alpha=0.8, pch=21,
+             col="black",
+             fill= "#fe6100") # Add beetles with white Underlay
+```
+
+Extract Residuals
+
+_With a simple lm model_
+```{r message=FALSE}
 
 # Linear model
 NIRVISMod1 <- lm (Reflectivity$R_NIR ~ Reflectivity$R_VIS)
@@ -319,14 +351,24 @@ ForResNIRPlot <-
   dplyr::select (ind, Res, R_NIR) %>% 
   arrange (R_NIR) 
 
+ForResNIRPlot2 <- 
+  ForResNIRPlot %>% 
+  dplyr:: filter (., grepl("xyl", ind)|
+                     grepl("prsi", ind) |
+                     grepl("pcz", ind))
+
 ggplot(data = ForResNIRPlot, aes(x= R_NIR ,y = Res))+
   geom_point(size=3,alpha=0.4, pch=21,
              col="black",
-             fill= "#39BEB1")+
+             fill= "#648fff")+
   geom_text(data = subset (ForResNIRPlot, Res > 10 | Res < -15), 
             aes(label=ind),col="black",
             position = position_nudge(x = +1.8),
             alpha=.3, size=2.5)+
+  geom_point(data = ForResNIRPlot2, aes(x= R_NIR ,y = Res), 
+             size=3,alpha=0.8, pch=21,
+             col="black",
+             fill= "#fe6100")+
   theme_bw() +
   geom_hline(yintercept=0)+
   xlab("Reflectivity in NIR (%)") +
@@ -347,7 +389,7 @@ ForResVISPlot <-
 ggplot(data = ForResVISPlot, aes(x= R_VIS ,y = Res))+
   geom_point(size=3,alpha=0.4, pch=21,
              col="black",
-             fill= "#39BEB1")+
+             fill= "#648fff")+
   geom_text(data = subset (ForResVISPlot, Res > 10 | Res < -15), 
             aes(label=ind),col="black",
             position = position_nudge(x = +0.8),
@@ -402,7 +444,7 @@ Reflectivity <-
 
 # Additional variables
 
-Finally we created data frames that contain the optical properties, size and phylogeny name for each beetle
+We created data frames that contain the optical properties, size and phylogeny name for each beetle
 
 <span style="color: #04C799"> **Size:** </span>  <br/>
 
@@ -448,9 +490,168 @@ SppNames <-
 
 ```
 
+<br>
+<br>
+<br>
+<span style="color: #04C799"> **Reflectivity by individual** </span>  <br/>
 
-<br>
-<br>
+Consolidated file with reflectivity on each spectral band, size and phylogeny name for each beetle.
+
+```{r}
+
+Cons1oo <-
+  data.frame(Reflectivity, Size, SppNames) %>% 
+  dplyr::select(-ind.1,-Ind)
+
+write.csv(Cons1oo,"../Data/FromCode/ConsolidatedReflectivityInd.csv")
+
+```
+
+
+# NIR/VIS Corrected
+
+The residuals can also be calculated from a model that considers phylogeny.
+
+
+Reflectivity by Individual
+
+```{r}
+Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1]
+```
+
+Phylogeny (multiple trees)
+
+```{r}
+trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
+```
+
+```{r}
+
+Cons1agg <-
+  Cons1 %>% 
+  dplyr::select (-ind) %>%# remove individual id
+  dplyr::select (phylogeny_name, everything ()) %>% # order columns
+  dplyr::group_by (phylogeny_name) %>%  # group
+  dplyr::summarise (across(everything(), list(mean))) # mean
+
+# Modify to make it compatible with tree tips
+ConsAgg <- as.data.frame(Cons1agg) # convert to a data frame
+rownames(ConsAgg) <- ConsAgg[, 1] # make species the row names 
+ConsAgg <- ConsAgg [,2:length(ConsAgg)] # eliminate spp name (redundant)
+
+# Separate the data frames 
+# Useful for plotting in the tree
+names(ConsAgg) <- c("TOT", "VIS", "NIR", "Res",
+                    "PC1", "PC2", "Size" )
+```
+
+Make sure that the phylogeny names are consistent in the data frame and the phylogenetic trees
+
+The MCC (Maximum clade credibility) tree used here is the BEAST MCC tree.
+
+```{r}
+
+# read the tree
+MCCtree.raw <- 
+  ape::read.nexus("../Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+
+# Prune extra spp in the tree, not contain in the test sample
+species.MCC <- as.data.frame(unique(Cons1$phylogeny_name))
+
+# Convert to "row names" (required for following steps)
+row.names(species.MCC) <- species.MCC[, 1] 
+
+# Make sure the names in data set and tree match
+temp.MCC <- name.check(MCCtree.raw, species.MCC) 
+temp.MCC 
+
+# This step would be neccesary if the tips had been different.
+# MCCtree <- drop.tip(MCCtree.raw, temp.MCC$tree_not_data)
+# Not used in our case.
+
+# Instead, changed the name
+MCCtree <- MCCtree.raw
+
+```
+
+Make sure names between data and tree tips match
+
+```{r}
+
+Cons1agg <- as.data.frame(Cons1agg)
+row.names(Cons1agg) <- Cons1agg [, 1] 
+names(Cons1agg) <- c("phylogeny_name", "TOT", "VIS", "NIR",
+                     "Res","size", "PC1", "PC2")
+
+
+# Test if the species are the same
+identical(
+  length(name.check(MCCtree, Cons1agg$phylogeny_name)$tree_not_data),
+  length(Cons1agg$phylogeny_name)
+)
+
+```
+
+Create subsets
+
+```{r}
+
+FRSDataSet <-
+  Cons1agg %>% 
+  dplyr::select (VIS, NIR) %>% 
+  dplyr::rename ("Reflectance" = NIR) 
+
+head(FRSDataSet)
+ 
+```
+
+
+PGLS in the MCC
+
+```{r}
+
+comp_data <- comparative.data(
+  phy = MCCtree, data = Cons1agg,
+  names.col = "phylogeny_name", vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+
+```
+
+Source function
+
+note that this function has to be adapted to the data frame and model on each case
+
+```{r warning=FALSE, message=FALSE}
+source("12_multiple_pgls_function_G.R")# function G is for NIR residuals
+```
+
+Define model
+
+```{r }
+MuPGLSMod0 <- Reflectance ~ VIS
+```
+
+Run
+ 
+```{r message= FALSE, warnings=FALSE}
+pglsmodFRS <- pgls(NIR ~ VIS,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsmodFRS) 
+
+```
+
+Extract residuals
+
+```{r}
+FixedRes <- pglsmodFRS$residuals
+
+Cons1agg$FRS <- FixedRes
+
+```
+
 
 # Final Data Frames
 
@@ -467,6 +668,8 @@ Cons1oo <-
 write.csv(Cons1oo,"../Data/FromCode/ConsolidatedReflectivityInd.csv")
 
 ```
+
+
 
 <span style="color: #04C799"> **Absorptivity by individual** </span>  <br/>
 
@@ -488,6 +691,13 @@ write.csv(Cons2oo,"../Data/FromCode/ConsolidatedAbsoptivityInd.csv")
 ```
 
 
+<span style="color: #04C799"> **Reflectivity by species** </span>  <br/>
 
+Consolidated file with reflectivity on each spectral band including NIR residuals corrected by phylogeny, size and phylogeny name for each species.
 
+```{r}
+
+write.csv(Cons1agg,"../Data/FromCode/ConsolidatedReflectivitySpp.csv")
+
+```
 

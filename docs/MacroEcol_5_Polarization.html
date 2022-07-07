@@ -13,7 +13,7 @@
 
 <title>Calculating degree of polarisation</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -43,7 +43,6 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
-
 
 
 <style type="text/css">
@@ -180,9 +179,6 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
-}
-details > summary > p:only-child {
-  display: inline;
 }
 pre code {
   padding: 0;
@@ -411,7 +407,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -442,7 +438,7 @@ div.tocify {
   <a href="MacroEcol_6_ManuscriptStats.html">Reflectivity PGLS</a>
 </li>
 <li>
-  <a href="MacroEcol_7_ManuscriptFigures.html">Figures</a>
+  <a href="MacroEcol_7_Summary.html">Summary</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -455,7 +451,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -735,7 +731,7 @@ calculations directly form the data frames.</p>
 <span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;sqzb&quot;</span>, ind)) <span class="co"># remove, absent in the phylogeny</span></span>
 <span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RGB_ave)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 3
+<pre><code>## # A tibble: 6 x 3
 ## # Groups:   ind, Type [6]
 ##   ind    Type  RGB_ave
 ##   &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;
@@ -803,7 +799,7 @@ calculations directly form the data frames.</p>
 <span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;sqzb&quot;</span>, ind)) <span class="co"># remove, absent in the phylogeny</span></span>
 <span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RGB_avePr)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 3
+<pre><code>## # A tibble: 6 x 3
 ## # Groups:   ind, Type [6]
 ##   ind    Type  RGB_aveP
 ##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;
@@ -835,7 +831,7 @@ individual:</p>
 <span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Polarization =</span> (LCP <span class="sc">-</span> RCP) <span class="sc">/</span> (LCP <span class="sc">+</span> RCP))</span>
 <span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ElyPol) <span class="co"># by individual</span></span></code></pre></div>
-<pre><code>## # A tibble: 6 × 5
+<pre><code>## # A tibble: 6 x 5
 ## # Groups:   ind [6]
 ##   ind      LCP   RCP   VIS Polarization
 ##   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
@@ -858,7 +854,7 @@ individual:</p>
 <span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">Pol =</span> <span class="fu">mean</span>(Polarization)) <span class="co"># by species</span></span>
 <span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(EPolbs)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 2
+<pre><code>## # A tibble: 6 x 2
 ##   spp      Pol
 ##   &lt;chr&gt;  &lt;dbl&gt;
 ## 1 abno  0.0643
@@ -879,7 +875,7 @@ individual:</p>
 <span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Polarization =</span> (LCP <span class="sc">-</span> RCP) <span class="sc">/</span> (LCP <span class="sc">+</span> RCP))</span>
 <span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ProPol) <span class="co">#  by individual</span></span></code></pre></div>
-<pre><code>## # A tibble: 6 × 5
+<pre><code>## # A tibble: 6 x 5
 ## # Groups:   ind [6]
 ##   ind      LCP   RCP   VIS Polarization
 ##   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
@@ -902,7 +898,7 @@ individual:</p>
 <span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">Pol =</span> <span class="fu">mean</span>(Polarization)) <span class="co"># by species</span></span>
 <span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(PPolbs)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 2
+<pre><code>## # A tibble: 6 x 2
 ##   spp      Pol
 ##   &lt;chr&gt;  &lt;dbl&gt;
 ## 1 abno  0.0820
@@ -1002,13 +998,20 @@ them into one larger data frame</p>
 <span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">merge</span>(Refbyind, ElyPolbyind) <span class="co"># Combine the two</span></span>
 <span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPData)</span></code></pre></div>
-<pre><code>##      ind    R_ALL     R_VIS    R_NIR        Res   size         phylogeny_name        PC1         PC2  spp   ElytrPol
-## 1 abno01 24.36959 15.194950 32.37499 -9.8258343 1.5390 Anoplognathus_abnormis -2.1441633  0.07156382 abno 0.05631758
-## 2 abno02 30.17203 17.865117 40.90967 -3.9177421 1.6120 Anoplognathus_abnormis -1.8227362  0.16083346 abno 0.07228979
-## 3 anom01 17.25955  2.229028 30.33292  0.8864166 1.7630        Anomala_antigua -2.3016135 -2.27652672 anom 0.13646753
-## 4 anom02 19.93132  7.888188 30.40910 -4.6042095 1.7675        Anomala_antigua -0.3855034 -1.15167811 anom 0.18547191
-## 5 atki01 15.52166  6.194366 23.61734 -9.7297912 2.4590   Calloodes_atkinsonii -2.7414058  1.08031739 atki 0.30583122
-## 6 atki02 18.73437  6.636925 29.23785 -4.5446134 2.0180   Calloodes_atkinsonii -2.7414058  1.08031739 atki 0.30355419</code></pre>
+<pre><code>##      ind    R_ALL     R_VIS    R_NIR        Res   size         phylogeny_name        PC1
+## 1 abno01 24.36959 15.194950 32.37499 -9.8258343 1.5390 Anoplognathus_abnormis -2.1441633
+## 2 abno02 30.17203 17.865117 40.90967 -3.9177421 1.6120 Anoplognathus_abnormis -1.8227362
+## 3 anom01 17.25955  2.229028 30.33292  0.8864166 1.7630        Anomala_antigua -2.3016135
+## 4 anom02 19.93132  7.888188 30.40910 -4.6042095 1.7675        Anomala_antigua -0.3855034
+## 5 atki01 15.52166  6.194366 23.61734 -9.7297912 2.4590   Calloodes_atkinsonii -2.7414058
+## 6 atki02 18.73437  6.636925 29.23785 -4.5446134 2.0180   Calloodes_atkinsonii -2.7414058
+##           PC2  spp   ElytrPol
+## 1  0.07156382 abno 0.05631758
+## 2  0.16083346 abno 0.07228979
+## 3 -2.27652672 anom 0.13646753
+## 4 -1.15167811 anom 0.18547191
+## 5  1.08031739 atki 0.30583122
+## 6  1.08031739 atki 0.30355419</code></pre>
 <p>We also summarised this data by species</p>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>RPDataAgg <span class="ot">&lt;-</span></span>
 <span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  RPData <span class="sc">%&gt;%</span></span>
@@ -1018,7 +1021,7 @@ them into one larger data frame</p>
 <span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="fu">list</span>(mean))) <span class="co"># mean</span></span>
 <span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPDataAgg)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 9
+<pre><code>## # A tibble: 6 x 9
 ##   phylogeny_name            R_ALL_1 R_VIS_1 R_NIR_1   Res_1 size_1 PC1_1  PC2_1 ElytrPol_1
 ##   &lt;chr&gt;                       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
 ## 1 Anomala_antigua              18.6    5.06    30.4  -1.86    1.77 -1.34 -1.71      0.161 
@@ -1076,15 +1079,16 @@ significantly different than 0.</p>
 <span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Difference <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span>
 <span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>ElytraMoreP<span class="sc">$</span>ind</span></code></pre></div>
-<pre><code>##  [1] &quot;atki01&quot; &quot;atki02&quot; &quot;brun01&quot; &quot;brun04&quot; &quot;brun05&quot; &quot;ecry01&quot; &quot;fchi01&quot; &quot;fchi02&quot; &quot;hirs03&quot; &quot;lats01&quot; &quot;lats03&quot; &quot;pvul02&quot; &quot;pvul03&quot;
-## [14] &quot;pvul04&quot; &quot;rayn01&quot; &quot;rayn03&quot; &quot;smgr01&quot;</code></pre>
+<pre><code>##  [1] &quot;atki01&quot; &quot;atki02&quot; &quot;brun01&quot; &quot;brun04&quot; &quot;brun05&quot; &quot;ecry01&quot; &quot;fchi01&quot; &quot;fchi02&quot; &quot;hirs03&quot; &quot;lats01&quot;
+## [11] &quot;lats03&quot; &quot;pvul02&quot; &quot;pvul03&quot; &quot;pvul04&quot; &quot;rayn01&quot; &quot;rayn03&quot; &quot;smgr01&quot;</code></pre>
 <p>These beetles with higher polarization in their pronotum are:</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>PronotumMoreP <span class="ot">&lt;-</span></span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  BeetlePol <span class="sc">%&gt;%</span></span>
 <span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Difference <span class="sc">&lt;</span> <span class="sc">-</span><span class="fl">0.1</span>)</span>
 <span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>PronotumMoreP<span class="sc">$</span>ind</span></code></pre></div>
-<pre><code>##  [1] &quot;aurs01&quot; &quot;aurs02&quot; &quot;clor09&quot; &quot;meli02&quot; &quot;meli03&quot; &quot;neus01&quot; &quot;oliv03&quot; &quot;opal01&quot; &quot;pvul01&quot; &quot;rubi01&quot; &quot;rubi02&quot; &quot;vrdi01&quot; &quot;vrdi03&quot;</code></pre>
+<pre><code>##  [1] &quot;aurs01&quot; &quot;aurs02&quot; &quot;clor09&quot; &quot;meli02&quot; &quot;meli03&quot; &quot;neus01&quot; &quot;oliv03&quot; &quot;opal01&quot; &quot;pvul01&quot; &quot;rubi01&quot;
+## [11] &quot;rubi02&quot; &quot;vrdi01&quot; &quot;vrdi03&quot;</code></pre>
 <p><br> <br> <br></p>
 </div>
 <div id="vis-reflectivity" class="section level2">
@@ -1202,7 +1206,10 @@ Relationship between polarization and VIS reflectivity by individual
 <span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdRes =</span> <span class="fu">sd</span>(Res),</span>
 <span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdPol =</span> <span class="fu">sd</span>(ElytrPol),</span>
 <span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdSize =</span> <span class="fu">sd</span>(size)</span>
-<span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb73-21"><a href="#cb73-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-22"><a href="#cb73-22" aria-hidden="true" tabindex="-1"></a>ToPlotPolbsp <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ToPlotPolbsp)</span>
+<span id="cb73-23"><a href="#cb73-23" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(ToPlotPolbsp) <span class="ot">&lt;-</span> ToPlotPolbsp<span class="sc">$</span>spp</span></code></pre></div>
 <div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ToPlotPolbsp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanVIS)) <span class="sc">+</span></span>
 <span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
 <span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanVIS <span class="sc">-</span> sdVIS,</span>
@@ -1216,11 +1223,16 @@ Relationship between polarization and VIS reflectivity by individual
 <span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
 <span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#593876&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#D7A1F9&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">colour =</span> <span class="st">&quot;#593876&quot;</span>) <span class="sc">+</span></span>
-<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb74-18"><a href="#cb74-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#ff9400&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#fe6100&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.08</span>) <span class="sc">+</span></span>
+<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">rownames</span>(ToPlotPolbsp), </span>
+<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">nudge_x =</span> <span class="fl">0.02</span>, <span class="at">nudge_y =</span> <span class="sc">-</span><span class="fl">0.04</span>, </span>
+<span id="cb74-18"><a href="#cb74-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">col=</span><span class="st">&quot;gray&quot;</span>, <span class="at">size=</span><span class="dv">2</span></span>
+<span id="cb74-19"><a href="#cb74-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb74-20"><a href="#cb74-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">colour =</span> <span class="st">&quot;#fe6100&quot;</span>) <span class="sc">+</span></span>
+<span id="cb74-21"><a href="#cb74-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb74-22"><a href="#cb74-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb74-23"><a href="#cb74-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 3 rows containing missing values (geom_errorbarh).</code></pre>
 <div class="figure">
 <img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-35-1.png" alt="Relationship between polarization and VIS reflectivity by species" width="672" />
@@ -1231,8 +1243,7 @@ Relationship between polarization and VIS reflectivity by species
 <p><span style="color: #04C799"> <strong>Conclusion</strong> </span>
 <br/></p>
 <p><strong>Yes, Beetles with more polarization reflect more visible
-light</strong></p>
-<p><br> <br> <br></p>
+light</strong> <br> <br> <br> <br></p>
 </div>
 <div id="nir-reflectivity" class="section level2">
 <h2>NIR Reflectivity</h2>
@@ -1452,8 +1463,8 @@ This could be the result of the fact that visible and NIR reflectivity
 have opposite correlations to polarization.</p>
 <p><br> <br> <br></p>
 </div>
-<div id="mechanism" class="section level2">
-<h2>Mechanism</h2>
+<div id="mechanism-1" class="section level2">
+<h2>Mechanism 1</h2>
 <p><span style="color: #04C799"> <strong>Question</strong> </span>
 <br/></p>
 <p>In our previous studies we discovered that some species have an
@@ -1576,20 +1587,270 @@ alternate mechanism that does not involve chiral structures
 (i.e. absence of circular polarization).</strong></p>
 <p><br> <br> <br></p>
 </div>
+<div id="mechanisms-2" class="section level2">
+<h2>Mechanisms 2</h2>
+<p>Can we extend that analysis even further? Perhaps we can identify
+three mechanisms in total: a traditional chiral mechanism, the white
+underlay and a white/gold chiral structure.</p>
+<p>We can analyze what happens with VIS and NIR reflectance when
+excluding the last two <br></p>
+<div id="vis" class="section level3">
+<h3>VIS</h3>
+<p>But this pattern seems to be driven by only a few species, lets
+explore what happens if we remove some species: Aurs, ecry, opal, lats,
+rose, pvul</p>
+<div class="sourceCode" id="cb102"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>nospecialcases <span class="ot">&lt;-</span> </span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>  RPData <span class="sc">%&gt;%</span> </span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>phylogeny_name) <span class="sc">%&gt;%</span></span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">&quot;spp&quot;</span> <span class="ot">=</span> <span class="fu">substr</span>(ind, <span class="dv">1</span>, <span class="dv">4</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(spp <span class="sc">!=</span> <span class="st">&quot;ecry&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;opal&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;lats&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-9"><a href="#cb102-9" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;rose&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-10"><a href="#cb102-10" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;pvul&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-11"><a href="#cb102-11" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;aurs&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-12"><a href="#cb102-12" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;xyls&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-13"><a href="#cb102-13" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;xyle&quot;</span> <span class="sc">&amp;</span> </span>
+<span id="cb102-14"><a href="#cb102-14" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;pczo&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-15"><a href="#cb102-15" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;pczp&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-16"><a href="#cb102-16" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;pczv&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb102-17"><a href="#cb102-17" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;prsi&quot;</span> ) </span>
+<span id="cb102-18"><a href="#cb102-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-19"><a href="#cb102-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-20"><a href="#cb102-20" aria-hidden="true" tabindex="-1"></a>dummydum1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(nospecialcases<span class="sc">$</span>R_VIS <span class="sc">~</span> nospecialcases<span class="sc">$</span>ElytrPol)</span>
+<span id="cb102-21"><a href="#cb102-21" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dummydum1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = nospecialcases$R_VIS ~ nospecialcases$ElytrPol)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -13.573  -4.445  -0.743   4.008  19.521 
+## 
+## Coefficients:
+##                         Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)               13.962      0.594  23.503 &lt;0.0000000000000002 ***
+## nospecialcases$ElytrPol   -9.908      5.461  -1.814              0.0718 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 6.48 on 137 degrees of freedom
+## Multiple R-squared:  0.02346,    Adjusted R-squared:  0.01633 
+## F-statistic: 3.292 on 1 and 137 DF,  p-value: 0.07182</code></pre>
+<div class="sourceCode" id="cb104"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>nospecialcasesspp <span class="ot">&lt;-</span> </span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>  ToPlotPolbsp <span class="sc">%&gt;%</span></span>
+<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(spp <span class="sc">!=</span> <span class="st">&quot;ecry&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-4"><a href="#cb104-4" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;opal&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-5"><a href="#cb104-5" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;lats&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-6"><a href="#cb104-6" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;rose&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-7"><a href="#cb104-7" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;pvul&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-8"><a href="#cb104-8" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;aurs&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-9"><a href="#cb104-9" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;xyls&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-10"><a href="#cb104-10" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;xyle&quot;</span> <span class="sc">&amp;</span> </span>
+<span id="cb104-11"><a href="#cb104-11" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;pczo&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-12"><a href="#cb104-12" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;pczp&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-13"><a href="#cb104-13" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;pczv&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-14"><a href="#cb104-14" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">!=</span> <span class="st">&quot;prsi&quot;</span> ) </span>
+<span id="cb104-15"><a href="#cb104-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb104-16"><a href="#cb104-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb104-17"><a href="#cb104-17" aria-hidden="true" tabindex="-1"></a>dummydum2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(nospecialcasesspp<span class="sc">$</span>meanVIS <span class="sc">~</span> nospecialcasesspp<span class="sc">$</span>meanPol)</span>
+<span id="cb104-18"><a href="#cb104-18" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dummydum2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = nospecialcasesspp$meanVIS ~ nospecialcasesspp$meanPol)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.7930  -3.5692  -0.5977   3.6458  15.7408 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept)                 14.295      1.224  11.681 0.0000000000000263 ***
+## nospecialcasesspp$meanPol  -17.540      9.773  -1.795             0.0804 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 6.632 on 39 degrees of freedom
+## Multiple R-squared:  0.0763, Adjusted R-squared:  0.05261 
+## F-statistic: 3.221 on 1 and 39 DF,  p-value: 0.08044</code></pre>
+<div class="sourceCode" id="cb106"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>WhiteUnderlay <span class="ot">&lt;-</span> </span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>  ToPlotPolbsp <span class="sc">%&gt;%</span></span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(spp <span class="sc">==</span> <span class="st">&quot;xyls&quot;</span> <span class="sc">|</span></span>
+<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;xyle&quot;</span> <span class="sc">|</span> </span>
+<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;pczo&quot;</span> <span class="sc">|</span></span>
+<span id="cb106-6"><a href="#cb106-6" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;pczp&quot;</span> <span class="sc">|</span></span>
+<span id="cb106-7"><a href="#cb106-7" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;pczv&quot;</span> <span class="sc">|</span></span>
+<span id="cb106-8"><a href="#cb106-8" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;prsi&quot;</span>) </span>
+<span id="cb106-9"><a href="#cb106-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb106-10"><a href="#cb106-10" aria-hidden="true" tabindex="-1"></a>WhiteAndGold <span class="ot">&lt;-</span> </span>
+<span id="cb106-11"><a href="#cb106-11" aria-hidden="true" tabindex="-1"></a>  ToPlotPolbsp <span class="sc">%&gt;%</span></span>
+<span id="cb106-12"><a href="#cb106-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(spp <span class="sc">==</span> <span class="st">&quot;opal&quot;</span> <span class="sc">|</span></span>
+<span id="cb106-13"><a href="#cb106-13" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;ecry&quot;</span> <span class="sc">|</span></span>
+<span id="cb106-14"><a href="#cb106-14" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;lats&quot;</span> <span class="sc">|</span> </span>
+<span id="cb106-15"><a href="#cb106-15" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;rose&quot;</span> <span class="sc">|</span></span>
+<span id="cb106-16"><a href="#cb106-16" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;pvul&quot;</span> <span class="sc">|</span></span>
+<span id="cb106-17"><a href="#cb106-17" aria-hidden="true" tabindex="-1"></a>                spp <span class="sc">==</span> <span class="st">&quot;aurs&quot;</span> ) </span></code></pre></div>
+<p>Yes, in both cases, the analysis by species and individuals the slope
+becomes negative when removing those 6 gold and pearly species.</p>
+<p>New plot with three groups:</p>
+<div class="sourceCode" id="cb107"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> ToPlotPolbsp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanVIS),</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">colour =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">rownames</span>(ToPlotPolbsp), </span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">nudge_x =</span> <span class="fl">0.02</span>, <span class="at">nudge_y =</span> <span class="sc">-</span><span class="fl">0.04</span>, </span>
+<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">col=</span><span class="st">&quot;gray&quot;</span>, <span class="at">size=</span><span class="dv">2</span></span>
+<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb107-8"><a href="#cb107-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># error bars</span></span>
+<span id="cb107-9"><a href="#cb107-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb107-10"><a href="#cb107-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">ymin =</span> meanVIS <span class="sc">-</span> sdVIS,</span>
+<span id="cb107-11"><a href="#cb107-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">ymax =</span> meanVIS <span class="sc">+</span> sdVIS),</span>
+<span id="cb107-12"><a href="#cb107-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb107-13"><a href="#cb107-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb107-14"><a href="#cb107-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
+<span id="cb107-15"><a href="#cb107-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> meanPol <span class="sc">-</span> sdPol,</span>
+<span id="cb107-16"><a href="#cb107-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> meanPol <span class="sc">+</span> sdPol</span>
+<span id="cb107-17"><a href="#cb107-17" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb107-18"><a href="#cb107-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb107-19"><a href="#cb107-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb107-20"><a href="#cb107-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb107-21"><a href="#cb107-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Almost all species</span></span>
+<span id="cb107-22"><a href="#cb107-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> nospecialcasesspp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanVIS),</span>
+<span id="cb107-23"><a href="#cb107-23" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">colour =</span> <span class="st">&quot;#ffc100&quot;</span>) <span class="sc">+</span></span>
+<span id="cb107-24"><a href="#cb107-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> nospecialcasesspp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanVIS),</span>
+<span id="cb107-25"><a href="#cb107-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb107-26"><a href="#cb107-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb107-27"><a href="#cb107-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># White underlay</span></span>
+<span id="cb107-28"><a href="#cb107-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> WhiteUnderlay, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanVIS),</span>
+<span id="cb107-29"><a href="#cb107-29" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">colour =</span> <span class="st">&quot;#785ef0&quot;</span>) <span class="sc">+</span></span>
+<span id="cb107-30"><a href="#cb107-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> WhiteUnderlay, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanVIS),</span>
+<span id="cb107-31"><a href="#cb107-31" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb107-32"><a href="#cb107-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb107-33"><a href="#cb107-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># White and Gold polarized</span></span>
+<span id="cb107-34"><a href="#cb107-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> WhiteAndGold, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanVIS),</span>
+<span id="cb107-35"><a href="#cb107-35" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">colour =</span> <span class="st">&quot;#fe6100&quot;</span>) <span class="sc">+</span></span>
+<span id="cb107-36"><a href="#cb107-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> WhiteAndGold, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanVIS),</span>
+<span id="cb107-37"><a href="#cb107-37" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb107-38"><a href="#cb107-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb107-39"><a href="#cb107-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb107-40"><a href="#cb107-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb107-41"><a href="#cb107-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Degree of Polarization (L - R)/(L + R)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb107-42"><a href="#cb107-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Visible reflectivity (%)&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 3 rows containing missing values (geom_errorbarh).</code></pre>
+<p><img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
+<p><br> ### NIR</p>
+<p>But we need to check if this relationship is driven only by non
+polarized beetles: <br></p>
+<p>These are the models excluding gold, pearl and white underlay</p>
+<div class="sourceCode" id="cb109"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>dummydum3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(nospecialcases<span class="sc">$</span>R_NIR <span class="sc">~</span> nospecialcases<span class="sc">$</span>ElytrPol)</span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dummydum3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = nospecialcases$R_NIR ~ nospecialcases$ElytrPol)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -21.4420  -5.0049  -0.9127   5.7669  21.0487 
+## 
+## Coefficients:
+##                         Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)              40.2561     0.7817  51.501 &lt; 0.0000000000000002 ***
+## nospecialcases$ElytrPol -33.1386     7.1856  -4.612           0.00000906 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 8.526 on 137 degrees of freedom
+## Multiple R-squared:  0.1344, Adjusted R-squared:  0.1281 
+## F-statistic: 21.27 on 1 and 137 DF,  p-value: 0.000009061</code></pre>
+<div class="sourceCode" id="cb111"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>dummydum4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(nospecialcasesspp<span class="sc">$</span>meanNIR <span class="sc">~</span> nospecialcasesspp<span class="sc">$</span>meanPol)</span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dummydum4)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = nospecialcasesspp$meanNIR ~ nospecialcasesspp$meanPol)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -18.2126  -4.5968   0.3965   4.0279  18.9642 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)                 40.440      1.552  26.048 &lt; 0.0000000000000002 ***
+## nospecialcasesspp$meanPol  -43.260     12.398  -3.489              0.00122 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 8.414 on 39 degrees of freedom
+## Multiple R-squared:  0.2379, Adjusted R-squared:  0.2184 
+## F-statistic: 12.18 on 1 and 39 DF,  p-value: 0.001217</code></pre>
+<div class="sourceCode" id="cb113"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> ToPlotPolbsp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanNIR),</span>
+<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">colour =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">rownames</span>(ToPlotPolbsp), </span>
+<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">nudge_x =</span> <span class="fl">0.02</span>, <span class="at">nudge_y =</span> <span class="sc">-</span><span class="fl">0.04</span>, </span>
+<span id="cb113-6"><a href="#cb113-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">col=</span><span class="st">&quot;gray&quot;</span>, <span class="at">size=</span><span class="dv">2</span></span>
+<span id="cb113-7"><a href="#cb113-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb113-8"><a href="#cb113-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># error bars</span></span>
+<span id="cb113-9"><a href="#cb113-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb113-10"><a href="#cb113-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">ymin =</span> meanNIR <span class="sc">-</span> sdNIR,</span>
+<span id="cb113-11"><a href="#cb113-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">ymax =</span> meanNIR <span class="sc">+</span> sdNIR),</span>
+<span id="cb113-12"><a href="#cb113-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb113-13"><a href="#cb113-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb113-14"><a href="#cb113-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
+<span id="cb113-15"><a href="#cb113-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> meanPol <span class="sc">-</span> sdPol,</span>
+<span id="cb113-16"><a href="#cb113-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> meanPol <span class="sc">+</span> sdPol</span>
+<span id="cb113-17"><a href="#cb113-17" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb113-18"><a href="#cb113-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb113-19"><a href="#cb113-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb113-20"><a href="#cb113-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb113-21"><a href="#cb113-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Almost all species</span></span>
+<span id="cb113-22"><a href="#cb113-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> nospecialcasesspp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanNIR),</span>
+<span id="cb113-23"><a href="#cb113-23" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">colour =</span> <span class="st">&quot;#ffc100&quot;</span>) <span class="sc">+</span></span>
+<span id="cb113-24"><a href="#cb113-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> nospecialcasesspp, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanNIR),</span>
+<span id="cb113-25"><a href="#cb113-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb113-26"><a href="#cb113-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb113-27"><a href="#cb113-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># White underlay</span></span>
+<span id="cb113-28"><a href="#cb113-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> WhiteUnderlay, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanNIR),</span>
+<span id="cb113-29"><a href="#cb113-29" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">colour =</span> <span class="st">&quot;#785ef0&quot;</span>) <span class="sc">+</span></span>
+<span id="cb113-30"><a href="#cb113-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> WhiteUnderlay, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanNIR),</span>
+<span id="cb113-31"><a href="#cb113-31" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb113-32"><a href="#cb113-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb113-33"><a href="#cb113-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># White and Gold polarized</span></span>
+<span id="cb113-34"><a href="#cb113-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> WhiteAndGold, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanNIR),</span>
+<span id="cb113-35"><a href="#cb113-35" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">colour =</span> <span class="st">&quot;#fe6100&quot;</span>) <span class="sc">+</span></span>
+<span id="cb113-36"><a href="#cb113-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> WhiteAndGold, <span class="fu">aes</span>(<span class="at">x =</span> meanPol, <span class="at">y =</span> meanNIR),</span>
+<span id="cb113-37"><a href="#cb113-37" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb113-38"><a href="#cb113-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb113-39"><a href="#cb113-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb113-40"><a href="#cb113-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb113-41"><a href="#cb113-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Degree of Polarization (L - R)/(L + R)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb113-42"><a href="#cb113-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;NIR reflectivity (%)&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 3 rows containing missing values (geom_errorbarh).</code></pre>
+<p><img src="MacroEcol_5_Polarization_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
+</div>
+</div>
 </div>
 <div id="results-from-this-step" class="section level1">
 <h1>Results from this step</h1>
+<p>As a general conclusion it does seem that there can be three
+mechanisms: White underlay, chiral and broadband chiral.</p>
 <p>We obtained a data frame useful to compare the degree of polarization
 between two body parts, elytron and pronotum</p>
-<div class="sourceCode" id="cb102"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(BeetlePol, <span class="st">&quot;../Data/FromCode/PolarzElytraPronot.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb115"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(BeetlePol, <span class="st">&quot;../Data/FromCode/PolarzElytraPronot.csv&quot;</span>)</span></code></pre></div>
 <p>And we also added the polarization of the elytra to a subset of the
 dataframe with the ecological variables and reflectance. Note that this
 subset may have fewer individuals that the one we will use for the
 phylogenetic analysis of the reflectance, but they both have the same
 number of species.</p>
-<div class="sourceCode" id="cb103"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(RPData, <span class="st">&quot;../Data/FromCode/PolarzElytraRefl.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb116"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(RPData, <span class="st">&quot;../Data/FromCode/PolarzElytraRefl.csv&quot;</span>)</span></code></pre></div>
 </div>
 
 

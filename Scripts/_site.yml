@@ -17,8 +17,8 @@ navbar:
      href: MacroEcol_5_Polarization2.html
    - text: Reflectivity PGLS
      href: MacroEcol_6_ManuscriptStats.html
-   - text: Figures
-     href: MacroEcol_7_ManuscriptFigures.html
+   - text: Summary
+     href: MacroEcol_7_Summary.html
 #   - text: Supplementary
 #     href: MacroEcol_8_Supplementary.html
 output:

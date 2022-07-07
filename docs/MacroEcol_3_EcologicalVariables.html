@@ -13,7 +13,7 @@
 
 <title>Summarising ecological variables into principal components</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -45,7 +45,6 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
-
 
 
 <style type="text/css">
@@ -182,9 +181,6 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
-}
-details > summary > p:only-child {
-  display: inline;
 }
 pre code {
   padding: 0;
@@ -413,7 +409,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -444,7 +440,7 @@ div.tocify {
   <a href="MacroEcol_6_ManuscriptStats.html">Reflectivity PGLS</a>
 </li>
 <li>
-  <a href="MacroEcol_7_ManuscriptFigures.html">Figures</a>
+  <a href="MacroEcol_7_Summary.html">Summary</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -457,7 +453,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -508,9 +504,10 @@ but we decided to use only the most informative ones</p>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rain =</span> avg_rr) <span class="co"># rainfall per day -&gt; mean in one month -&gt; mean over 10 years</span></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(climat) </span></code></pre></div>
-<pre><code>##  [1] &quot;species&quot;               &quot;over35&quot;                &quot;MaxT&quot;                  &quot;MinT&quot;                  &quot;Solar&quot;                
-##  [6] &quot;Clouds&quot;                &quot;Rain&quot;                  &quot;Vapour&quot;                &quot;avg_temp_over_35_Coll&quot; &quot;avg_max_temp_Coll&quot;    
-## [11] &quot;avg_min_temp_Coll&quot;     &quot;avg_sol_Coll&quot;          &quot;avg_rr_Coll&quot;           &quot;avg_vpr_Coll&quot;</code></pre>
+<pre><code>##  [1] &quot;species&quot;               &quot;over35&quot;                &quot;MaxT&quot;                  &quot;MinT&quot;                 
+##  [5] &quot;Solar&quot;                 &quot;Clouds&quot;                &quot;Rain&quot;                  &quot;Vapour&quot;               
+##  [9] &quot;avg_temp_over_35_Coll&quot; &quot;avg_max_temp_Coll&quot;     &quot;avg_min_temp_Coll&quot;     &quot;avg_sol_Coll&quot;         
+## [13] &quot;avg_rr_Coll&quot;           &quot;avg_vpr_Coll&quot;</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Suffix Coll = value for the parameter in the collection month. </span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># No suffix = average value for this variable across the activity period</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1975,10 +1972,10 @@ only the ones with eigen value &gt; 1.</p>
 each component.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(compv)</span></code></pre></div>
 <pre><code>## Importance of components:
-##                           PC1   PC2     PC3     PC4     PC5     PC6     PC7
-## Standard deviation     1.7206 1.663 0.77800 0.59788 0.40371 0.31950 0.21572
-## Proportion of Variance 0.4229 0.395 0.08647 0.05107 0.02328 0.01458 0.00665
-## Cumulative Proportion  0.4229 0.818 0.90442 0.95549 0.97877 0.99335 1.00000</code></pre>
+##                           PC1    PC2     PC3     PC4     PC5     PC6     PC7
+## Standard deviation     1.7206 1.6629 0.77800 0.59788 0.40371 0.31950 0.21572
+## Proportion of Variance 0.4229 0.3950 0.08647 0.05107 0.02328 0.01458 0.00665
+## Cumulative Proportion  0.4229 0.8179 0.90442 0.95549 0.97877 0.99335 1.00000</code></pre>
 <p>PC1 and PC2 are able to explain 82% of all the variance in ecological
 habitats for our samples.</p>
 <p><br></p>
@@ -2063,8 +2060,8 @@ individual</strong> </span> <br/></p>
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons1,<span class="st">&quot;../Data/FromCode/ConsReflEcolInd.csv&quot;</span>)</span>
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(Cons1)</span></code></pre></div>
-<pre><code>## [1] &quot;ind&quot;            &quot;R_ALL&quot;          &quot;R_VIS&quot;          &quot;R_NIR&quot;          &quot;Res&quot;            &quot;size&quot;           &quot;phylogeny_name&quot;
-## [8] &quot;PC1&quot;            &quot;PC2&quot;</code></pre>
+<pre><code>## [1] &quot;ind&quot;            &quot;R_ALL&quot;          &quot;R_VIS&quot;          &quot;R_NIR&quot;          &quot;Res&quot;           
+## [6] &quot;size&quot;           &quot;phylogeny_name&quot; &quot;PC1&quot;            &quot;PC2&quot;</code></pre>
 <p><span style="color: #04C799"> <strong>Absorptivity by
 individual</strong> </span> <br/></p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Cons2oo <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/FromCode/ConsolidatedAbsoptivityInd.csv&quot;</span>) [<span class="sc">-</span><span class="dv">1</span>]</span>
@@ -2080,7 +2077,8 @@ individual</strong> </span> <br/></p>
 <span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons2,<span class="st">&quot;../Data/FromCode/ConsAbsEcolInd.csv&quot;</span>)</span>
 <span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(Cons2)</span></code></pre></div>
-<pre><code>##  [1] &quot;ind&quot;   &quot;PC1&quot;   &quot;PC2&quot;   &quot;size&quot;  &quot;R_ALL&quot; &quot;R_VIS&quot; &quot;R_NIR&quot; &quot;T_ALL&quot; &quot;T_VIS&quot; &quot;T_NIR&quot; &quot;A_ALL&quot; &quot;A_VIS&quot; &quot;A_NIR&quot;</code></pre>
+<pre><code>##  [1] &quot;ind&quot;   &quot;PC1&quot;   &quot;PC2&quot;   &quot;size&quot;  &quot;R_ALL&quot; &quot;R_VIS&quot; &quot;R_NIR&quot; &quot;T_ALL&quot; &quot;T_VIS&quot; &quot;T_NIR&quot; &quot;A_ALL&quot; &quot;A_VIS&quot;
+## [13] &quot;A_NIR&quot;</code></pre>
 </div>
 <div id="meaning-of-each-pc" class="section level1">
 <h1>Meaning of each PC</h1>
@@ -2090,9 +2088,51 @@ clouds, which in turn correlates with more plant coverage.</p>
 <p><strong>Lower PC2</strong> = higher solar radiation and max temp,
 more days above 35 and more aridity.</p>
 <p><br></p>
-<p><img src="../Data/RmdImages/PCarrows.png" /></p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>im<span class="ot">&lt;-</span><span class="fu">load.image</span>(<span class="st">&quot;../Data/RmdImages/PCarrows.png&quot;</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(im, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(imager)</span></code></pre></div>
+<pre><code>## Warning: package &#39;imager&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;magrittr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     set_names</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     extract</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggtree&#39;:
+## 
+##     inset</code></pre>
+<pre><code>## 
+## Attaching package: &#39;imager&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:magrittr&#39;:
+## 
+##     add</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     liply</code></pre>
+<pre><code>## The following object is masked from &#39;package:stringr&#39;:
+## 
+##     boundary</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     fill</code></pre>
+<pre><code>## The following object is masked from &#39;package:ape&#39;:
+## 
+##     where</code></pre>
+<pre><code>## The following object is masked from &#39;package:Hmisc&#39;:
+## 
+##     label</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     convolve, spectrum</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     frame</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     save.image</code></pre>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>im<span class="ot">&lt;-</span><span class="fu">load.image</span>(<span class="st">&quot;../Data/RmdImages/PCarrows.png&quot;</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(im, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p><img src="MacroEcol_3_EcologicalVariables_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 

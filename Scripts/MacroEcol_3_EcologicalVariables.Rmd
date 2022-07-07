@@ -349,8 +349,8 @@ names(Cons2)
 
 <br>
 
-![ ](../Data/RmdImages/PCarrows.png)
 
 ```{r}
+library(imager)
 im<-load.image("../Data/RmdImages/PCarrows.png")
 plot(im, axes = FALSE)
