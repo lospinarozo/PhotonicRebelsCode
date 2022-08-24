@@ -2,6 +2,8 @@
 title: "Reflectivity PGLS"
 # author: "Laura Ospina-Rozo"
 # date: "25/04/2022"
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Libraries
@@ -21,7 +23,6 @@ Reflectivity by Individual
 Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1]
 
 Cons1agg <- read.csv("../Data/FromCode/ConsolidatedReflectivitySpp.csv")[-1]
-
 
 ```
 
@@ -100,7 +101,7 @@ NmoDataSet <-
   dplyr::rename ("Reflectance" = NIR) 
 
 FRSDataSet <-
- Cons1agg %>% 
+  Cons1agg %>% 
   dplyr::select (-TOT, -NIR, -VIS, -Res) %>% 
   dplyr::rename ("Reflectance" = FRS)
 
@@ -695,9 +696,9 @@ Visi <- as.character(as.numeric(c(rbind((c(
 Niri <- as.character(as.numeric(c(rbind(
             FinMccNirc[2:7], FinMccNirp[2:7]))))
 
-Resi <- as.character(as.numeric(c(rbind((c(
-            FinMccResc[2:4],"NA",FinMccResc[5:6])),
-                (c(FinMccResp[2:4],"NA",FinMccResp[5:6]))))))
+FRSi <- as.character(as.numeric(c(rbind((c(
+            FinMccFRSc[2:4],"NA",FinMccFRSc[5:6])),
+                (c(FinMccFRSp[2:4],"NA",FinMccFRSp[5:6]))))))
   
 # This section colours the signifficant p-values and their coefficients
 
@@ -719,11 +720,11 @@ Niri[8] <- cell_spec(Niri[8],bold = TRUE)
 Niri[11] <- cell_spec(Niri[11],bold = TRUE, color="#D40481")
 Niri[12] <- cell_spec(Niri[12],bold = TRUE)
 
-Resi[3] <- cell_spec(Resi[3],bold = TRUE, color="#D40481")
-Resi[4] <- cell_spec(Resi[4],bold = TRUE)
+FRSi[3] <- cell_spec(FRSi[3],bold = TRUE, color="#D40481")
+FRSi[4] <- cell_spec(FRSi[4],bold = TRUE)
 
-Resi[11] <- cell_spec(Resi[11],bold = TRUE, color="#D40481")
-Resi[12] <- cell_spec(Resi[12],bold = TRUE)
+FRSi[11] <- cell_spec(FRSi[11],bold = TRUE, color="#D40481")
+FRSi[12] <- cell_spec(FRSi[12],bold = TRUE)
 
 # Assemble the table
 
@@ -731,7 +732,7 @@ Resultspgls <- data.frame(Predictor,
                           "TOT" = Toti,
                           "VIS" = Visi,
                           "NIR" = Niri,
-                          "Res" = Resi) 
+                          "Res" = FRSi) 
 
 Resultspgls %>% 
   kbl(align ="c", escape = FALSE) %>%
@@ -790,25 +791,25 @@ rvNIRu <- as.character(
               FinNirM[13,2],FinNirM[15,2], FinNirM[16,2],FinNirM[18,2]
               )),3),nsmall=3))
 
-rvResl <- as.character(
+rvFRSl <- as.character(
             format(round(as.numeric(c(
-              FinResM[1,1],FinResM[3,1],FinResM[4,1],FinResM[6,1],
-              FinResM[7,1],FinResM[9,1],"NA","NA",
-              FinResM[10,1],FinResM[12,1],
-              FinResM[13,1],FinResM[15,1])),3),nsmall=3))
+              FinFRSM[1,1],FinFRSM[3,1],FinFRSM[4,1],FinFRSM[6,1],
+              FinFRSM[7,1],FinFRSM[9,1],"NA","NA",
+              FinFRSM[10,1],FinFRSM[12,1],
+              FinFRSM[13,1],FinFRSM[15,1])),3),nsmall=3))
 
-rvResu <- as.character(
+rvFRSu <- as.character(
             format(round(as.numeric(c(
-              FinResM[1,2],FinResM[3,2],FinResM[4,2],FinResM[6,2],
-              FinResM[7,2],FinResM[9,2],"NA","NA",
-              FinResM[10,2],FinResM[12,2],
-              FinResM[13,2],FinResM[15,2])),3),nsmall=3))
+              FinFRSM[1,2],FinFRSM[3,2],FinFRSM[4,2],FinFRSM[6,2],
+              FinFRSM[7,2],FinFRSM[9,2],"NA","NA",
+              FinFRSM[10,2],FinFRSM[12,2],
+              FinFRSM[13,2],FinFRSM[15,2])),3),nsmall=3))
 
 
 rvTOTi<-paste(rvTOTl,rvTOTu, sep = " ; ")
 rvVISi<-paste(rvVISl,rvVISu, sep = " ; ")
 rvNIRi<-paste(rvNIRl,rvNIRu, sep = " ; ")
-rvResi<-paste(rvResl,rvResu, sep = " ; ")
+rvFRSi<-paste(rvFRSl,rvFRSu, sep = " ; ")
 
 rvVISi[1] <- cell_spec(rvVISi[1],bold = TRUE, color="#367D91")
 rvVISi[2] <- cell_spec(rvVISi[2],bold = TRUE, color="#B2B9BF")
@@ -828,17 +829,17 @@ rvNIRi[8] <- cell_spec(rvNIRi[8],bold = TRUE)
 rvNIRi[11] <- cell_spec(rvNIRi[11],bold = TRUE, color="#D40481")
 rvNIRi[12] <- cell_spec(rvNIRi[12],bold = TRUE)
 
-rvResi[3] <- cell_spec(rvResi[3],bold = TRUE, color="#D40481")
-rvResi[4] <- cell_spec(rvResi[4],bold = TRUE)
+rvFRSi[3] <- cell_spec(rvFRSi[3],bold = TRUE, color="#D40481")
+rvFRSi[4] <- cell_spec(rvFRSi[4],bold = TRUE)
 
-rvResi[11] <- cell_spec(rvResi[11],bold = TRUE, color="#D40481")
-rvResi[12] <- cell_spec(rvResi[12],bold = TRUE)
+rvFRSi[11] <- cell_spec(rvFRSi[11],bold = TRUE, color="#D40481")
+rvFRSi[12] <- cell_spec(rvFRSi[12],bold = TRUE)
 
 Resultspgls <- data.frame(Predictor,  
                           "TOT" = rvTOTi,
                           "VIS" = rvVISi,
                           "NIR" = rvNIRi,
-                          "Res" = rvResi) 
+                          "Res" = rvFRSi) 
 
 
 Resultspgls %>% 
@@ -875,9 +876,9 @@ sVisi <- as.character(as.numeric(c(rbind((c(
 sNiri <- as.character(as.numeric(c(rbind(
             sFinMccNirc[2:5], sFinMccNirp[2:5]))))
 
-sResi <- as.character(as.numeric(c(rbind((c(
-            sFinMccResc[2:3],"NA",sFinMccResc[4])),
-                (c(sFinMccResp[2:3],"NA",sFinMccResp[4]))))))
+sFRSi <- as.character(as.numeric(c(rbind((c(
+            sFinMccFRSc[2:3],"NA",sFinMccFRSc[4])),
+                (c(sFinMccFRSp[2:3],"NA",sFinMccFRSp[4]))))))
   
 # This section colours the signifficant p-values and their coefficients
 
@@ -901,18 +902,18 @@ sNiri[7] <- cell_spec(sNiri[7],bold = TRUE, color="#D40481")
 sNiri[8] <- cell_spec(sNiri[8],bold = TRUE)
 
 
-sResi[1] <- cell_spec(sResi[1],bold = TRUE, color="#D40481")
-sResi[2] <- cell_spec(sResi[2],bold = TRUE)
+sFRSi[1] <- cell_spec(sFRSi[1],bold = TRUE, color="#D40481")
+sFRSi[2] <- cell_spec(sFRSi[2],bold = TRUE)
 
-sResi[7] <- cell_spec(sResi[7],bold = TRUE, color="#D40481")
-sResi[8] <- cell_spec(sResi[8],bold = TRUE)
+sFRSi[7] <- cell_spec(sFRSi[7],bold = TRUE, color="#D40481")
+sFRSi[8] <- cell_spec(sFRSi[8],bold = TRUE)
 
 # Assemble the table
 
 sResultspgls <- data.frame(sPredictor,  
                           "VIS" = sVisi,
                           "NIR" = sNiri,
-                          "Res" = sResi) 
+                          "Res" = sFRSi) 
 
 sResultspgls %>% 
   kbl(align ="c", escape = FALSE) %>%
@@ -956,22 +957,22 @@ srvNIRu <- as.character(
               FinNirS[10,2],FinNirS[12,2]
               )),3),nsmall=3))
 
-srvResl <- as.character(
+srvFRSl <- as.character(
             format(round(as.numeric(c(
-              FinResS[1,1],FinResS[3,1],
-              FinResS[4,1],FinResS[6,1],"NA","NA",
-              FinResS[7,1],FinResS[9,1])),3),nsmall=3))
+              FinFRSS[1,1],FinFRSS[3,1],
+              FinFRSS[4,1],FinFRSS[6,1],"NA","NA",
+              FinFRSS[7,1],FinFRSS[9,1])),3),nsmall=3))
 
-srvResu <- as.character(
+srvFRSu <- as.character(
             format(round(as.numeric(c(
-              FinResS[1,2],FinResS[3,2],
-              FinResS[4,2],FinResS[6,2],"NA","NA",
-              FinResS[7,2],FinResS[9,2])),3),nsmall=3))
+              FinFRSS[1,2],FinFRSS[3,2],
+              FinFRSS[4,2],FinFRSS[6,2],"NA","NA",
+              FinFRSS[7,2],FinFRSS[9,2])),3),nsmall=3))
 
 
 srvVISi<-paste(srvVISl,srvVISu, sep = " ; ")
 srvNIRi<-paste(srvNIRl,srvNIRu, sep = " ; ")
-srvResi<-paste(srvResl,srvResu, sep = " ; ")
+srvFRSi<-paste(srvFRSl,srvFRSu, sep = " ; ")
 
 srvVISi[1] <- cell_spec(srvVISi[1],bold = TRUE, color="#D40481")
 srvVISi[2] <- cell_spec(srvVISi[2],bold = TRUE)
@@ -991,16 +992,16 @@ srvNIRi[6] <- cell_spec(srvNIRi[6],bold = TRUE)
 srvNIRi[7] <- cell_spec(srvNIRi[7],bold = TRUE, color="#D40481")
 srvNIRi[8] <- cell_spec(srvNIRi[8],bold = TRUE)
 
-srvResi[1] <- cell_spec(srvResi[1],bold = TRUE, color="#D40481")
-srvResi[2] <- cell_spec(srvResi[2],bold = TRUE)
+srvFRSi[1] <- cell_spec(srvFRSi[1],bold = TRUE, color="#D40481")
+srvFRSi[2] <- cell_spec(srvFRSi[2],bold = TRUE)
 
-srvResi[7] <- cell_spec(srvResi[7],bold = TRUE, color="#D40481")
-srvResi[8] <- cell_spec(srvResi[8],bold = TRUE)
+srvFRSi[7] <- cell_spec(srvFRSi[7],bold = TRUE, color="#D40481")
+srvFRSi[8] <- cell_spec(srvFRSi[8],bold = TRUE)
 
 smResultspgls <- data.frame(sPredictor,
                           "VIS" = srvVISi,
                           "NIR" = srvNIRi,
-                          "Res" = srvResi) 
+                          "Res" = srvFRSi) 
 
 
 smResultspgls %>% 
@@ -1079,7 +1080,6 @@ ResLarge<-
 Subsets for plots
 
 ```{r}
-
 ToPlotInt <-
   Cons1 %>%
   dplyr::select(-phylogeny_name) %>%
@@ -1103,8 +1103,6 @@ ToPlotInt <-
     sdSize = sd(size)
   )
 
-names(ToPlotInt)
-
 plotVisSmall <- 
   ToPlotInt %>% 
   dplyr::filter(meanSize<2.2) %>%  # Small beetles
@@ -1125,7 +1123,8 @@ plotNirLarge <-
   dplyr::filter(meanSize>2.5) %>%  # Large beetles
   dplyr::select(1,5,7,8,12,14,15)
 
-head(plotNirSmall)
+
+
 ```
 
 

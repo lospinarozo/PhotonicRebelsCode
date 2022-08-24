@@ -2,6 +2,8 @@
 title: "Calculating degree of polarisation"
 # author: "Laura Ospina-Rozo"
 # date: "25/04/2022"
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -759,6 +761,10 @@ summary(modPol2)
 Species level:
 ```{r}
 cor.test(RPDataAgg$R_NIR_1, RPDataAgg$ElytrPol_1) # by species
+
+
+modPolnirspp <- lm(RPDataAgg$R_NIR_1 ~ RPDataAgg$ElytrPol_1) # by spp
+summary(modPolnirspp)
 ```
 (Correlation is lost when considering the average per species)
 
@@ -1006,6 +1012,8 @@ nospecialcasesspp <-
                 spp != "prsi" ) 
   
 
+cor.test(nospecialcasesspp$meanVIS, nospecialcasesspp$meanPol)
+
 dummydum2 <- lm(nospecialcasesspp$meanVIS ~ nospecialcasesspp$meanPol)
 summary(dummydum2)
 
@@ -1064,15 +1072,11 @@ ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanVIS),
   
   # White underlay
   geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanVIS),
-             size = 2.2, alpha = 0.6, colour = "#785ef0") +
-  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanVIS),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+             size = 2.2, pch = 25, fill= "#785ef0", colour = "black", alpha = 0.7) +
   
   # White and Gold polarized
   geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanVIS),
-             size = 2.2, alpha = 0.8, colour = "#fe6100") +
-  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanVIS),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+             size = 2.2, pch = 23, fill= "#fe6100", colour = "black", alpha = 0.7) +
   
   theme_minimal() +
   theme(legend.position = "none") + 
@@ -1083,6 +1087,7 @@ ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanVIS),
 ```
 
 <br>
+
 ### NIR
 
 
@@ -1094,6 +1099,9 @@ These are the models excluding gold, pearl and white underlay
 ```{r}
 dummydum3 <- lm(nospecialcases$R_NIR ~ nospecialcases$ElytrPol)
 summary(dummydum3)
+
+
+cor.test(nospecialcasesspp$meanNIR, nospecialcasesspp$meanPol)
 
 dummydum4 <- lm(nospecialcasesspp$meanNIR ~ nospecialcasesspp$meanPol)
 summary(dummydum4)
@@ -1130,15 +1138,11 @@ ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanNIR),
   
   # White underlay
   geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanNIR),
-             size = 2.2, alpha = 0.6, colour = "#785ef0") +
-  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanNIR),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+             size = 2.2, pch = 25, fill = "#785ef0", colour = "black", alpha = 0.7) +
   
   # White and Gold polarized
   geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanNIR),
-             size = 2.2, alpha = 0.8, colour = "#fe6100") +
-  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanNIR),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
+             size = 2.2, pch = 23, colour = "black", fill= "#fe6100",  alpha = 0.7) +
   
   theme_minimal() +
   theme(legend.position = "none") + 

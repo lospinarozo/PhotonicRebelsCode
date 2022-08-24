@@ -193,7 +193,9 @@ If the two evolve together their correlation should dissapear when after applyin
 
 <span style="color: #04C799"> **Tests** </span>  <br/>
 
-### PGLS in the MCC
+### MCC tree
+
+#### VIS PGLS in the MCC
 
 Create the data frame of comparative data
 
@@ -251,7 +253,107 @@ phylosig(MCCtree, pagelPDPol, method = "lambda", test = TRUE, nsim = 999)
 <br>
 
 
-### PGLS in multiple trees
+#### NIR PGLS in the MCC
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDNIR <- pgls(NIR ~ Pol,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDNIR)
+```
+
+Test phylogenetic signal using Pagel's lambda: Pending...
+
+#### VIS subset PGLS MCC
+
+We need to subset the data frame excluding the species with composite materials: chiral and non-chiral
+
+```{r}
+Polsubset <- 
+  RPDAgg1 %>% 
+  dplyr::filter (
+    phylogeny_name != "Anoplognathus_prasinus" &
+    phylogeny_name != "Xylonichus_sp" &
+    phylogeny_name != "Paraschizognathus_ocularis" &
+    phylogeny_name != "Paraschizognathus_olivaceous" &
+    phylogeny_name != "Paraschizognathus_prasinus"&
+    phylogeny_name != "Anoplostethus_laetus" &
+    phylogeny_name != "Anoplostethus_opalinus" &
+    phylogeny_name != "Anoplostethus_roseus" &
+    phylogeny_name != "Epichrysus_lamprimoides" &
+    phylogeny_name != "Anoplognathus_aureus" &
+    phylogeny_name != "Anoplognathus_parvulus" 
+  )
+
+Polsubset <-  as.data.frame(Polsubset)
+
+```
+
+Then trim the tree
+
+```{r}
+# Prune extra spp in the tree, not contain in the test sample
+species.MCCsub <- as.data.frame(unique(Polsubset$phylogeny_name))
+
+# Convert to "row names" (required for following steps)
+row.names(species.MCCsub) <- species.MCCsub[, 1]
+
+# Make sure the names in data set and tree match
+temp.MCCsub <- name.check(MCCtree.raw, species.MCCsub)
+temp.MCCsub 
+# This step would be neccesary if the tips had been different.
+MCCtreesub <- drop.tip(MCCtree.raw, temp.MCCsub$tree_not_data)
+
+# create phylogeny object for ggtree()
+phylo.MCC <- ggtree(MCCtreesub, layout = "rectangular") + geom_tiplab(size = 1.5)
+
+# set xlim
+phylo.MCC + xlim(0, 25) +
+  geom_nodepoint(col = "gold", alpha = 0.4)
+```
+
+Now create comparative data
+
+
+```{r}
+comp_data_sub <- comparative.data(
+  phy = MCCtreesub,
+  data = Polsubset, # aggregated data without the spp in the row names
+  names.col = "phylogeny_name", # contains the column phylogeny name
+  vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+```
+
+
+Run model
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDVISsub <- pgls(VIS ~ Pol,
+  data = comp_data_sub, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDVISsub)
+```
+
+
+#### NIR subset PGLS MCC
+
+```{r}
+pglsPDNIRsub <- pgls(NIR ~ Pol,
+  data = comp_data_sub, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDNIRsub)
+```
+
+
+### Multiple trees
+
+#### VIS PGLS in multiple trees
 
 
 Function
@@ -297,7 +399,6 @@ HPDinterval(as.mcmc(dfPol1))
 
 
 
-
 ## Ecology
 
 <span style="color: #04C799"> **Question** </span>  <br/>
@@ -319,7 +420,8 @@ comp_data2 <- comparative.data(
   na.omit = FALSE, warn.dropped = TRUE
 )
 
-head(RPDAgg1)
+
+length(RPDAgg1$Pol)
 ```
 
 Establish the model

@@ -476,20 +476,20 @@ phylogeny.</p>
 value per species for each variable</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>RPDataAgg <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/FromCode/PolarzElytraRefl.csv&quot;</span>)[<span class="sc">-</span><span class="dv">1</span>]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPDataAgg)</span></code></pre></div>
-<pre><code>##      ind    R_ALL     R_VIS    R_NIR        Res   size         phylogeny_name        PC1
-## 1 abno01 24.36959 15.194950 32.37499 -9.8258343 1.5390 Anoplognathus_abnormis -2.1441633
-## 2 abno02 30.17203 17.865117 40.90967 -3.9177421 1.6120 Anoplognathus_abnormis -1.8227362
-## 3 anom01 17.25955  2.229028 30.33292  0.8864166 1.7630        Anomala_antigua -2.3016135
-## 4 anom02 19.93132  7.888188 30.40910 -4.6042095 1.7675        Anomala_antigua -0.3855034
-## 5 atki01 15.52166  6.194366 23.61734 -9.7297912 2.4590   Calloodes_atkinsonii -2.7414058
-## 6 atki02 18.73437  6.636925 29.23785 -4.5446134 2.0180   Calloodes_atkinsonii -2.7414058
-##           PC2  spp   ElytrPol
-## 1  0.07156382 abno 0.05631758
-## 2  0.16083346 abno 0.07228979
-## 3 -2.27652672 anom 0.13646753
-## 4 -1.15167811 anom 0.18547191
-## 5  1.08031739 atki 0.30583122
-## 6  1.08031739 atki 0.30355419</code></pre>
+<pre><code>##      ind    R_ALL     R_VIS    R_NIR        Res   size         phylogeny_name
+## 1 abno01 24.36959 15.194950 32.37499 -9.8258343 1.5390 Anoplognathus_abnormis
+## 2 abno02 30.17203 17.865117 40.90967 -3.9177421 1.6120 Anoplognathus_abnormis
+## 3 anom01 17.25955  2.229028 30.33292  0.8864166 1.7630        Anomala_antigua
+## 4 anom02 19.93132  7.888188 30.40910 -4.6042095 1.7675        Anomala_antigua
+## 5 atki01 15.52166  6.194366 23.61734 -9.7297912 2.4590   Calloodes_atkinsonii
+## 6 atki02 18.73437  6.636925 29.23785 -4.5446134 2.0180   Calloodes_atkinsonii
+##          PC1         PC2  spp   ElytrPol
+## 1 -2.1441633  0.07156382 abno 0.05631758
+## 2 -1.8227362  0.16083346 abno 0.07228979
+## 3 -2.3016135 -2.27652672 anom 0.13646753
+## 4 -0.3855034 -1.15167811 anom 0.18547191
+## 5 -2.7414058  1.08031739 atki 0.30583122
+## 6 -2.7414058  1.08031739 atki 0.30355419</code></pre>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>RPDAgg1 <span class="ot">&lt;-</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  RPDataAgg <span class="sc">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>ind, <span class="sc">-</span>spp) <span class="sc">%&gt;%</span></span>
@@ -500,20 +500,20 @@ value per species for each variable</p>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to a data frame for the comparative.data function</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>RPDAgg1 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(RPDAgg1)</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPDAgg1)</span></code></pre></div>
-<pre><code>##              phylogeny_name  R_ALL_1   R_VIS_1  R_NIR_1       Res_1  size_1     PC1_1      PC2_1
-## 1           Anomala_antigua 18.59543  5.058608 30.37101  -1.8588965 1.76525 -1.343558 -1.7141024
-## 2    Anoplognathus_abnormis 27.27081 16.530033 36.64233  -6.8717882 1.57550 -1.983450  0.1161986
-## 3      Anoplognathus_aeneus 22.10221 10.404140 32.27222  -5.2159832 3.11250 -1.903878  0.4191886
-## 4      Anoplognathus_aureus 42.63349 34.727230 49.54375 -11.8705985 1.71400 -3.493997 -0.4335432
-## 5 Anoplognathus_boisduvalii 31.14445 17.303047 43.21203  -1.0624889 2.60540 -1.635325 -0.9220386
-## 6 Anoplognathus_brevicollis 27.43900 12.869292 40.14934   0.2362219 2.51400 -1.145208 -3.6269193
-##   ElytrPol_1
-## 1 0.16096972
-## 2 0.06430368
-## 3 0.11204259
-## 4 0.20560559
-## 5 0.08846901
-## 6 0.08712699</code></pre>
+<pre><code>##              phylogeny_name  R_ALL_1   R_VIS_1  R_NIR_1       Res_1  size_1
+## 1           Anomala_antigua 18.59543  5.058608 30.37101  -1.8588965 1.76525
+## 2    Anoplognathus_abnormis 27.27081 16.530033 36.64233  -6.8717882 1.57550
+## 3      Anoplognathus_aeneus 22.10221 10.404140 32.27222  -5.2159832 3.11250
+## 4      Anoplognathus_aureus 42.63349 34.727230 49.54375 -11.8705985 1.71400
+## 5 Anoplognathus_boisduvalii 31.14445 17.303047 43.21203  -1.0624889 2.60540
+## 6 Anoplognathus_brevicollis 27.43900 12.869292 40.14934   0.2362219 2.51400
+##       PC1_1      PC2_1 ElytrPol_1
+## 1 -1.343558 -1.7141024 0.16096972
+## 2 -1.983450  0.1161986 0.06430368
+## 3 -1.903878  0.4191886 0.11204259
+## 4 -3.493997 -0.4335432 0.20560559
+## 5 -1.635325 -0.9220386 0.08846901
+## 6 -1.145208 -3.6269193 0.08712699</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(RPDAgg1) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;phylogeny_name&quot;</span>,</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;TOT&quot;</span>, <span class="st">&quot;VIS&quot;</span>, <span class="st">&quot;NIR&quot;</span>, <span class="st">&quot;Res&quot;</span>, <span class="st">&quot;size&quot;</span>,</span>
@@ -650,8 +650,10 @@ after applying the phylogenetic correction and the phylogenetic signal
 in these traits would be high</p>
 <p><span style="color: #04C799"> <strong>Tests</strong> </span>
 <br/></p>
-<div id="pgls-in-the-mcc" class="section level3">
-<h3>PGLS in the MCC</h3>
+<div id="mcc-tree" class="section level3">
+<h3>MCC tree</h3>
+<div id="vis-pgls-in-the-mcc" class="section level4">
+<h4>VIS PGLS in the MCC</h4>
 <p>Create the data frame of comparative data</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>comp_data <span class="ot">&lt;-</span> <span class="fu">comparative.data</span>(</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">phy =</span> MCCtree,</span>
@@ -720,23 +722,194 @@ in these traits would be high</p>
 independently. They do cluster according to phylogeny.</strong></p>
 <p><br> <br> <br></p>
 </div>
-<div id="pgls-in-multiple-trees" class="section level3">
-<h3>PGLS in multiple trees</h3>
+<div id="nir-pgls-in-the-mcc" class="section level4">
+<h4>NIR PGLS in the MCC</h4>
+<p>The data frame of comparative data is the same as for visible
+light</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pglsPDNIR <span class="ot">&lt;-</span> <span class="fu">pgls</span>(NIR <span class="sc">~</span> Pol,</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> comp_data, <span class="at">param.CI =</span> <span class="fl">0.95</span>, <span class="at">lambda =</span> <span class="st">&quot;ML&quot;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pglsPDNIR)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## pgls(formula = NIR ~ Pol, data = comp_data, lambda = &quot;ML&quot;, param.CI = 0.95)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -6.513 -2.119  1.230  2.693  8.576 
+## 
+## Branch length transformations:
+## 
+## kappa  [Fix]  : 1.000
+## lambda [ ML]  : 0.802
+##    lower bound : 0.000, p = 0.42414
+##    upper bound : 1.000, p = 0.11061
+##    95.0% CI   : (NA, NA)
+## delta  [Fix]  : 1.000
+## 
+## Coefficients:
+##             Estimate Std. Error t value    Pr(&gt;|t|)    
+## (Intercept)  46.8842     8.4462  5.5509 0.000001442 ***
+## Pol         -22.6554    14.6475 -1.5467      0.1289    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.604 on 45 degrees of freedom
+## Multiple R-squared: 0.05048, Adjusted R-squared: 0.02938 
+## F-statistic: 2.392 on 1 and 45 DF,  p-value: 0.1289</code></pre>
+<p>Test phylogenetic signal using Pagel’s lambda: Pending…</p>
+</div>
+<div id="vis-subset-pgls-mcc" class="section level4">
+<h4>VIS subset PGLS MCC</h4>
+<p>We need to subset the data frame excluding the species with composite
+materials: chiral and non-chiral</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>Polsubset <span class="ot">&lt;-</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  RPDAgg1 <span class="sc">%&gt;%</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span> (</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplognathus_prasinus&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Xylonichus_sp&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Paraschizognathus_ocularis&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Paraschizognathus_olivaceous&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Paraschizognathus_prasinus&quot;</span><span class="sc">&amp;</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplostethus_laetus&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplostethus_opalinus&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplostethus_roseus&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Epichrysus_lamprimoides&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplognathus_aureus&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplognathus_parvulus&quot;</span> </span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>Polsubset <span class="ot">&lt;-</span>  <span class="fu">as.data.frame</span>(Polsubset)</span></code></pre></div>
+<p>Then trim the tree</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prune extra spp in the tree, not contain in the test sample</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>species.MCCsub <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">unique</span>(Polsubset<span class="sc">$</span>phylogeny_name))</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to &quot;row names&quot; (required for following steps)</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(species.MCCsub) <span class="ot">&lt;-</span> species.MCCsub[, <span class="dv">1</span>]</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Make sure the names in data set and tree match</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>temp.MCCsub <span class="ot">&lt;-</span> <span class="fu">name.check</span>(MCCtree.raw, species.MCCsub)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>temp.MCCsub </span></code></pre></div>
+<pre><code>## $tree_not_data
+##  [1] &quot;Anoplognathus_aureus&quot;         &quot;Anoplognathus_parvulus&quot;      
+##  [3] &quot;Anoplognathus_prasinus&quot;       &quot;Anoplostethus_laetus&quot;        
+##  [5] &quot;Anoplostethus_opalinus&quot;       &quot;Anoplostethus_roseus&quot;        
+##  [7] &quot;Epichrysus_lamprimoides&quot;      &quot;Paraschizognathus_ocularis&quot;  
+##  [9] &quot;Paraschizognathus_olivaceous&quot; &quot;Paraschizognathus_prasinus&quot;  
+## [11] &quot;Xylonichus_sp&quot;               
+## 
+## $data_not_tree
+## character(0)</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This step would be neccesary if the tips had been different.</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>MCCtreesub <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(MCCtree.raw, temp.MCCsub<span class="sc">$</span>tree_not_data)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># create phylogeny object for ggtree()</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>phylo.MCC <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(MCCtreesub, <span class="at">layout =</span> <span class="st">&quot;rectangular&quot;</span>) <span class="sc">+</span> <span class="fu">geom_tiplab</span>(<span class="at">size =</span> <span class="fl">1.5</span>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co"># set xlim</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>phylo.MCC <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">25</span>) <span class="sc">+</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_nodepoint</span>(<span class="at">col =</span> <span class="st">&quot;gold&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>)</span></code></pre></div>
+<p><img src="MacroEcol_5_Polarization2_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>Now create comparative data</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>comp_data_sub <span class="ot">&lt;-</span> <span class="fu">comparative.data</span>(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">phy =</span> MCCtreesub,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> Polsubset, <span class="co"># aggregated data without the spp in the row names</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">names.col =</span> <span class="st">&quot;phylogeny_name&quot;</span>, <span class="co"># contains the column phylogeny name</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">vcv =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.omit =</span> <span class="cn">FALSE</span>, <span class="at">warn.dropped =</span> <span class="cn">TRUE</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Run model</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pglsPDVISsub <span class="ot">&lt;-</span> <span class="fu">pgls</span>(VIS <span class="sc">~</span> Pol,</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> comp_data_sub, <span class="at">param.CI =</span> <span class="fl">0.95</span>, <span class="at">lambda =</span> <span class="st">&quot;ML&quot;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pglsPDVISsub)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## pgls(formula = VIS ~ Pol, data = comp_data_sub, lambda = &quot;ML&quot;, 
+##     param.CI = 0.95)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.6089 -0.5845  0.5978  1.3236  2.9735 
+## 
+## Branch length transformations:
+## 
+## kappa  [Fix]  : 1.000
+## lambda [ ML]  : 0.000
+##    lower bound : 0.000, p = 1    
+##    upper bound : 1.000, p = 0.0027462
+##    95.0% CI   : (NA, 0.879)
+## delta  [Fix]  : 1.000
+## 
+## Coefficients:
+##             Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept)  14.1864     1.2119 11.7062 0.0000000000001781 ***
+## Pol         -15.0346     9.5636 -1.5721             0.1252    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.496 on 34 degrees of freedom
+## Multiple R-squared: 0.06776, Adjusted R-squared: 0.04034 
+## F-statistic: 2.471 on 1 and 34 DF,  p-value: 0.1252</code></pre>
+</div>
+<div id="nir-subset-pgls-mcc" class="section level4">
+<h4>NIR subset PGLS MCC</h4>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>pglsPDNIRsub <span class="ot">&lt;-</span> <span class="fu">pgls</span>(NIR <span class="sc">~</span> Pol,</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> comp_data_sub, <span class="at">param.CI =</span> <span class="fl">0.95</span>, <span class="at">lambda =</span> <span class="st">&quot;ML&quot;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pglsPDNIRsub)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## pgls(formula = NIR ~ Pol, data = comp_data_sub, lambda = &quot;ML&quot;, 
+##     param.CI = 0.95)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.3121 -1.0519  0.6397  1.9417  3.5418 
+## 
+## Branch length transformations:
+## 
+## kappa  [Fix]  : 1.000
+## lambda [ ML]  : 0.000
+##    lower bound : 0.000, p = 1    
+##    upper bound : 1.000, p = 0.0021504
+##    95.0% CI   : (NA, 0.908)
+## delta  [Fix]  : 1.000
+## 
+## Coefficients:
+##             Estimate Std. Error t value              Pr(&gt;|t|)    
+## (Intercept)  40.5372     1.5749  25.739 &lt; 0.00000000000000022 ***
+## Pol         -42.2945    12.4288  -3.403              0.001723 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.945 on 34 degrees of freedom
+## Multiple R-squared: 0.2541,  Adjusted R-squared: 0.2321 
+## F-statistic: 11.58 on 1 and 34 DF,  p-value: 0.001723</code></pre>
+</div>
+</div>
+<div id="multiple-trees" class="section level3">
+<h3>Multiple trees</h3>
+<div id="vis-pgls-in-multiple-trees" class="section level4">
+<h4>VIS PGLS in multiple trees</h4>
 <p>Function</p>
 <p>Note that the function has to be modified for the predictors and data
 frame that we are using</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;6_multiple_pgls_function_A.R&quot;</span>) <span class="co"># script A is for Polarization as predictor</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;6_multiple_pgls_function_A.R&quot;</span>) <span class="co"># script A is for Polarization as predictor</span></span></code></pre></div>
 <p>Model</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>MuPGLSPol1 <span class="ot">&lt;-</span> Reflectance <span class="sc">~</span> Pol</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>MuPGLSPol1 <span class="ot">&lt;-</span> Reflectance <span class="sc">~</span> Pol</span></code></pre></div>
 <p>Dataset</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the phylogeny name again because in this function it is needed:</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>PDVIS2 <span class="ot">&lt;-</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  PDVIS <span class="sc">%&gt;%</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">phylogeny_name =</span> <span class="fu">rownames</span>(PDVIS)) <span class="sc">%&gt;%</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Reflectance, Pol)</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>PDVIS2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(PDVIS2)</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(PDVIS2)</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the phylogeny name again because in this function it is needed:</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>PDVIS2 <span class="ot">&lt;-</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  PDVIS <span class="sc">%&gt;%</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">phylogeny_name =</span> <span class="fu">rownames</span>(PDVIS)) <span class="sc">%&gt;%</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Reflectance, Pol)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>PDVIS2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(PDVIS2)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(PDVIS2)</span></code></pre></div>
 <pre><code>##                           Reflectance        Pol
 ## Anomala_antigua              5.058608 0.16096972
 ## Anoplognathus_abnormis      16.530033 0.06430368
@@ -745,7 +918,7 @@ frame that we are using</p>
 ## Anoplognathus_boisduvalii   17.303047 0.08846901
 ## Anoplognathus_brevicollis   12.869292 0.08712699</code></pre>
 <p>Apply</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>runsPol1 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(trees, pgls_runA, <span class="at">model =</span> MuPGLSPol1, <span class="at">dataset =</span> PDVIS2)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>runsPol1 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(trees, pgls_runA, <span class="at">model =</span> MuPGLSPol1, <span class="at">dataset =</span> PDVIS2)</span></code></pre></div>
 <pre><code>## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
@@ -790,9 +963,9 @@ frame that we are using</p>
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dfPol1 <span class="ot">&lt;-</span> <span class="fu">ldply</span>(runsPol1, data.frame)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>dfPol1 <span class="ot">&lt;-</span> <span class="fu">ldply</span>(runsPol1, data.frame)</span></code></pre></div>
 <p>Get results</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">as.mcmc</span>(dfPol1))</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">as.mcmc</span>(dfPol1))</span></code></pre></div>
 <pre><code>##                lower      upper
 ## estimateP1 4.3130270 11.6583362
 ## ts1        0.4160769  1.2995120
@@ -801,44 +974,33 @@ frame that we are using</p>
 ## [1] 0.9498978</code></pre>
 </div>
 </div>
+</div>
 <div id="ecology" class="section level2">
 <h2>Ecology</h2>
 <p><span style="color: #04C799"> <strong>Question</strong> </span>
 <br/></p>
 <p><strong>Is polarization correlated to the extracted climate
 variables?</strong></p>
-<div id="pgls-in-the-mcc-1" class="section level3">
+<div id="pgls-in-the-mcc" class="section level3">
 <h3>PGLS in the MCC</h3>
 <p>Create the data frame of comparative data</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>comp_data2 <span class="ot">&lt;-</span> <span class="fu">comparative.data</span>(</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">phy =</span> MCCtree,</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> RPDAgg1, <span class="co"># aggregated data without the spp in the row names</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">names.col =</span> <span class="st">&quot;phylogeny_name&quot;</span>, <span class="co"># contains the column phylogeny name</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">vcv =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.omit =</span> <span class="cn">FALSE</span>, <span class="at">warn.dropped =</span> <span class="cn">TRUE</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPDAgg1)</span></code></pre></div>
-<pre><code>##              phylogeny_name      TOT       VIS      NIR         Res    size       PC1        PC2
-## 1           Anomala_antigua 18.59543  5.058608 30.37101  -1.8588965 1.76525 -1.343558 -1.7141024
-## 2    Anoplognathus_abnormis 27.27081 16.530033 36.64233  -6.8717882 1.57550 -1.983450  0.1161986
-## 3      Anoplognathus_aeneus 22.10221 10.404140 32.27222  -5.2159832 3.11250 -1.903878  0.4191886
-## 4      Anoplognathus_aureus 42.63349 34.727230 49.54375 -11.8705985 1.71400 -3.493997 -0.4335432
-## 5 Anoplognathus_boisduvalii 31.14445 17.303047 43.21203  -1.0624889 2.60540 -1.635325 -0.9220386
-## 6 Anoplognathus_brevicollis 27.43900 12.869292 40.14934   0.2362219 2.51400 -1.145208 -3.6269193
-##          Pol
-## 1 0.16096972
-## 2 0.06430368
-## 3 0.11204259
-## 4 0.20560559
-## 5 0.08846901
-## 6 0.08712699</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>comp_data2 <span class="ot">&lt;-</span> <span class="fu">comparative.data</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">phy =</span> MCCtree,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> RPDAgg1, <span class="co"># aggregated data without the spp in the row names</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">names.col =</span> <span class="st">&quot;phylogeny_name&quot;</span>, <span class="co"># contains the column phylogeny name</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">vcv =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.omit =</span> <span class="cn">FALSE</span>, <span class="at">warn.dropped =</span> <span class="cn">TRUE</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(RPDAgg1<span class="sc">$</span>Pol)</span></code></pre></div>
+<pre><code>## [1] 47</code></pre>
 <p>Establish the model</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>pglsPDPol <span class="ot">&lt;-</span> <span class="fu">pgls</span>(Pol <span class="sc">~</span> PC1 <span class="sc">+</span> PC2 <span class="sc">+</span> size <span class="sc">+</span> PC1 <span class="sc">*</span> size <span class="sc">+</span> PC2 <span class="sc">*</span> size,</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> comp_data2, <span class="at">param.CI =</span> <span class="fl">0.95</span>, <span class="at">lambda =</span> <span class="st">&quot;ML&quot;</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pglsPDPol)</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>pglsPDPol <span class="ot">&lt;-</span> <span class="fu">pgls</span>(Pol <span class="sc">~</span> PC1 <span class="sc">+</span> PC2 <span class="sc">+</span> size <span class="sc">+</span> PC1 <span class="sc">*</span> size <span class="sc">+</span> PC2 <span class="sc">*</span> size,</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> comp_data2, <span class="at">param.CI =</span> <span class="fl">0.95</span>, <span class="at">lambda =</span> <span class="st">&quot;ML&quot;</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pglsPDPol)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## pgls(formula = Pol ~ PC1 + PC2 + size + PC1 * size + PC2 * size, 
@@ -870,15 +1032,15 @@ variables?</strong></p>
 ## Multiple R-squared: 0.2541,  Adjusted R-squared: 0.1631 
 ## F-statistic: 2.794 on 5 and 41 DF,  p-value: 0.0292</code></pre>
 <p>Polarization</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>pagelPDPol <span class="ot">&lt;-</span> PDVIS<span class="sc">$</span>Pol <span class="co"># Define which trait you want to test</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(pagelPDPol) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(PDVIS) <span class="co"># Row names = tree tips</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">phylosig</span>(MCCtree, pagelPDPol, <span class="at">method =</span> <span class="st">&quot;lambda&quot;</span>, <span class="at">test =</span> <span class="cn">TRUE</span>, <span class="at">nsim =</span> <span class="dv">999</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>pagelPDPol <span class="ot">&lt;-</span> PDVIS<span class="sc">$</span>Pol <span class="co"># Define which trait you want to test</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(pagelPDPol) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(PDVIS) <span class="co"># Row names = tree tips</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">phylosig</span>(MCCtree, pagelPDPol, <span class="at">method =</span> <span class="st">&quot;lambda&quot;</span>, <span class="at">test =</span> <span class="cn">TRUE</span>, <span class="at">nsim =</span> <span class="dv">999</span>)</span></code></pre></div>
 <pre><code>## 
 ## Phylogenetic signal lambda : 0.955169 
 ## logL(lambda) : 40.0202 
 ## LR(lambda=0) : 28.1436 
 ## P-value (based on LR test) : 0.000000112637</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># nsim = 999 means testing with 999 randomizations</span></span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># nsim = 999 means testing with 999 randomizations</span></span></code></pre></div>
 <p>Phylogenetic signal is high.</p>
 <p><span style="color: #04C799"> <strong>Conclusion</strong> </span>
 <br/></p>
@@ -886,24 +1048,24 @@ variables?</strong></p>
 ecological variables</strong></p>
 <p><br> <br> <br></p>
 </div>
-<div id="pgls-in-multiple-trees-1" class="section level3">
+<div id="pgls-in-multiple-trees" class="section level3">
 <h3>PGLS in multiple trees</h3>
 <p>Function</p>
 <p>Note that the function has to be modified for the predictors and data
 frame that we are using</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;7_multiple_pgls_function_B.R&quot;</span>) <span class="co"># script A is for Polarization as a response</span></span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;7_multiple_pgls_function_B.R&quot;</span>) <span class="co"># script A is for Polarization as a response</span></span></code></pre></div>
 <p>Model</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>MuPGLSPol2 <span class="ot">&lt;-</span> Polarization <span class="sc">~</span> PC1 <span class="sc">+</span> PC2 <span class="sc">+</span> size <span class="sc">+</span> PC1 <span class="sc">*</span> size <span class="sc">+</span> PC2 <span class="sc">*</span> size</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>MuPGLSPol2 <span class="ot">&lt;-</span> Polarization <span class="sc">~</span> PC1 <span class="sc">+</span> PC2 <span class="sc">+</span> size <span class="sc">+</span> PC1 <span class="sc">*</span> size <span class="sc">+</span> PC2 <span class="sc">*</span> size</span></code></pre></div>
 <p>Dataset</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the phylogeny name again because in this function it is needed:</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>PDPol2 <span class="ot">&lt;-</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  PDPol <span class="sc">%&gt;%</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">phylogeny_name =</span> <span class="fu">rownames</span>(PDPol)) <span class="sc">%&gt;%</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(phylogeny_name, Polarization, size, PC1, PC2)</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>PDPol2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(PDPol2)</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the phylogeny name again because in this function it is needed:</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>PDPol2 <span class="ot">&lt;-</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  PDPol <span class="sc">%&gt;%</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">phylogeny_name =</span> <span class="fu">rownames</span>(PDPol)) <span class="sc">%&gt;%</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(phylogeny_name, Polarization, size, PC1, PC2)</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>PDPol2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(PDPol2)</span></code></pre></div>
 <p>Apply</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>runsPol2 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(trees, pgls_runB, <span class="at">model =</span> MuPGLSPol2, <span class="at">dataset =</span> PDPol2)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>runsPol2 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(trees, pgls_runB, <span class="at">model =</span> MuPGLSPol2, <span class="at">dataset =</span> PDPol2)</span></code></pre></div>
 <pre><code>## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
@@ -930,9 +1092,9 @@ frame that we are using</p>
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH 
 ## ERROR : Problem with optim:52ERROR: ABNORMAL_TERMINATION_IN_LNSRCH</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>dfPol2 <span class="ot">&lt;-</span> <span class="fu">ldply</span>(runsPol2, data.frame)</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>dfPol2 <span class="ot">&lt;-</span> <span class="fu">ldply</span>(runsPol2, data.frame)</span></code></pre></div>
 <p>Get results</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">as.mcmc</span>(dfPol2))</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">as.mcmc</span>(dfPol2))</span></code></pre></div>
 <pre><code>##                   lower        upper
 ## estimateP1 -0.025690717  0.008274889
 ## ts1        -0.509394426  0.155718334

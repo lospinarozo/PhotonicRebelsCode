@@ -494,20 +494,20 @@ div.tocify {
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to a data frame for the comparative.data function</span></span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>Cons1agg <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Cons1agg)</span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Cons1agg)</span></code></pre></div>
-<pre><code>##              phylogeny_name      TOT      VIS      NIR        Res   size       PC1        PC2
-## 1           Anomala_antigua 17.23732  4.54861 28.27315 -3.4550833 1.7660 -1.662963 -1.9015325
-## 2    Anoplognathus_abnormis 27.27081 16.53003 36.64233 -6.8717882 1.5755 -1.983450  0.1161986
-## 3      Anoplognathus_aeneus 22.10221 10.40414 32.27222 -5.2159832 3.1125 -1.903878  0.4191886
-## 4      Anoplognathus_aureus 44.93754 34.33124 54.20353 -6.8212959 1.7140 -3.122363 -0.4118618
-## 5 Anoplognathus_boisduvalii 31.14445 17.30305 43.21203 -1.0624889 2.6054 -1.635325 -0.9220386
-## 6 Anoplognathus_brevicollis 27.43900 12.86929 40.14934  0.2362219 2.5140 -1.145208 -3.6269193
-##          FRS        Pol
-## 1  -6.924027 0.16096972
-## 2 -11.233399 0.06430368
-## 3  -9.121189 0.11204259
-## 4 -12.509174 0.20560559
-## 5  -5.481693 0.08846901
-## 6  -3.852648 0.08712699</code></pre>
+<pre><code>##              phylogeny_name      TOT      VIS      NIR        Res   size
+## 1           Anomala_antigua 17.23732  4.54861 28.27315 -3.4550833 1.7660
+## 2    Anoplognathus_abnormis 27.27081 16.53003 36.64233 -6.8717882 1.5755
+## 3      Anoplognathus_aeneus 22.10221 10.40414 32.27222 -5.2159832 3.1125
+## 4      Anoplognathus_aureus 44.93754 34.33124 54.20353 -6.8212959 1.7140
+## 5 Anoplognathus_boisduvalii 31.14445 17.30305 43.21203 -1.0624889 2.6054
+## 6 Anoplognathus_brevicollis 27.43900 12.86929 40.14934  0.2362219 2.5140
+##         PC1        PC2        FRS        Pol
+## 1 -1.662963 -1.9015325  -6.924027 0.16096972
+## 2 -1.983450  0.1161986 -11.233399 0.06430368
+## 3 -1.903878  0.4191886  -9.121189 0.11204259
+## 4 -3.122363 -0.4118618 -12.509174 0.20560559
+## 5 -1.635325 -0.9220386  -5.481693 0.08846901
+## 6 -1.145208 -3.6269193  -3.852648 0.08712699</code></pre>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modify to make it compatible with tree tips</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ConsAgg<span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Cons1agg) <span class="co"># create new data frame</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(ConsAgg) <span class="ot">&lt;-</span> ConsAgg[, <span class="dv">1</span>] <span class="co"># make species the row names</span></span>

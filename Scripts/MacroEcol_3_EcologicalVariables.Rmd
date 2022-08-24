@@ -350,7 +350,7 @@ names(Cons2)
 <br>
 
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 library(imager)
 im<-load.image("../Data/RmdImages/PCarrows.png")
 plot(im, axes = FALSE)

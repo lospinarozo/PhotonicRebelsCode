@@ -539,7 +539,7 @@ properties).</p>
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span> (<span class="st">&quot;Reflectance&quot;</span> <span class="ot">=</span> NIR) </span>
 <span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>FRSDataSet <span class="ot">&lt;-</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a> Cons1agg <span class="sc">%&gt;%</span> </span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  Cons1agg <span class="sc">%&gt;%</span> </span>
 <span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (<span class="sc">-</span>TOT, <span class="sc">-</span>NIR, <span class="sc">-</span>VIS, <span class="sc">-</span>Res) <span class="sc">%&gt;%</span> </span>
 <span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span> (<span class="st">&quot;Reflectance&quot;</span> <span class="ot">=</span> FRS)</span></code></pre></div>
 </div>
@@ -825,13 +825,20 @@ obtained only one value per species.</p>
 <span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>SimpleNIR <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(SimpleNIR)</span>
 <span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(SimpleNIR)</span></code></pre></div>
-<pre><code>##                                      phylogeny_name Reflectance   size      VIS         PC
-## Anomala_antigua                     Anomala_antigua    28.27315 1.7660  4.54861 -1.9015325
-## Anoplognathus_abnormis       Anoplognathus_abnormis    36.64233 1.5755 16.53003  0.1161986
-## Anoplognathus_aeneus           Anoplognathus_aeneus    32.27222 3.1125 10.40414  0.4191886
-## Anoplognathus_aureus           Anoplognathus_aureus    54.20353 1.7140 34.33124 -0.4118618
-## Anoplognathus_boisduvalii Anoplognathus_boisduvalii    43.21203 2.6054 17.30305 -0.9220386
-## Anoplognathus_brevicollis Anoplognathus_brevicollis    40.14934 2.5140 12.86929 -3.6269193</code></pre>
+<pre><code>##                                      phylogeny_name Reflectance   size      VIS
+## Anomala_antigua                     Anomala_antigua    28.27315 1.7660  4.54861
+## Anoplognathus_abnormis       Anoplognathus_abnormis    36.64233 1.5755 16.53003
+## Anoplognathus_aeneus           Anoplognathus_aeneus    32.27222 3.1125 10.40414
+## Anoplognathus_aureus           Anoplognathus_aureus    54.20353 1.7140 34.33124
+## Anoplognathus_boisduvalii Anoplognathus_boisduvalii    43.21203 2.6054 17.30305
+## Anoplognathus_brevicollis Anoplognathus_brevicollis    40.14934 2.5140 12.86929
+##                                   PC
+## Anomala_antigua           -1.9015325
+## Anoplognathus_abnormis     0.1161986
+## Anoplognathus_aeneus       0.4191886
+## Anoplognathus_aureus      -0.4118618
+## Anoplognathus_boisduvalii -0.9220386
+## Anoplognathus_brevicollis -3.6269193</code></pre>
 <p>Now run the model</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>runsNIRsimple<span class="ot">&lt;-</span><span class="fu">lapply</span>(trees[trees_subset_min<span class="sc">:</span>trees_subset_max],</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>                      pgls_runF,</span>
@@ -1023,9 +1030,9 @@ obtained only one value per species.</p>
 <span id="cb71-19"><a href="#cb71-19" aria-hidden="true" tabindex="-1"></a>Niri <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="fu">rbind</span>(</span>
 <span id="cb71-20"><a href="#cb71-20" aria-hidden="true" tabindex="-1"></a>            FinMccNirc[<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>], FinMccNirp[<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>]))))</span>
 <span id="cb71-21"><a href="#cb71-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-22"><a href="#cb71-22" aria-hidden="true" tabindex="-1"></a>Resi <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="fu">rbind</span>((<span class="fu">c</span>(</span>
-<span id="cb71-23"><a href="#cb71-23" aria-hidden="true" tabindex="-1"></a>            FinMccResc[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>],<span class="st">&quot;NA&quot;</span>,FinMccResc[<span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>])),</span>
-<span id="cb71-24"><a href="#cb71-24" aria-hidden="true" tabindex="-1"></a>                (<span class="fu">c</span>(FinMccResp[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>],<span class="st">&quot;NA&quot;</span>,FinMccResp[<span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>]))))))</span>
+<span id="cb71-22"><a href="#cb71-22" aria-hidden="true" tabindex="-1"></a>FRSi <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="fu">rbind</span>((<span class="fu">c</span>(</span>
+<span id="cb71-23"><a href="#cb71-23" aria-hidden="true" tabindex="-1"></a>            FinMccFRSc[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>],<span class="st">&quot;NA&quot;</span>,FinMccFRSc[<span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>])),</span>
+<span id="cb71-24"><a href="#cb71-24" aria-hidden="true" tabindex="-1"></a>                (<span class="fu">c</span>(FinMccFRSp[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>],<span class="st">&quot;NA&quot;</span>,FinMccFRSp[<span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>]))))))</span>
 <span id="cb71-25"><a href="#cb71-25" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb71-26"><a href="#cb71-26" aria-hidden="true" tabindex="-1"></a><span class="co"># This section colours the signifficant p-values and their coefficients</span></span>
 <span id="cb71-27"><a href="#cb71-27" aria-hidden="true" tabindex="-1"></a></span>
@@ -1047,11 +1054,11 @@ obtained only one value per species.</p>
 <span id="cb71-43"><a href="#cb71-43" aria-hidden="true" tabindex="-1"></a>Niri[<span class="dv">11</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(Niri[<span class="dv">11</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
 <span id="cb71-44"><a href="#cb71-44" aria-hidden="true" tabindex="-1"></a>Niri[<span class="dv">12</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(Niri[<span class="dv">12</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb71-45"><a href="#cb71-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-46"><a href="#cb71-46" aria-hidden="true" tabindex="-1"></a>Resi[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(Resi[<span class="dv">3</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
-<span id="cb71-47"><a href="#cb71-47" aria-hidden="true" tabindex="-1"></a>Resi[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(Resi[<span class="dv">4</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb71-46"><a href="#cb71-46" aria-hidden="true" tabindex="-1"></a>FRSi[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(FRSi[<span class="dv">3</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
+<span id="cb71-47"><a href="#cb71-47" aria-hidden="true" tabindex="-1"></a>FRSi[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(FRSi[<span class="dv">4</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb71-48"><a href="#cb71-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-49"><a href="#cb71-49" aria-hidden="true" tabindex="-1"></a>Resi[<span class="dv">11</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(Resi[<span class="dv">11</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
-<span id="cb71-50"><a href="#cb71-50" aria-hidden="true" tabindex="-1"></a>Resi[<span class="dv">12</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(Resi[<span class="dv">12</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb71-49"><a href="#cb71-49" aria-hidden="true" tabindex="-1"></a>FRSi[<span class="dv">11</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(FRSi[<span class="dv">11</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
+<span id="cb71-50"><a href="#cb71-50" aria-hidden="true" tabindex="-1"></a>FRSi[<span class="dv">12</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(FRSi[<span class="dv">12</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb71-51"><a href="#cb71-51" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb71-52"><a href="#cb71-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Assemble the table</span></span>
 <span id="cb71-53"><a href="#cb71-53" aria-hidden="true" tabindex="-1"></a></span>
@@ -1059,7 +1066,7 @@ obtained only one value per species.</p>
 <span id="cb71-55"><a href="#cb71-55" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;TOT&quot;</span> <span class="ot">=</span> Toti,</span>
 <span id="cb71-56"><a href="#cb71-56" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;VIS&quot;</span> <span class="ot">=</span> Visi,</span>
 <span id="cb71-57"><a href="#cb71-57" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;NIR&quot;</span> <span class="ot">=</span> Niri,</span>
-<span id="cb71-58"><a href="#cb71-58" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Res&quot;</span> <span class="ot">=</span> Resi) </span>
+<span id="cb71-58"><a href="#cb71-58" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Res&quot;</span> <span class="ot">=</span> FRSi) </span>
 <span id="cb71-59"><a href="#cb71-59" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb71-60"><a href="#cb71-60" aria-hidden="true" tabindex="-1"></a>Resultspgls <span class="sc">%&gt;%</span> </span>
 <span id="cb71-61"><a href="#cb71-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">align =</span><span class="st">&quot;c&quot;</span>, <span class="at">escape =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
@@ -1101,7 +1108,7 @@ style=" font-weight: bold;    color: #D40481 !important;">-6.177</span>
 2.081
 </td>
 <td style="text-align:center;">
-0.872
+1.376
 </td>
 </tr>
 <tr>
@@ -1118,7 +1125,7 @@ PC1 p-val
 0.566
 </td>
 <td style="text-align:center;">
-0.8
+0.688
 </td>
 </tr>
 <tr>
@@ -1137,7 +1144,7 @@ style=" font-weight: bold;    color: #D40481 !important;">12.647</span>
 </td>
 <td style="text-align:center;">
 <span
-style=" font-weight: bold;    color: #D40481 !important;">11.163</span>
+style=" font-weight: bold;    color: #D40481 !important;">11.781</span>
 </td>
 </tr>
 <tr>
@@ -1154,7 +1161,7 @@ PC2 p-val
 <span style=" font-weight: bold;    ">0.007</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    ">0.012</span>
+<span style=" font-weight: bold;    ">0.008</span>
 </td>
 </tr>
 <tr>
@@ -1172,7 +1179,7 @@ style=" font-weight: bold;    color: #D40481 !important;">7.075</span>
 -3.652
 </td>
 <td style="text-align:center;">
--2.138
+-2.772
 </td>
 </tr>
 <tr>
@@ -1189,7 +1196,7 @@ Size p-val
 0.311
 </td>
 <td style="text-align:center;">
-0.524
+0.407
 </td>
 </tr>
 <tr>
@@ -1242,7 +1249,7 @@ style=" font-weight: bold;    color: #D40481 !important;">2.723</span>
 -0.691
 </td>
 <td style="text-align:center;">
--0.141
+-0.371
 </td>
 </tr>
 <tr>
@@ -1259,7 +1266,7 @@ PC1:size p-val
 0.656
 </td>
 <td style="text-align:center;">
-0.923
+0.8
 </td>
 </tr>
 <tr>
@@ -1278,7 +1285,7 @@ style=" font-weight: bold;    color: #D40481 !important;">-4.866</span>
 </td>
 <td style="text-align:center;">
 <span
-style=" font-weight: bold;    color: #D40481 !important;">-4.291</span>
+style=" font-weight: bold;    color: #D40481 !important;">-4.531</span>
 </td>
 </tr>
 <tr>
@@ -1295,7 +1302,7 @@ PC2:size p-val
 <span style=" font-weight: bold;    ">0.009</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    ">0.015</span>
+<span style=" font-weight: bold;    ">0.01</span>
 </td>
 </tr>
 </tbody>
@@ -1316,24 +1323,24 @@ PC2:size p-val
 <span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>              FinTotM[<span class="dv">7</span>,<span class="dv">2</span>],FinTotM[<span class="dv">9</span>,<span class="dv">2</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
 <span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>              FinTotM[<span class="dv">10</span>,<span class="dv">2</span>],FinTotM[<span class="dv">12</span>,<span class="dv">2</span>],</span>
 <span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>              FinTotM[<span class="dv">13</span>,<span class="dv">2</span>],FinTotM[<span class="dv">15</span>,<span class="dv">2</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
-<pre><code>## Warning in format(round(as.numeric(c(FinTotM[1, 2], FinTotM[3, 2], FinTotM[4, : NAs introduced by
-## coercion</code></pre>
+<pre><code>## Warning in format(round(as.numeric(c(FinTotM[1, 2], FinTotM[3, 2], FinTotM[4, :
+## NAs introduced by coercion</code></pre>
 <div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>rvVISl <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
 <span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>          <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(</span>
 <span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>              FinVisM[<span class="dv">1</span>,<span class="dv">1</span>],FinVisM[<span class="dv">3</span>,<span class="dv">1</span>],FinVisM[<span class="dv">4</span>,<span class="dv">1</span>],FinVisM[<span class="dv">6</span>,<span class="dv">1</span>],</span>
 <span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>              FinVisM[<span class="dv">7</span>,<span class="dv">1</span>],FinVisM[<span class="dv">9</span>,<span class="dv">1</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
 <span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>              FinVisM[<span class="dv">10</span>,<span class="dv">1</span>],FinVisM[<span class="dv">12</span>,<span class="dv">1</span>],</span>
 <span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>              FinVisM[<span class="dv">13</span>,<span class="dv">1</span>],FinVisM[<span class="dv">15</span>,<span class="dv">1</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
-<pre><code>## Warning in format(round(as.numeric(c(FinVisM[1, 1], FinVisM[3, 1], FinVisM[4, : NAs introduced by
-## coercion</code></pre>
+<pre><code>## Warning in format(round(as.numeric(c(FinVisM[1, 1], FinVisM[3, 1], FinVisM[4, :
+## NAs introduced by coercion</code></pre>
 <div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>rvVISu <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
 <span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(</span>
 <span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>              FinVisM[<span class="dv">1</span>,<span class="dv">2</span>],FinVisM[<span class="dv">3</span>,<span class="dv">2</span>],FinVisM[<span class="dv">4</span>,<span class="dv">2</span>],FinVisM[<span class="dv">6</span>,<span class="dv">2</span>],</span>
 <span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>              FinVisM[<span class="dv">7</span>,<span class="dv">2</span>],FinVisM[<span class="dv">9</span>,<span class="dv">2</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
 <span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>              FinVisM[<span class="dv">10</span>,<span class="dv">2</span>],FinVisM[<span class="dv">12</span>,<span class="dv">2</span>],</span>
 <span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>              FinVisM[<span class="dv">13</span>,<span class="dv">2</span>],FinVisM[<span class="dv">15</span>,<span class="dv">2</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
-<pre><code>## Warning in format(round(as.numeric(c(FinVisM[1, 2], FinVisM[3, 2], FinVisM[4, : NAs introduced by
-## coercion</code></pre>
+<pre><code>## Warning in format(round(as.numeric(c(FinVisM[1, 2], FinVisM[3, 2], FinVisM[4, :
+## NAs introduced by coercion</code></pre>
 <div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>rvNIRl <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
 <span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(</span>
 <span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>              FinNirM[<span class="dv">1</span>,<span class="dv">1</span>],FinNirM[<span class="dv">3</span>,<span class="dv">1</span>],FinNirM[<span class="dv">4</span>,<span class="dv">1</span>],FinNirM[<span class="dv">6</span>,<span class="dv">1</span>],</span>
@@ -1348,26 +1355,26 @@ PC2:size p-val
 <span id="cb80-12"><a href="#cb80-12" aria-hidden="true" tabindex="-1"></a>              FinNirM[<span class="dv">13</span>,<span class="dv">2</span>],FinNirM[<span class="dv">15</span>,<span class="dv">2</span>], FinNirM[<span class="dv">16</span>,<span class="dv">2</span>],FinNirM[<span class="dv">18</span>,<span class="dv">2</span>]</span>
 <span id="cb80-13"><a href="#cb80-13" aria-hidden="true" tabindex="-1"></a>              )),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span>
 <span id="cb80-14"><a href="#cb80-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb80-15"><a href="#cb80-15" aria-hidden="true" tabindex="-1"></a>rvResl <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
+<span id="cb80-15"><a href="#cb80-15" aria-hidden="true" tabindex="-1"></a>rvFRSl <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
 <span id="cb80-16"><a href="#cb80-16" aria-hidden="true" tabindex="-1"></a>            <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(</span>
-<span id="cb80-17"><a href="#cb80-17" aria-hidden="true" tabindex="-1"></a>              FinResM[<span class="dv">1</span>,<span class="dv">1</span>],FinResM[<span class="dv">3</span>,<span class="dv">1</span>],FinResM[<span class="dv">4</span>,<span class="dv">1</span>],FinResM[<span class="dv">6</span>,<span class="dv">1</span>],</span>
-<span id="cb80-18"><a href="#cb80-18" aria-hidden="true" tabindex="-1"></a>              FinResM[<span class="dv">7</span>,<span class="dv">1</span>],FinResM[<span class="dv">9</span>,<span class="dv">1</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
-<span id="cb80-19"><a href="#cb80-19" aria-hidden="true" tabindex="-1"></a>              FinResM[<span class="dv">10</span>,<span class="dv">1</span>],FinResM[<span class="dv">12</span>,<span class="dv">1</span>],</span>
-<span id="cb80-20"><a href="#cb80-20" aria-hidden="true" tabindex="-1"></a>              FinResM[<span class="dv">13</span>,<span class="dv">1</span>],FinResM[<span class="dv">15</span>,<span class="dv">1</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
-<pre><code>## Warning in format(round(as.numeric(c(FinResM[1, 1], FinResM[3, 1], FinResM[4, : NAs introduced by
-## coercion</code></pre>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>rvResu <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
+<span id="cb80-17"><a href="#cb80-17" aria-hidden="true" tabindex="-1"></a>              FinFRSM[<span class="dv">1</span>,<span class="dv">1</span>],FinFRSM[<span class="dv">3</span>,<span class="dv">1</span>],FinFRSM[<span class="dv">4</span>,<span class="dv">1</span>],FinFRSM[<span class="dv">6</span>,<span class="dv">1</span>],</span>
+<span id="cb80-18"><a href="#cb80-18" aria-hidden="true" tabindex="-1"></a>              FinFRSM[<span class="dv">7</span>,<span class="dv">1</span>],FinFRSM[<span class="dv">9</span>,<span class="dv">1</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
+<span id="cb80-19"><a href="#cb80-19" aria-hidden="true" tabindex="-1"></a>              FinFRSM[<span class="dv">10</span>,<span class="dv">1</span>],FinFRSM[<span class="dv">12</span>,<span class="dv">1</span>],</span>
+<span id="cb80-20"><a href="#cb80-20" aria-hidden="true" tabindex="-1"></a>              FinFRSM[<span class="dv">13</span>,<span class="dv">1</span>],FinFRSM[<span class="dv">15</span>,<span class="dv">1</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
+<pre><code>## Warning in format(round(as.numeric(c(FinFRSM[1, 1], FinFRSM[3, 1], FinFRSM[4, :
+## NAs introduced by coercion</code></pre>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>rvFRSu <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
 <span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(</span>
-<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>              FinResM[<span class="dv">1</span>,<span class="dv">2</span>],FinResM[<span class="dv">3</span>,<span class="dv">2</span>],FinResM[<span class="dv">4</span>,<span class="dv">2</span>],FinResM[<span class="dv">6</span>,<span class="dv">2</span>],</span>
-<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>              FinResM[<span class="dv">7</span>,<span class="dv">2</span>],FinResM[<span class="dv">9</span>,<span class="dv">2</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
-<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>              FinResM[<span class="dv">10</span>,<span class="dv">2</span>],FinResM[<span class="dv">12</span>,<span class="dv">2</span>],</span>
-<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>              FinResM[<span class="dv">13</span>,<span class="dv">2</span>],FinResM[<span class="dv">15</span>,<span class="dv">2</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
-<pre><code>## Warning in format(round(as.numeric(c(FinResM[1, 2], FinResM[3, 2], FinResM[4, : NAs introduced by
-## coercion</code></pre>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>              FinFRSM[<span class="dv">1</span>,<span class="dv">2</span>],FinFRSM[<span class="dv">3</span>,<span class="dv">2</span>],FinFRSM[<span class="dv">4</span>,<span class="dv">2</span>],FinFRSM[<span class="dv">6</span>,<span class="dv">2</span>],</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>              FinFRSM[<span class="dv">7</span>,<span class="dv">2</span>],FinFRSM[<span class="dv">9</span>,<span class="dv">2</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>              FinFRSM[<span class="dv">10</span>,<span class="dv">2</span>],FinFRSM[<span class="dv">12</span>,<span class="dv">2</span>],</span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>              FinFRSM[<span class="dv">13</span>,<span class="dv">2</span>],FinFRSM[<span class="dv">15</span>,<span class="dv">2</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
+<pre><code>## Warning in format(round(as.numeric(c(FinFRSM[1, 2], FinFRSM[3, 2], FinFRSM[4, :
+## NAs introduced by coercion</code></pre>
 <div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>rvTOTi<span class="ot">&lt;-</span><span class="fu">paste</span>(rvTOTl,rvTOTu, <span class="at">sep =</span> <span class="st">&quot; ; &quot;</span>)</span>
 <span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>rvVISi<span class="ot">&lt;-</span><span class="fu">paste</span>(rvVISl,rvVISu, <span class="at">sep =</span> <span class="st">&quot; ; &quot;</span>)</span>
 <span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>rvNIRi<span class="ot">&lt;-</span><span class="fu">paste</span>(rvNIRl,rvNIRu, <span class="at">sep =</span> <span class="st">&quot; ; &quot;</span>)</span>
-<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>rvResi<span class="ot">&lt;-</span><span class="fu">paste</span>(rvResl,rvResu, <span class="at">sep =</span> <span class="st">&quot; ; &quot;</span>)</span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>rvFRSi<span class="ot">&lt;-</span><span class="fu">paste</span>(rvFRSl,rvFRSu, <span class="at">sep =</span> <span class="st">&quot; ; &quot;</span>)</span>
 <span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a>rvVISi[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvVISi[<span class="dv">1</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#367D91&quot;</span>)</span>
 <span id="cb84-7"><a href="#cb84-7" aria-hidden="true" tabindex="-1"></a>rvVISi[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvVISi[<span class="dv">2</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#B2B9BF&quot;</span>)</span>
@@ -1387,17 +1394,17 @@ PC2:size p-val
 <span id="cb84-21"><a href="#cb84-21" aria-hidden="true" tabindex="-1"></a>rvNIRi[<span class="dv">11</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvNIRi[<span class="dv">11</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
 <span id="cb84-22"><a href="#cb84-22" aria-hidden="true" tabindex="-1"></a>rvNIRi[<span class="dv">12</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvNIRi[<span class="dv">12</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb84-23"><a href="#cb84-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-24"><a href="#cb84-24" aria-hidden="true" tabindex="-1"></a>rvResi[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvResi[<span class="dv">3</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
-<span id="cb84-25"><a href="#cb84-25" aria-hidden="true" tabindex="-1"></a>rvResi[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvResi[<span class="dv">4</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb84-24"><a href="#cb84-24" aria-hidden="true" tabindex="-1"></a>rvFRSi[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvFRSi[<span class="dv">3</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
+<span id="cb84-25"><a href="#cb84-25" aria-hidden="true" tabindex="-1"></a>rvFRSi[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvFRSi[<span class="dv">4</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb84-26"><a href="#cb84-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-27"><a href="#cb84-27" aria-hidden="true" tabindex="-1"></a>rvResi[<span class="dv">11</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvResi[<span class="dv">11</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
-<span id="cb84-28"><a href="#cb84-28" aria-hidden="true" tabindex="-1"></a>rvResi[<span class="dv">12</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvResi[<span class="dv">12</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb84-27"><a href="#cb84-27" aria-hidden="true" tabindex="-1"></a>rvFRSi[<span class="dv">11</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvFRSi[<span class="dv">11</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
+<span id="cb84-28"><a href="#cb84-28" aria-hidden="true" tabindex="-1"></a>rvFRSi[<span class="dv">12</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(rvFRSi[<span class="dv">12</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb84-29"><a href="#cb84-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb84-30"><a href="#cb84-30" aria-hidden="true" tabindex="-1"></a>Resultspgls <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(Predictor,  </span>
 <span id="cb84-31"><a href="#cb84-31" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;TOT&quot;</span> <span class="ot">=</span> rvTOTi,</span>
 <span id="cb84-32"><a href="#cb84-32" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;VIS&quot;</span> <span class="ot">=</span> rvVISi,</span>
 <span id="cb84-33"><a href="#cb84-33" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;NIR&quot;</span> <span class="ot">=</span> rvNIRi,</span>
-<span id="cb84-34"><a href="#cb84-34" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Res&quot;</span> <span class="ot">=</span> rvResi) </span>
+<span id="cb84-34"><a href="#cb84-34" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Res&quot;</span> <span class="ot">=</span> rvFRSi) </span>
 <span id="cb84-35"><a href="#cb84-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb84-36"><a href="#cb84-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb84-37"><a href="#cb84-37" aria-hidden="true" tabindex="-1"></a>Resultspgls <span class="sc">%&gt;%</span> </span>
@@ -1440,7 +1447,7 @@ PC1
 0.869 ; 3.144
 </td>
 <td style="text-align:center;">
--0.400 ; 1.709
+0.212 ; 2.294
 </td>
 </tr>
 <tr>
@@ -1458,7 +1465,7 @@ PC1 p-val
 0.404 ; 0.808
 </td>
 <td style="text-align:center;">
-0.642 ; 0.999
+0.502 ; 0.940
 </td>
 </tr>
 <tr>
@@ -1476,8 +1483,8 @@ PC2
 15.124</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    color: #D40481 !important;"> 9.176 ;
-13.822</span>
+<span style=" font-weight: bold;    color: #D40481 !important;"> 9.576 ;
+14.173</span>
 </td>
 </tr>
 <tr>
@@ -1494,7 +1501,7 @@ PC2 p-val
 <span style=" font-weight: bold;    "> 0.000 ; 0.023</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    "> 0.001 ; 0.037</span>
+<span style=" font-weight: bold;    "> 0.000 ; 0.026</span>
 </td>
 </tr>
 <tr>
@@ -1512,7 +1519,7 @@ Size
 -5.348 ; -1.774
 </td>
 <td style="text-align:center;">
--4.036 ; -0.568
+-4.388 ; -1.084
 </td>
 </tr>
 <tr>
@@ -1529,7 +1536,7 @@ Size p-val
 0.145 ; 0.599
 </td>
 <td style="text-align:center;">
-0.266 ; 0.854
+0.207 ; 0.707
 </td>
 </tr>
 <tr>
@@ -1582,7 +1589,7 @@ PC1:size
 -1.253 ; -0.152
 </td>
 <td style="text-align:center;">
--0.684 ; 0.373
+-0.900 ; 0.138
 </td>
 </tr>
 <tr>
@@ -1600,7 +1607,7 @@ PC1:size p-val
 0.439 ; 0.925
 </td>
 <td style="text-align:center;">
-0.689 ; 1.000
+0.597 ; 0.999
 </td>
 </tr>
 <tr>
@@ -1618,8 +1625,8 @@ PC2:size
 -3.974</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    color: #D40481 !important;">-5.328 ;
--3.477</span>
+<span style=" font-weight: bold;    color: #D40481 !important;">-5.544 ;
+-3.718</span>
 </td>
 </tr>
 <tr>
@@ -1636,7 +1643,7 @@ PC2:size p-val
 <span style=" font-weight: bold;    "> 0.001 ; 0.026</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    "> 0.001 ; 0.042</span>
+<span style=" font-weight: bold;    "> 0.001 ; 0.029</span>
 </td>
 </tr>
 </tbody>
@@ -1669,9 +1676,9 @@ correspondent interactions.</p>
 <span id="cb85-13"><a href="#cb85-13" aria-hidden="true" tabindex="-1"></a>sNiri <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="fu">rbind</span>(</span>
 <span id="cb85-14"><a href="#cb85-14" aria-hidden="true" tabindex="-1"></a>            sFinMccNirc[<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>], sFinMccNirp[<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>]))))</span>
 <span id="cb85-15"><a href="#cb85-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb85-16"><a href="#cb85-16" aria-hidden="true" tabindex="-1"></a>sResi <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="fu">rbind</span>((<span class="fu">c</span>(</span>
-<span id="cb85-17"><a href="#cb85-17" aria-hidden="true" tabindex="-1"></a>            sFinMccResc[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>],<span class="st">&quot;NA&quot;</span>,sFinMccResc[<span class="dv">4</span>])),</span>
-<span id="cb85-18"><a href="#cb85-18" aria-hidden="true" tabindex="-1"></a>                (<span class="fu">c</span>(sFinMccResp[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>],<span class="st">&quot;NA&quot;</span>,sFinMccResp[<span class="dv">4</span>]))))))</span>
+<span id="cb85-16"><a href="#cb85-16" aria-hidden="true" tabindex="-1"></a>sFRSi <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="fu">rbind</span>((<span class="fu">c</span>(</span>
+<span id="cb85-17"><a href="#cb85-17" aria-hidden="true" tabindex="-1"></a>            sFinMccFRSc[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>],<span class="st">&quot;NA&quot;</span>,sFinMccFRSc[<span class="dv">4</span>])),</span>
+<span id="cb85-18"><a href="#cb85-18" aria-hidden="true" tabindex="-1"></a>                (<span class="fu">c</span>(sFinMccFRSp[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>],<span class="st">&quot;NA&quot;</span>,sFinMccFRSp[<span class="dv">4</span>]))))))</span>
 <span id="cb85-19"><a href="#cb85-19" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb85-20"><a href="#cb85-20" aria-hidden="true" tabindex="-1"></a><span class="co"># This section colours the signifficant p-values and their coefficients</span></span>
 <span id="cb85-21"><a href="#cb85-21" aria-hidden="true" tabindex="-1"></a></span>
@@ -1695,18 +1702,18 @@ correspondent interactions.</p>
 <span id="cb85-39"><a href="#cb85-39" aria-hidden="true" tabindex="-1"></a>sNiri[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(sNiri[<span class="dv">8</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb85-40"><a href="#cb85-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb85-41"><a href="#cb85-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb85-42"><a href="#cb85-42" aria-hidden="true" tabindex="-1"></a>sResi[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(sResi[<span class="dv">1</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
-<span id="cb85-43"><a href="#cb85-43" aria-hidden="true" tabindex="-1"></a>sResi[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(sResi[<span class="dv">2</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb85-42"><a href="#cb85-42" aria-hidden="true" tabindex="-1"></a>sFRSi[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(sFRSi[<span class="dv">1</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
+<span id="cb85-43"><a href="#cb85-43" aria-hidden="true" tabindex="-1"></a>sFRSi[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(sFRSi[<span class="dv">2</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb85-44"><a href="#cb85-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb85-45"><a href="#cb85-45" aria-hidden="true" tabindex="-1"></a>sResi[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(sResi[<span class="dv">7</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
-<span id="cb85-46"><a href="#cb85-46" aria-hidden="true" tabindex="-1"></a>sResi[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(sResi[<span class="dv">8</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb85-45"><a href="#cb85-45" aria-hidden="true" tabindex="-1"></a>sFRSi[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(sFRSi[<span class="dv">7</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
+<span id="cb85-46"><a href="#cb85-46" aria-hidden="true" tabindex="-1"></a>sFRSi[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(sFRSi[<span class="dv">8</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb85-47"><a href="#cb85-47" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb85-48"><a href="#cb85-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Assemble the table</span></span>
 <span id="cb85-49"><a href="#cb85-49" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb85-50"><a href="#cb85-50" aria-hidden="true" tabindex="-1"></a>sResultspgls <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(sPredictor,  </span>
 <span id="cb85-51"><a href="#cb85-51" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;VIS&quot;</span> <span class="ot">=</span> sVisi,</span>
 <span id="cb85-52"><a href="#cb85-52" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;NIR&quot;</span> <span class="ot">=</span> sNiri,</span>
-<span id="cb85-53"><a href="#cb85-53" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Res&quot;</span> <span class="ot">=</span> sResi) </span>
+<span id="cb85-53"><a href="#cb85-53" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Res&quot;</span> <span class="ot">=</span> sFRSi) </span>
 <span id="cb85-54"><a href="#cb85-54" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb85-55"><a href="#cb85-55" aria-hidden="true" tabindex="-1"></a>sResultspgls <span class="sc">%&gt;%</span> </span>
 <span id="cb85-56"><a href="#cb85-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">align =</span><span class="st">&quot;c&quot;</span>, <span class="at">escape =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
@@ -1744,7 +1751,7 @@ style=" font-weight: bold;    color: #D40481 !important;">13.192</span>
 </td>
 <td style="text-align:center;">
 <span
-style=" font-weight: bold;    color: #D40481 !important;">12.352</span>
+style=" font-weight: bold;    color: #D40481 !important;">12.737</span>
 </td>
 </tr>
 <tr>
@@ -1758,7 +1765,7 @@ PC p-val
 <span style=" font-weight: bold;    ">0.002</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    ">0.003</span>
+<span style=" font-weight: bold;    ">0.002</span>
 </td>
 </tr>
 <tr>
@@ -1773,7 +1780,7 @@ style=" font-weight: bold;    color: #D40481 !important;">5.312</span>
 -2.623
 </td>
 <td style="text-align:center;">
--1.941
+-2.256
 </td>
 </tr>
 <tr>
@@ -1787,7 +1794,7 @@ Size p-val
 0.358
 </td>
 <td style="text-align:center;">
-0.486
+0.414
 </td>
 </tr>
 <tr>
@@ -1833,7 +1840,7 @@ style=" font-weight: bold;    color: #D40481 !important;">-5.015</span>
 </td>
 <td style="text-align:center;">
 <span
-style=" font-weight: bold;    color: #D40481 !important;">-4.749</span>
+style=" font-weight: bold;    color: #D40481 !important;">-4.871</span>
 </td>
 </tr>
 <tr>
@@ -1860,15 +1867,15 @@ PC:size p-val
 <span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>              FinVisS[<span class="dv">1</span>,<span class="dv">1</span>],FinVisS[<span class="dv">3</span>,<span class="dv">1</span>],</span>
 <span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>              FinResS[<span class="dv">4</span>,<span class="dv">1</span>],FinVisS[<span class="dv">6</span>,<span class="dv">1</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
 <span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>              FinVisS[<span class="dv">7</span>,<span class="dv">1</span>],FinVisS[<span class="dv">9</span>,<span class="dv">1</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
-<pre><code>## Warning in format(round(as.numeric(c(FinVisS[1, 1], FinVisS[3, 1], FinResS[4, : NAs introduced by
-## coercion</code></pre>
+<pre><code>## Warning in format(round(as.numeric(c(FinVisS[1, 1], FinVisS[3, 1], FinResS[4, :
+## NAs introduced by coercion</code></pre>
 <div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>srvVISu <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
 <span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(</span>
 <span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>              FinVisS[<span class="dv">1</span>,<span class="dv">2</span>],FinVisS[<span class="dv">3</span>,<span class="dv">2</span>],</span>
 <span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>              FinVisS[<span class="dv">4</span>,<span class="dv">2</span>],FinVisS[<span class="dv">6</span>,<span class="dv">2</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
 <span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>              FinVisS[<span class="dv">7</span>,<span class="dv">2</span>],FinVisS[<span class="dv">9</span>,<span class="dv">2</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
-<pre><code>## Warning in format(round(as.numeric(c(FinVisS[1, 2], FinVisS[3, 2], FinVisS[4, : NAs introduced by
-## coercion</code></pre>
+<pre><code>## Warning in format(round(as.numeric(c(FinVisS[1, 2], FinVisS[3, 2], FinVisS[4, :
+## NAs introduced by coercion</code></pre>
 <div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>srvNIRl <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
 <span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(</span>
 <span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>              FinNirS[<span class="dv">1</span>,<span class="dv">1</span>],FinNirS[<span class="dv">3</span>,<span class="dv">1</span>],</span>
@@ -1885,23 +1892,23 @@ PC:size p-val
 <span id="cb90-14"><a href="#cb90-14" aria-hidden="true" tabindex="-1"></a>              FinNirS[<span class="dv">10</span>,<span class="dv">2</span>],FinNirS[<span class="dv">12</span>,<span class="dv">2</span>]</span>
 <span id="cb90-15"><a href="#cb90-15" aria-hidden="true" tabindex="-1"></a>              )),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span>
 <span id="cb90-16"><a href="#cb90-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb90-17"><a href="#cb90-17" aria-hidden="true" tabindex="-1"></a>srvResl <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
+<span id="cb90-17"><a href="#cb90-17" aria-hidden="true" tabindex="-1"></a>srvFRSl <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
 <span id="cb90-18"><a href="#cb90-18" aria-hidden="true" tabindex="-1"></a>            <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(</span>
-<span id="cb90-19"><a href="#cb90-19" aria-hidden="true" tabindex="-1"></a>              FinResS[<span class="dv">1</span>,<span class="dv">1</span>],FinResS[<span class="dv">3</span>,<span class="dv">1</span>],</span>
-<span id="cb90-20"><a href="#cb90-20" aria-hidden="true" tabindex="-1"></a>              FinResS[<span class="dv">4</span>,<span class="dv">1</span>],FinResS[<span class="dv">6</span>,<span class="dv">1</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
-<span id="cb90-21"><a href="#cb90-21" aria-hidden="true" tabindex="-1"></a>              FinResS[<span class="dv">7</span>,<span class="dv">1</span>],FinResS[<span class="dv">9</span>,<span class="dv">1</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
-<pre><code>## Warning in format(round(as.numeric(c(FinResS[1, 1], FinResS[3, 1], FinResS[4, : NAs introduced by
-## coercion</code></pre>
-<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>srvResu <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
+<span id="cb90-19"><a href="#cb90-19" aria-hidden="true" tabindex="-1"></a>              FinFRSS[<span class="dv">1</span>,<span class="dv">1</span>],FinFRSS[<span class="dv">3</span>,<span class="dv">1</span>],</span>
+<span id="cb90-20"><a href="#cb90-20" aria-hidden="true" tabindex="-1"></a>              FinFRSS[<span class="dv">4</span>,<span class="dv">1</span>],FinFRSS[<span class="dv">6</span>,<span class="dv">1</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
+<span id="cb90-21"><a href="#cb90-21" aria-hidden="true" tabindex="-1"></a>              FinFRSS[<span class="dv">7</span>,<span class="dv">1</span>],FinFRSS[<span class="dv">9</span>,<span class="dv">1</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
+<pre><code>## Warning in format(round(as.numeric(c(FinFRSS[1, 1], FinFRSS[3, 1], FinFRSS[4, :
+## NAs introduced by coercion</code></pre>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>srvFRSu <span class="ot">&lt;-</span> <span class="fu">as.character</span>(</span>
 <span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">c</span>(</span>
-<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>              FinResS[<span class="dv">1</span>,<span class="dv">2</span>],FinResS[<span class="dv">3</span>,<span class="dv">2</span>],</span>
-<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>              FinResS[<span class="dv">4</span>,<span class="dv">2</span>],FinResS[<span class="dv">6</span>,<span class="dv">2</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
-<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>              FinResS[<span class="dv">7</span>,<span class="dv">2</span>],FinResS[<span class="dv">9</span>,<span class="dv">2</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
-<pre><code>## Warning in format(round(as.numeric(c(FinResS[1, 2], FinResS[3, 2], FinResS[4, : NAs introduced by
-## coercion</code></pre>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>              FinFRSS[<span class="dv">1</span>,<span class="dv">2</span>],FinFRSS[<span class="dv">3</span>,<span class="dv">2</span>],</span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>              FinFRSS[<span class="dv">4</span>,<span class="dv">2</span>],FinFRSS[<span class="dv">6</span>,<span class="dv">2</span>],<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;NA&quot;</span>,</span>
+<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>              FinFRSS[<span class="dv">7</span>,<span class="dv">2</span>],FinFRSS[<span class="dv">9</span>,<span class="dv">2</span>])),<span class="dv">3</span>),<span class="at">nsmall=</span><span class="dv">3</span>))</span></code></pre></div>
+<pre><code>## Warning in format(round(as.numeric(c(FinFRSS[1, 2], FinFRSS[3, 2], FinFRSS[4, :
+## NAs introduced by coercion</code></pre>
 <div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>srvVISi<span class="ot">&lt;-</span><span class="fu">paste</span>(srvVISl,srvVISu, <span class="at">sep =</span> <span class="st">&quot; ; &quot;</span>)</span>
 <span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>srvNIRi<span class="ot">&lt;-</span><span class="fu">paste</span>(srvNIRl,srvNIRu, <span class="at">sep =</span> <span class="st">&quot; ; &quot;</span>)</span>
-<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>srvResi<span class="ot">&lt;-</span><span class="fu">paste</span>(srvResl,srvResu, <span class="at">sep =</span> <span class="st">&quot; ; &quot;</span>)</span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>srvFRSi<span class="ot">&lt;-</span><span class="fu">paste</span>(srvFRSl,srvFRSu, <span class="at">sep =</span> <span class="st">&quot; ; &quot;</span>)</span>
 <span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>srvVISi[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvVISi[<span class="dv">1</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
 <span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a>srvVISi[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvVISi[<span class="dv">2</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
@@ -1921,16 +1928,16 @@ PC:size p-val
 <span id="cb94-20"><a href="#cb94-20" aria-hidden="true" tabindex="-1"></a>srvNIRi[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvNIRi[<span class="dv">7</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
 <span id="cb94-21"><a href="#cb94-21" aria-hidden="true" tabindex="-1"></a>srvNIRi[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvNIRi[<span class="dv">8</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb94-22"><a href="#cb94-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb94-23"><a href="#cb94-23" aria-hidden="true" tabindex="-1"></a>srvResi[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvResi[<span class="dv">1</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
-<span id="cb94-24"><a href="#cb94-24" aria-hidden="true" tabindex="-1"></a>srvResi[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvResi[<span class="dv">2</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb94-23"><a href="#cb94-23" aria-hidden="true" tabindex="-1"></a>srvFRSi[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvFRSi[<span class="dv">1</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
+<span id="cb94-24"><a href="#cb94-24" aria-hidden="true" tabindex="-1"></a>srvFRSi[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvFRSi[<span class="dv">2</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb94-25"><a href="#cb94-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb94-26"><a href="#cb94-26" aria-hidden="true" tabindex="-1"></a>srvResi[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvResi[<span class="dv">7</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
-<span id="cb94-27"><a href="#cb94-27" aria-hidden="true" tabindex="-1"></a>srvResi[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvResi[<span class="dv">8</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb94-26"><a href="#cb94-26" aria-hidden="true" tabindex="-1"></a>srvFRSi[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvFRSi[<span class="dv">7</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color=</span><span class="st">&quot;#D40481&quot;</span>)</span>
+<span id="cb94-27"><a href="#cb94-27" aria-hidden="true" tabindex="-1"></a>srvFRSi[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="fu">cell_spec</span>(srvFRSi[<span class="dv">8</span>],<span class="at">bold =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb94-28"><a href="#cb94-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb94-29"><a href="#cb94-29" aria-hidden="true" tabindex="-1"></a>smResultspgls <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(sPredictor,</span>
 <span id="cb94-30"><a href="#cb94-30" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;VIS&quot;</span> <span class="ot">=</span> srvVISi,</span>
 <span id="cb94-31"><a href="#cb94-31" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;NIR&quot;</span> <span class="ot">=</span> srvNIRi,</span>
-<span id="cb94-32"><a href="#cb94-32" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Res&quot;</span> <span class="ot">=</span> srvResi) </span>
+<span id="cb94-32"><a href="#cb94-32" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Res&quot;</span> <span class="ot">=</span> srvFRSi) </span>
 <span id="cb94-33"><a href="#cb94-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb94-34"><a href="#cb94-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb94-35"><a href="#cb94-35" aria-hidden="true" tabindex="-1"></a>smResultspgls <span class="sc">%&gt;%</span> </span>
@@ -1968,8 +1975,8 @@ PC
 14.851</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    color: #D40481 !important;">10.487 ;
-13.871</span>
+<span style=" font-weight: bold;    color: #D40481 !important;">10.884 ;
+14.297</span>
 </td>
 </tr>
 <tr>
@@ -1983,7 +1990,7 @@ PC p-val
 <span style=" font-weight: bold;    "> 0.000 ; 0.007</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    "> 0.000 ; 0.009</span>
+<span style=" font-weight: bold;    "> 0.000 ; 0.007</span>
 </td>
 </tr>
 <tr>
@@ -1998,7 +2005,7 @@ Size
 -4.022 ; -0.915
 </td>
 <td style="text-align:center;">
--3.260 ; -0.272
+-3.613 ; -0.691
 </td>
 </tr>
 <tr>
@@ -2012,7 +2019,7 @@ Size p-val
 0.169 ; 0.755
 </td>
 <td style="text-align:center;">
-0.244 ; 0.883
+0.206 ; 0.797
 </td>
 </tr>
 <tr>
@@ -2057,8 +2064,8 @@ PC:size
 -4.222</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    color: #D40481 !important;">-5.349 ;
--4.053</span>
+<span style=" font-weight: bold;    color: #D40481 !important;">-5.487 ;
+-4.175</span>
 </td>
 </tr>
 <tr>
@@ -2072,7 +2079,7 @@ PC:size p-val
 <span style=" font-weight: bold;    "> 0.000 ; 0.008</span>
 </td>
 <td style="text-align:center;">
-<span style=" font-weight: bold;    "> 0.000 ; 0.011</span>
+<span style=" font-weight: bold;    "> 0.000 ; 0.009</span>
 </td>
 </tr>
 </tbody>
@@ -2164,40 +2171,25 @@ class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb1
 <span id="cb101-21"><a href="#cb101-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdSize =</span> <span class="fu">sd</span>(size)</span>
 <span id="cb101-22"><a href="#cb101-22" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb101-23"><a href="#cb101-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb101-24"><a href="#cb101-24" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ToPlotInt)</span></code></pre></div>
-<pre><code>##  [1] &quot;spp&quot;      &quot;meanAll&quot;  &quot;meanVIS&quot;  &quot;meanNIR&quot;  &quot;meanRes&quot;  &quot;meanPC1&quot;  &quot;meanPC2&quot;  &quot;meanSize&quot;
-##  [9] &quot;sdAll&quot;    &quot;sdVIS&quot;    &quot;sdNIR&quot;    &quot;sdRes&quot;    &quot;sdPC1&quot;    &quot;sdPC2&quot;    &quot;sdSize&quot;</code></pre>
-<div class="sourceCode" id="cb103"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>plotVisSmall <span class="ot">&lt;-</span> </span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>  ToPlotInt <span class="sc">%&gt;%</span> </span>
-<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(meanSize<span class="sc">&lt;</span><span class="fl">2.2</span>) <span class="sc">%&gt;%</span>  <span class="co"># Small beetles</span></span>
-<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">15</span>)</span>
-<span id="cb103-5"><a href="#cb103-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-6"><a href="#cb103-6" aria-hidden="true" tabindex="-1"></a>plotVisLarge <span class="ot">&lt;-</span> </span>
-<span id="cb103-7"><a href="#cb103-7" aria-hidden="true" tabindex="-1"></a>  ToPlotInt <span class="sc">%&gt;%</span> </span>
-<span id="cb103-8"><a href="#cb103-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(meanSize<span class="sc">&gt;</span><span class="fl">2.2</span>) <span class="sc">%&gt;%</span>  <span class="co"># Large beetles </span></span>
-<span id="cb103-9"><a href="#cb103-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">15</span>)</span>
-<span id="cb103-10"><a href="#cb103-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-11"><a href="#cb103-11" aria-hidden="true" tabindex="-1"></a>plotNirSmall <span class="ot">&lt;-</span></span>
-<span id="cb103-12"><a href="#cb103-12" aria-hidden="true" tabindex="-1"></a>  ToPlotInt <span class="sc">%&gt;%</span> </span>
-<span id="cb103-13"><a href="#cb103-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(meanSize<span class="sc">&lt;</span><span class="fl">2.5</span>) <span class="sc">%&gt;%</span>  <span class="co"># Small beetles</span></span>
-<span id="cb103-14"><a href="#cb103-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">12</span>,<span class="dv">14</span>,<span class="dv">15</span>)</span>
-<span id="cb103-15"><a href="#cb103-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-16"><a href="#cb103-16" aria-hidden="true" tabindex="-1"></a>plotNirLarge <span class="ot">&lt;-</span></span>
-<span id="cb103-17"><a href="#cb103-17" aria-hidden="true" tabindex="-1"></a>  ToPlotInt <span class="sc">%&gt;%</span> </span>
-<span id="cb103-18"><a href="#cb103-18" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(meanSize<span class="sc">&gt;</span><span class="fl">2.5</span>) <span class="sc">%&gt;%</span>  <span class="co"># Large beetles</span></span>
-<span id="cb103-19"><a href="#cb103-19" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">12</span>,<span class="dv">14</span>,<span class="dv">15</span>)</span>
-<span id="cb103-20"><a href="#cb103-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-21"><a href="#cb103-21" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(plotNirSmall)</span></code></pre></div>
-<pre><code>## # A tibble: 6 x 7
-##   spp   meanRes meanPC2 meanSize sdRes  sdPC2  sdSize
-##   &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
-## 1 abno    -6.87   0.116     1.58  4.18 0.0631 0.0516 
-## 2 anom    -3.46  -1.90      1.77  3.90 0.649  0.00260
-## 3 atki    -9.50   0.471     2.24  3.63 0.932  0.180  
-## 4 aurs    -6.82  -0.412     1.71  6.37 0.0250 0.00408
-## 5 brun     3.94   0.706     2.10  4.72 0.429  0.162  
-## 6 clor    -2.91   0.461     2.45  3.74 0.374  0.118</code></pre>
+<span id="cb101-24"><a href="#cb101-24" aria-hidden="true" tabindex="-1"></a>plotVisSmall <span class="ot">&lt;-</span> </span>
+<span id="cb101-25"><a href="#cb101-25" aria-hidden="true" tabindex="-1"></a>  ToPlotInt <span class="sc">%&gt;%</span> </span>
+<span id="cb101-26"><a href="#cb101-26" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(meanSize<span class="sc">&lt;</span><span class="fl">2.2</span>) <span class="sc">%&gt;%</span>  <span class="co"># Small beetles</span></span>
+<span id="cb101-27"><a href="#cb101-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">15</span>)</span>
+<span id="cb101-28"><a href="#cb101-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-29"><a href="#cb101-29" aria-hidden="true" tabindex="-1"></a>plotVisLarge <span class="ot">&lt;-</span> </span>
+<span id="cb101-30"><a href="#cb101-30" aria-hidden="true" tabindex="-1"></a>  ToPlotInt <span class="sc">%&gt;%</span> </span>
+<span id="cb101-31"><a href="#cb101-31" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(meanSize<span class="sc">&gt;</span><span class="fl">2.2</span>) <span class="sc">%&gt;%</span>  <span class="co"># Large beetles </span></span>
+<span id="cb101-32"><a href="#cb101-32" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">15</span>)</span>
+<span id="cb101-33"><a href="#cb101-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-34"><a href="#cb101-34" aria-hidden="true" tabindex="-1"></a>plotNirSmall <span class="ot">&lt;-</span></span>
+<span id="cb101-35"><a href="#cb101-35" aria-hidden="true" tabindex="-1"></a>  ToPlotInt <span class="sc">%&gt;%</span> </span>
+<span id="cb101-36"><a href="#cb101-36" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(meanSize<span class="sc">&lt;</span><span class="fl">2.5</span>) <span class="sc">%&gt;%</span>  <span class="co"># Small beetles</span></span>
+<span id="cb101-37"><a href="#cb101-37" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">12</span>,<span class="dv">14</span>,<span class="dv">15</span>)</span>
+<span id="cb101-38"><a href="#cb101-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-39"><a href="#cb101-39" aria-hidden="true" tabindex="-1"></a>plotNirLarge <span class="ot">&lt;-</span></span>
+<span id="cb101-40"><a href="#cb101-40" aria-hidden="true" tabindex="-1"></a>  ToPlotInt <span class="sc">%&gt;%</span> </span>
+<span id="cb101-41"><a href="#cb101-41" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(meanSize<span class="sc">&gt;</span><span class="fl">2.5</span>) <span class="sc">%&gt;%</span>  <span class="co"># Large beetles</span></span>
+<span id="cb101-42"><a href="#cb101-42" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">12</span>,<span class="dv">14</span>,<span class="dv">15</span>)</span></code></pre></div>
 <div id="preliminary" class="section level2">
 <h2>Preliminary</h2>
 <ol style="list-style-type: decimal">
@@ -2205,9 +2197,9 @@ class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb1
 </ol>
 <p>This relationship is intensified if the most reflective beetles are
 removed. The species A. aures, A. parvulus and A. roseus.</p>
-<div class="sourceCode" id="cb105"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>AllBeet <span class="ot">&lt;-</span> <span class="fu">lm</span>(VISDataSet<span class="sc">$</span>Reflectance <span class="sc">~</span> VISDataSet<span class="sc">$</span>size)</span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(AllBeet)</span></code></pre></div>
+<div class="sourceCode" id="cb102"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>AllBeet <span class="ot">&lt;-</span> <span class="fu">lm</span>(VISDataSet<span class="sc">$</span>Reflectance <span class="sc">~</span> VISDataSet<span class="sc">$</span>size)</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(AllBeet)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = VISDataSet$Reflectance ~ VISDataSet$size)
@@ -2224,15 +2216,15 @@ class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb1
 ## Residual standard error: 6.624 on 45 degrees of freedom
 ## Multiple R-squared:  0.03456,    Adjusted R-squared:  0.01311 
 ## F-statistic: 1.611 on 1 and 45 DF,  p-value: 0.2109</code></pre>
-<div class="sourceCode" id="cb107"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>AA <span class="ot">&lt;-</span> <span class="co"># removing the most reflective beetles</span></span>
-<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>  VISDataSet <span class="sc">%&gt;%</span> </span>
-<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplognathus_aureus&quot;</span> <span class="sc">&amp;</span></span>
-<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>                phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplognathus_parvulus&quot;</span> <span class="sc">&amp;</span></span>
-<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>                phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplostethus_roseus&quot;</span>) </span>
-<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a>SubsetBeet <span class="ot">&lt;-</span><span class="fu">lm</span>(AA<span class="sc">$</span>Reflectance <span class="sc">~</span> AA<span class="sc">$</span>size)</span>
-<span id="cb107-8"><a href="#cb107-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(SubsetBeet)</span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>AA <span class="ot">&lt;-</span> <span class="co"># removing the most reflective beetles</span></span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>  VISDataSet <span class="sc">%&gt;%</span> </span>
+<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplognathus_aureus&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-4"><a href="#cb104-4" aria-hidden="true" tabindex="-1"></a>                phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplognathus_parvulus&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb104-5"><a href="#cb104-5" aria-hidden="true" tabindex="-1"></a>                phylogeny_name <span class="sc">!=</span> <span class="st">&quot;Anoplostethus_roseus&quot;</span>) </span>
+<span id="cb104-6"><a href="#cb104-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb104-7"><a href="#cb104-7" aria-hidden="true" tabindex="-1"></a>SubsetBeet <span class="ot">&lt;-</span><span class="fu">lm</span>(AA<span class="sc">$</span>Reflectance <span class="sc">~</span> AA<span class="sc">$</span>size)</span>
+<span id="cb104-8"><a href="#cb104-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(SubsetBeet)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = AA$Reflectance ~ AA$size)
@@ -2260,16 +2252,16 @@ light.</p>
 small beetles &lt; 2.2 cm.</p>
 <p>** If I remove the non-polarized beetles, the pattern remains the
 same.</p>
-<div class="sourceCode" id="cb109"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(VISSmall<span class="sc">$</span>Reflectance <span class="sc">~</span> VISSmall<span class="sc">$</span>PC, </span>
-<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;PC1&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Reflectance&quot;</span>,  <span class="at">main=</span><span class="st">&quot;Small beetles (&lt;2.2cm)&quot;</span>)</span>
-<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(VISLarge<span class="sc">$</span>Reflectance <span class="sc">~</span> VISLarge<span class="sc">$</span>PC,</span>
-<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;PC1&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Reflectance&quot;</span>, <span class="at">main=</span><span class="st">&quot;Large beetles (&gt;2.2cm)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb106"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(VISSmall<span class="sc">$</span>Reflectance <span class="sc">~</span> VISSmall<span class="sc">$</span>PC, </span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;PC1&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Reflectance&quot;</span>,  <span class="at">main=</span><span class="st">&quot;Small beetles (&lt;2.2cm)&quot;</span>)</span>
+<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(VISLarge<span class="sc">$</span>Reflectance <span class="sc">~</span> VISLarge<span class="sc">$</span>PC,</span>
+<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;PC1&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Reflectance&quot;</span>, <span class="at">main=</span><span class="st">&quot;Large beetles (&gt;2.2cm)&quot;</span>)</span></code></pre></div>
 <p><img src="MacroEcol_6_ManuscriptStats_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
-<div class="sourceCode" id="cb110"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>dumModVs <span class="ot">&lt;-</span> <span class="fu">lm</span>(VISSmall<span class="sc">$</span>Reflectance <span class="sc">~</span> VISSmall<span class="sc">$</span>PC)</span>
-<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModVs)</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>dumModVs <span class="ot">&lt;-</span> <span class="fu">lm</span>(VISSmall<span class="sc">$</span>Reflectance <span class="sc">~</span> VISSmall<span class="sc">$</span>PC)</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModVs)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = VISSmall$Reflectance ~ VISSmall$PC)
@@ -2288,9 +2280,9 @@ class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb1
 ## Residual standard error: 8.075 on 19 degrees of freedom
 ## Multiple R-squared:  0.05588,    Adjusted R-squared:  0.006189 
 ## F-statistic: 1.125 on 1 and 19 DF,  p-value: 0.3022</code></pre>
-<div class="sourceCode" id="cb112"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a>dumModVl <span class="ot">&lt;-</span> <span class="fu">lm</span>(VISLarge<span class="sc">$</span>Reflectance <span class="sc">~</span> VISLarge<span class="sc">$</span>PC) </span>
-<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModVl)</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>dumModVl <span class="ot">&lt;-</span> <span class="fu">lm</span>(VISLarge<span class="sc">$</span>Reflectance <span class="sc">~</span> VISLarge<span class="sc">$</span>PC) </span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModVl)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = VISLarge$Reflectance ~ VISLarge$PC)
@@ -2315,18 +2307,18 @@ significant.</p>
 <p>Plots for NIR light</p>
 <p>We separated the beetles into two groups large beetles &gt; 2.5 cm
 and small beetles &lt; 2.5 cm.</p>
-<div class="sourceCode" id="cb114"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>((ResDataSet[ResDataSet<span class="sc">$</span>size<span class="sc">&lt;</span><span class="fl">2.5</span>,])<span class="sc">$</span>PC2,</span>
-<span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a>     (ResDataSet[ResDataSet<span class="sc">$</span>size<span class="sc">&lt;</span><span class="fl">2.5</span>,])<span class="sc">$</span>Reflectance,</span>
-<span id="cb114-4"><a href="#cb114-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">&quot;Reflectance&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;PC2&quot;</span>, <span class="at">main=</span><span class="st">&quot;Small beetles (&lt;2.5cm)&quot;</span>)</span>
-<span id="cb114-5"><a href="#cb114-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>((ResDataSet[ResDataSet<span class="sc">$</span>size<span class="sc">&gt;</span><span class="fl">2.5</span>,])<span class="sc">$</span>PC2,</span>
-<span id="cb114-6"><a href="#cb114-6" aria-hidden="true" tabindex="-1"></a>     (ResDataSet[ResDataSet<span class="sc">$</span>size<span class="sc">&gt;</span><span class="fl">2.5</span>,])<span class="sc">$</span>Reflectance,</span>
-<span id="cb114-7"><a href="#cb114-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">&quot;Reflectance&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;PC2&quot;</span>, <span class="at">main=</span><span class="st">&quot;Large beetles (&gt;2.5cm)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>((ResDataSet[ResDataSet<span class="sc">$</span>size<span class="sc">&lt;</span><span class="fl">2.5</span>,])<span class="sc">$</span>PC2,</span>
+<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a>     (ResDataSet[ResDataSet<span class="sc">$</span>size<span class="sc">&lt;</span><span class="fl">2.5</span>,])<span class="sc">$</span>Reflectance,</span>
+<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">&quot;Reflectance&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;PC2&quot;</span>, <span class="at">main=</span><span class="st">&quot;Small beetles (&lt;2.5cm)&quot;</span>)</span>
+<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>((ResDataSet[ResDataSet<span class="sc">$</span>size<span class="sc">&gt;</span><span class="fl">2.5</span>,])<span class="sc">$</span>PC2,</span>
+<span id="cb111-6"><a href="#cb111-6" aria-hidden="true" tabindex="-1"></a>     (ResDataSet[ResDataSet<span class="sc">$</span>size<span class="sc">&gt;</span><span class="fl">2.5</span>,])<span class="sc">$</span>Reflectance,</span>
+<span id="cb111-7"><a href="#cb111-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">&quot;Reflectance&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;PC2&quot;</span>, <span class="at">main=</span><span class="st">&quot;Large beetles (&gt;2.5cm)&quot;</span>)</span></code></pre></div>
 <p><img src="MacroEcol_6_ManuscriptStats_files/figure-html/unnamed-chunk-52-1.png" width="672" /></p>
-<div class="sourceCode" id="cb115"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>dumModNb <span class="ot">&lt;-</span> <span class="fu">lm</span>(ResDataSet<span class="sc">$</span>Reflectance <span class="sc">~</span> ResDataSet<span class="sc">$</span>PC2) <span class="co"># All together</span></span>
-<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModNb)</span></code></pre></div>
+<div class="sourceCode" id="cb112"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a>dumModNb <span class="ot">&lt;-</span> <span class="fu">lm</span>(ResDataSet<span class="sc">$</span>Reflectance <span class="sc">~</span> ResDataSet<span class="sc">$</span>PC2) <span class="co"># All together</span></span>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModNb)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = ResDataSet$Reflectance ~ ResDataSet$PC2)
@@ -2343,9 +2335,9 @@ class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb1
 ## Residual standard error: 7.52 on 45 degrees of freedom
 ## Multiple R-squared:  0.04052,    Adjusted R-squared:  0.01919 
 ## F-statistic:   1.9 on 1 and 45 DF,  p-value: 0.1749</code></pre>
-<div class="sourceCode" id="cb117"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>dumModNs <span class="ot">&lt;-</span> <span class="fu">lm</span>(ResSmall<span class="sc">$</span>Reflectance <span class="sc">~</span> ResSmall<span class="sc">$</span>PC) <span class="co"># size &lt; 2.5</span></span>
-<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModNs)</span></code></pre></div>
+<div class="sourceCode" id="cb114"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>dumModNs <span class="ot">&lt;-</span> <span class="fu">lm</span>(ResSmall<span class="sc">$</span>Reflectance <span class="sc">~</span> ResSmall<span class="sc">$</span>PC) <span class="co"># size &lt; 2.5</span></span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModNs)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = ResSmall$Reflectance ~ ResSmall$PC)
@@ -2364,9 +2356,9 @@ class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb1
 ## Residual standard error: 7.86 on 32 degrees of freedom
 ## Multiple R-squared:  0.1795, Adjusted R-squared:  0.1539 
 ## F-statistic: 7.002 on 1 and 32 DF,  p-value: 0.01252</code></pre>
-<div class="sourceCode" id="cb119"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>dumModNl <span class="ot">&lt;-</span> <span class="fu">lm</span>(ResLarge<span class="sc">$</span>Reflectance <span class="sc">~</span> ResLarge<span class="sc">$</span>PC) <span class="co"># size &gt; 2.5</span></span>
-<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModNl)</span></code></pre></div>
+<div class="sourceCode" id="cb116"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a>dumModNl <span class="ot">&lt;-</span> <span class="fu">lm</span>(ResLarge<span class="sc">$</span>Reflectance <span class="sc">~</span> ResLarge<span class="sc">$</span>PC) <span class="co"># size &gt; 2.5</span></span>
+<span id="cb116-2"><a href="#cb116-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dumModNl)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = ResLarge$Reflectance ~ ResLarge$PC)
@@ -2400,192 +2392,192 @@ model.</p>
 <p>Fos the visible reflectance we only graphed the PC1 since PC2 did not
 have a signifficant effect in reflectance. For NIR reflectance we
 graphed only PC2.</p>
-<div class="sourceCode" id="cb121"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Small beetles VIS</span></span>
-<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-3"><a href="#cb121-3" aria-hidden="true" tabindex="-1"></a><span class="do">## set values for predictors: </span></span>
-<span id="cb121-4"><a href="#cb121-4" aria-hidden="true" tabindex="-1"></a>SVPC1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(plotVisSmall<span class="sc">$</span>meanPC1)[<span class="dv">1</span>],</span>
-<span id="cb121-5"><a href="#cb121-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">range</span>(plotVisSmall<span class="sc">$</span>meanPC1)[<span class="dv">2</span>],<span class="fl">0.01</span>) <span class="co"># A range of PC1 values</span></span>
-<span id="cb121-6"><a href="#cb121-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-7"><a href="#cb121-7" aria-hidden="true" tabindex="-1"></a>SVPC2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(VISDataSet<span class="sc">$</span>PC2),<span class="fu">length</span>(SVPC1)) <span class="co"># The mean PC2 for all beetles </span></span>
-<span id="cb121-8"><a href="#cb121-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-9"><a href="#cb121-9" aria-hidden="true" tabindex="-1"></a>SVsize <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(plotVisSmall<span class="sc">$</span>meanSize),</span>
-<span id="cb121-10"><a href="#cb121-10" aria-hidden="true" tabindex="-1"></a>              <span class="fu">length</span>(SVPC1)) <span class="co"># mean size of the small beetles</span></span>
-<span id="cb121-11"><a href="#cb121-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-12"><a href="#cb121-12" aria-hidden="true" tabindex="-1"></a>new1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="st">&quot;PC1&quot;</span> <span class="ot">=</span> SVPC1, <span class="st">&quot;PC2&quot;</span> <span class="ot">=</span> SVPC2, <span class="st">&quot;size&quot;</span> <span class="ot">=</span> SVsize) <span class="co"># data frame</span></span>
-<span id="cb121-13"><a href="#cb121-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-14"><a href="#cb121-14" aria-hidden="true" tabindex="-1"></a>ref1<span class="ot">&lt;-</span><span class="fu">predict</span>(pglsmodVIS, <span class="at">newdata =</span> new1, </span>
-<span id="cb121-15"><a href="#cb121-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># Expected reflectance</span></span>
-<span id="cb121-16"><a href="#cb121-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-17"><a href="#cb121-17" aria-hidden="true" tabindex="-1"></a>trend1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(ref1,SVPC1) <span class="co"># PC1 values and expected reflectance joint</span></span>
-<span id="cb121-18"><a href="#cb121-18" aria-hidden="true" tabindex="-1"></a>trend1<span class="sc">$</span>invSVPC1<span class="ot">&lt;-</span> trend1<span class="sc">$</span>SVPC1<span class="sc">*-</span><span class="dv">1</span></span>
-<span id="cb121-19"><a href="#cb121-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-20"><a href="#cb121-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Large beetles VIS</span></span>
-<span id="cb121-21"><a href="#cb121-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-22"><a href="#cb121-22" aria-hidden="true" tabindex="-1"></a>LVPC1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(plotVisLarge<span class="sc">$</span>meanPC1)[<span class="dv">1</span>],</span>
-<span id="cb121-23"><a href="#cb121-23" aria-hidden="true" tabindex="-1"></a>             <span class="fu">range</span>(plotVisLarge<span class="sc">$</span>meanPC1)[<span class="dv">2</span>],<span class="fl">0.01</span>) <span class="co"># A range of PC1 values</span></span>
-<span id="cb121-24"><a href="#cb121-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-25"><a href="#cb121-25" aria-hidden="true" tabindex="-1"></a>LVPC2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(VISDataSet<span class="sc">$</span>PC2),<span class="fu">length</span>(LVPC1)) <span class="co"># The mean PC2 for all beetles</span></span>
-<span id="cb121-26"><a href="#cb121-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-27"><a href="#cb121-27" aria-hidden="true" tabindex="-1"></a>LVsize <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(plotVisLarge<span class="sc">$</span>meanSize),</span>
-<span id="cb121-28"><a href="#cb121-28" aria-hidden="true" tabindex="-1"></a>              <span class="fu">length</span>(LVPC1)) <span class="co"># mean size of the large beetles</span></span>
-<span id="cb121-29"><a href="#cb121-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-30"><a href="#cb121-30" aria-hidden="true" tabindex="-1"></a>new2<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="st">&quot;PC1&quot;</span> <span class="ot">=</span> LVPC1, <span class="st">&quot;PC2&quot;</span> <span class="ot">=</span> LVPC2, <span class="st">&quot;size&quot;</span> <span class="ot">=</span> LVsize) <span class="co"># data frame </span></span>
-<span id="cb121-31"><a href="#cb121-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-32"><a href="#cb121-32" aria-hidden="true" tabindex="-1"></a>ref2<span class="ot">&lt;-</span><span class="fu">predict</span>(pglsmodVIS, <span class="at">newdata =</span> new2, </span>
-<span id="cb121-33"><a href="#cb121-33" aria-hidden="true" tabindex="-1"></a>              <span class="at">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># Expected reflectance</span></span>
-<span id="cb121-34"><a href="#cb121-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-35"><a href="#cb121-35" aria-hidden="true" tabindex="-1"></a>trend2<span class="ot">&lt;-</span><span class="fu">data.frame</span>(ref2,LVPC1) <span class="co"># PC1 values and expected reflectance joint</span></span>
-<span id="cb121-36"><a href="#cb121-36" aria-hidden="true" tabindex="-1"></a>trend2<span class="sc">$</span>invLVPC1 <span class="ot">&lt;-</span> trend2<span class="sc">$</span>LVPC1<span class="sc">*-</span><span class="dv">1</span></span>
-<span id="cb121-37"><a href="#cb121-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-38"><a href="#cb121-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-39"><a href="#cb121-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Small beetles NIR</span></span>
-<span id="cb121-40"><a href="#cb121-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-41"><a href="#cb121-41" aria-hidden="true" tabindex="-1"></a>SNPC2 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(plotNirSmall<span class="sc">$</span>meanPC2)[<span class="dv">1</span>],</span>
-<span id="cb121-42"><a href="#cb121-42" aria-hidden="true" tabindex="-1"></a>             <span class="fu">range</span>(plotNirSmall<span class="sc">$</span>meanPC2)[<span class="dv">2</span>],<span class="fl">0.01</span>) <span class="co"># A range of PC2 values</span></span>
-<span id="cb121-43"><a href="#cb121-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-44"><a href="#cb121-44" aria-hidden="true" tabindex="-1"></a>SNPC1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(ResDataSet<span class="sc">$</span>PC1),<span class="fu">length</span>(SNPC2)) <span class="co"># The mean PC1 for all beetles</span></span>
-<span id="cb121-45"><a href="#cb121-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-46"><a href="#cb121-46" aria-hidden="true" tabindex="-1"></a>SNsize <span class="ot">&lt;-</span> <span class="fu">rep</span>((<span class="fu">mean</span>(plotNirSmall<span class="sc">$</span>meanSize)<span class="co"># mean size of the small beetles</span></span>
-<span id="cb121-47"><a href="#cb121-47" aria-hidden="true" tabindex="-1"></a>               <span class="sc">-</span><span class="fl">0.2</span>), <span class="co"># adjusted for visualization purposes</span></span>
-<span id="cb121-48"><a href="#cb121-48" aria-hidden="true" tabindex="-1"></a>              <span class="fu">length</span>(SNPC2)) </span>
-<span id="cb121-49"><a href="#cb121-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-50"><a href="#cb121-50" aria-hidden="true" tabindex="-1"></a>new3<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="st">&quot;PC1&quot;</span> <span class="ot">=</span> SNPC1, <span class="st">&quot;PC2&quot;</span> <span class="ot">=</span> SNPC2, <span class="st">&quot;size&quot;</span> <span class="ot">=</span> SNsize) <span class="co"># data frame </span></span>
-<span id="cb121-51"><a href="#cb121-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-52"><a href="#cb121-52" aria-hidden="true" tabindex="-1"></a>ref3<span class="ot">&lt;-</span><span class="fu">predict</span>(pglsmodRes, <span class="at">newdata =</span> new3, </span>
-<span id="cb121-53"><a href="#cb121-53" aria-hidden="true" tabindex="-1"></a>              <span class="at">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># Expected reflectance</span></span>
-<span id="cb121-54"><a href="#cb121-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-55"><a href="#cb121-55" aria-hidden="true" tabindex="-1"></a>trend3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(ref3,SNPC2)</span>
-<span id="cb121-56"><a href="#cb121-56" aria-hidden="true" tabindex="-1"></a>trend3<span class="sc">$</span>invSNPC2 <span class="ot">&lt;-</span> trend3<span class="sc">$</span>SNPC2<span class="sc">*-</span><span class="dv">1</span></span>
-<span id="cb121-57"><a href="#cb121-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-58"><a href="#cb121-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-59"><a href="#cb121-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-60"><a href="#cb121-60" aria-hidden="true" tabindex="-1"></a><span class="co"># Large beetles NIR</span></span>
-<span id="cb121-61"><a href="#cb121-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-62"><a href="#cb121-62" aria-hidden="true" tabindex="-1"></a>LNPC2 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(plotNirLarge<span class="sc">$</span>meanPC2)[<span class="dv">1</span>],</span>
-<span id="cb121-63"><a href="#cb121-63" aria-hidden="true" tabindex="-1"></a>             <span class="fu">range</span>(plotNirLarge<span class="sc">$</span>meanPC2)[<span class="dv">2</span>],<span class="fl">0.01</span>) <span class="co"># A range of PC1 values</span></span>
-<span id="cb121-64"><a href="#cb121-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-65"><a href="#cb121-65" aria-hidden="true" tabindex="-1"></a>LNPC1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(ResDataSet<span class="sc">$</span>PC1),<span class="fu">length</span>(LNPC2)) <span class="co"># The mean PC2 for all beetles</span></span>
-<span id="cb121-66"><a href="#cb121-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-67"><a href="#cb121-67" aria-hidden="true" tabindex="-1"></a>LNsize <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(plotNirLarge<span class="sc">$</span>meanSize),</span>
-<span id="cb121-68"><a href="#cb121-68" aria-hidden="true" tabindex="-1"></a>              <span class="fu">length</span>(LNPC2)) <span class="co"># mean size of the large beetles</span></span>
-<span id="cb121-69"><a href="#cb121-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-70"><a href="#cb121-70" aria-hidden="true" tabindex="-1"></a>new4<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="st">&quot;PC1&quot;</span> <span class="ot">=</span> LNPC1, <span class="st">&quot;PC2&quot;</span> <span class="ot">=</span> LNPC2, <span class="st">&quot;size&quot;</span> <span class="ot">=</span> LNsize) <span class="co"># data frame </span></span>
-<span id="cb121-71"><a href="#cb121-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-72"><a href="#cb121-72" aria-hidden="true" tabindex="-1"></a>ref4<span class="ot">&lt;-</span><span class="fu">predict</span>(pglsmodRes, <span class="at">newdata =</span> new4, </span>
-<span id="cb121-73"><a href="#cb121-73" aria-hidden="true" tabindex="-1"></a>              <span class="at">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># Expected reflectance</span></span>
-<span id="cb121-74"><a href="#cb121-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-75"><a href="#cb121-75" aria-hidden="true" tabindex="-1"></a>trend4 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(ref4,LNPC2)</span>
-<span id="cb121-76"><a href="#cb121-76" aria-hidden="true" tabindex="-1"></a>trend4<span class="sc">$</span>invLNPC2 <span class="ot">&lt;-</span> trend4<span class="sc">$</span>LNPC2<span class="sc">*-</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb118"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Small beetles VIS</span></span>
+<span id="cb118-2"><a href="#cb118-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-3"><a href="#cb118-3" aria-hidden="true" tabindex="-1"></a><span class="do">## set values for predictors: </span></span>
+<span id="cb118-4"><a href="#cb118-4" aria-hidden="true" tabindex="-1"></a>SVPC1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(plotVisSmall<span class="sc">$</span>meanPC1)[<span class="dv">1</span>],</span>
+<span id="cb118-5"><a href="#cb118-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">range</span>(plotVisSmall<span class="sc">$</span>meanPC1)[<span class="dv">2</span>],<span class="fl">0.01</span>) <span class="co"># A range of PC1 values</span></span>
+<span id="cb118-6"><a href="#cb118-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-7"><a href="#cb118-7" aria-hidden="true" tabindex="-1"></a>SVPC2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(VISDataSet<span class="sc">$</span>PC2),<span class="fu">length</span>(SVPC1)) <span class="co"># The mean PC2 for all beetles </span></span>
+<span id="cb118-8"><a href="#cb118-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-9"><a href="#cb118-9" aria-hidden="true" tabindex="-1"></a>SVsize <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(plotVisSmall<span class="sc">$</span>meanSize),</span>
+<span id="cb118-10"><a href="#cb118-10" aria-hidden="true" tabindex="-1"></a>              <span class="fu">length</span>(SVPC1)) <span class="co"># mean size of the small beetles</span></span>
+<span id="cb118-11"><a href="#cb118-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-12"><a href="#cb118-12" aria-hidden="true" tabindex="-1"></a>new1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="st">&quot;PC1&quot;</span> <span class="ot">=</span> SVPC1, <span class="st">&quot;PC2&quot;</span> <span class="ot">=</span> SVPC2, <span class="st">&quot;size&quot;</span> <span class="ot">=</span> SVsize) <span class="co"># data frame</span></span>
+<span id="cb118-13"><a href="#cb118-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-14"><a href="#cb118-14" aria-hidden="true" tabindex="-1"></a>ref1<span class="ot">&lt;-</span><span class="fu">predict</span>(pglsmodVIS, <span class="at">newdata =</span> new1, </span>
+<span id="cb118-15"><a href="#cb118-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># Expected reflectance</span></span>
+<span id="cb118-16"><a href="#cb118-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-17"><a href="#cb118-17" aria-hidden="true" tabindex="-1"></a>trend1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(ref1,SVPC1) <span class="co"># PC1 values and expected reflectance joint</span></span>
+<span id="cb118-18"><a href="#cb118-18" aria-hidden="true" tabindex="-1"></a>trend1<span class="sc">$</span>invSVPC1<span class="ot">&lt;-</span> trend1<span class="sc">$</span>SVPC1<span class="sc">*-</span><span class="dv">1</span></span>
+<span id="cb118-19"><a href="#cb118-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-20"><a href="#cb118-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Large beetles VIS</span></span>
+<span id="cb118-21"><a href="#cb118-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-22"><a href="#cb118-22" aria-hidden="true" tabindex="-1"></a>LVPC1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(plotVisLarge<span class="sc">$</span>meanPC1)[<span class="dv">1</span>],</span>
+<span id="cb118-23"><a href="#cb118-23" aria-hidden="true" tabindex="-1"></a>             <span class="fu">range</span>(plotVisLarge<span class="sc">$</span>meanPC1)[<span class="dv">2</span>],<span class="fl">0.01</span>) <span class="co"># A range of PC1 values</span></span>
+<span id="cb118-24"><a href="#cb118-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-25"><a href="#cb118-25" aria-hidden="true" tabindex="-1"></a>LVPC2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(VISDataSet<span class="sc">$</span>PC2),<span class="fu">length</span>(LVPC1)) <span class="co"># The mean PC2 for all beetles</span></span>
+<span id="cb118-26"><a href="#cb118-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-27"><a href="#cb118-27" aria-hidden="true" tabindex="-1"></a>LVsize <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(plotVisLarge<span class="sc">$</span>meanSize),</span>
+<span id="cb118-28"><a href="#cb118-28" aria-hidden="true" tabindex="-1"></a>              <span class="fu">length</span>(LVPC1)) <span class="co"># mean size of the large beetles</span></span>
+<span id="cb118-29"><a href="#cb118-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-30"><a href="#cb118-30" aria-hidden="true" tabindex="-1"></a>new2<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="st">&quot;PC1&quot;</span> <span class="ot">=</span> LVPC1, <span class="st">&quot;PC2&quot;</span> <span class="ot">=</span> LVPC2, <span class="st">&quot;size&quot;</span> <span class="ot">=</span> LVsize) <span class="co"># data frame </span></span>
+<span id="cb118-31"><a href="#cb118-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-32"><a href="#cb118-32" aria-hidden="true" tabindex="-1"></a>ref2<span class="ot">&lt;-</span><span class="fu">predict</span>(pglsmodVIS, <span class="at">newdata =</span> new2, </span>
+<span id="cb118-33"><a href="#cb118-33" aria-hidden="true" tabindex="-1"></a>              <span class="at">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># Expected reflectance</span></span>
+<span id="cb118-34"><a href="#cb118-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-35"><a href="#cb118-35" aria-hidden="true" tabindex="-1"></a>trend2<span class="ot">&lt;-</span><span class="fu">data.frame</span>(ref2,LVPC1) <span class="co"># PC1 values and expected reflectance joint</span></span>
+<span id="cb118-36"><a href="#cb118-36" aria-hidden="true" tabindex="-1"></a>trend2<span class="sc">$</span>invLVPC1 <span class="ot">&lt;-</span> trend2<span class="sc">$</span>LVPC1<span class="sc">*-</span><span class="dv">1</span></span>
+<span id="cb118-37"><a href="#cb118-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-38"><a href="#cb118-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-39"><a href="#cb118-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Small beetles NIR</span></span>
+<span id="cb118-40"><a href="#cb118-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-41"><a href="#cb118-41" aria-hidden="true" tabindex="-1"></a>SNPC2 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(plotNirSmall<span class="sc">$</span>meanPC2)[<span class="dv">1</span>],</span>
+<span id="cb118-42"><a href="#cb118-42" aria-hidden="true" tabindex="-1"></a>             <span class="fu">range</span>(plotNirSmall<span class="sc">$</span>meanPC2)[<span class="dv">2</span>],<span class="fl">0.01</span>) <span class="co"># A range of PC2 values</span></span>
+<span id="cb118-43"><a href="#cb118-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-44"><a href="#cb118-44" aria-hidden="true" tabindex="-1"></a>SNPC1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(ResDataSet<span class="sc">$</span>PC1),<span class="fu">length</span>(SNPC2)) <span class="co"># The mean PC1 for all beetles</span></span>
+<span id="cb118-45"><a href="#cb118-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-46"><a href="#cb118-46" aria-hidden="true" tabindex="-1"></a>SNsize <span class="ot">&lt;-</span> <span class="fu">rep</span>((<span class="fu">mean</span>(plotNirSmall<span class="sc">$</span>meanSize)<span class="co"># mean size of the small beetles</span></span>
+<span id="cb118-47"><a href="#cb118-47" aria-hidden="true" tabindex="-1"></a>               <span class="sc">-</span><span class="fl">0.2</span>), <span class="co"># adjusted for visualization purposes</span></span>
+<span id="cb118-48"><a href="#cb118-48" aria-hidden="true" tabindex="-1"></a>              <span class="fu">length</span>(SNPC2)) </span>
+<span id="cb118-49"><a href="#cb118-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-50"><a href="#cb118-50" aria-hidden="true" tabindex="-1"></a>new3<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="st">&quot;PC1&quot;</span> <span class="ot">=</span> SNPC1, <span class="st">&quot;PC2&quot;</span> <span class="ot">=</span> SNPC2, <span class="st">&quot;size&quot;</span> <span class="ot">=</span> SNsize) <span class="co"># data frame </span></span>
+<span id="cb118-51"><a href="#cb118-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-52"><a href="#cb118-52" aria-hidden="true" tabindex="-1"></a>ref3<span class="ot">&lt;-</span><span class="fu">predict</span>(pglsmodRes, <span class="at">newdata =</span> new3, </span>
+<span id="cb118-53"><a href="#cb118-53" aria-hidden="true" tabindex="-1"></a>              <span class="at">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># Expected reflectance</span></span>
+<span id="cb118-54"><a href="#cb118-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-55"><a href="#cb118-55" aria-hidden="true" tabindex="-1"></a>trend3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(ref3,SNPC2)</span>
+<span id="cb118-56"><a href="#cb118-56" aria-hidden="true" tabindex="-1"></a>trend3<span class="sc">$</span>invSNPC2 <span class="ot">&lt;-</span> trend3<span class="sc">$</span>SNPC2<span class="sc">*-</span><span class="dv">1</span></span>
+<span id="cb118-57"><a href="#cb118-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-58"><a href="#cb118-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-59"><a href="#cb118-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-60"><a href="#cb118-60" aria-hidden="true" tabindex="-1"></a><span class="co"># Large beetles NIR</span></span>
+<span id="cb118-61"><a href="#cb118-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-62"><a href="#cb118-62" aria-hidden="true" tabindex="-1"></a>LNPC2 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(plotNirLarge<span class="sc">$</span>meanPC2)[<span class="dv">1</span>],</span>
+<span id="cb118-63"><a href="#cb118-63" aria-hidden="true" tabindex="-1"></a>             <span class="fu">range</span>(plotNirLarge<span class="sc">$</span>meanPC2)[<span class="dv">2</span>],<span class="fl">0.01</span>) <span class="co"># A range of PC1 values</span></span>
+<span id="cb118-64"><a href="#cb118-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-65"><a href="#cb118-65" aria-hidden="true" tabindex="-1"></a>LNPC1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(ResDataSet<span class="sc">$</span>PC1),<span class="fu">length</span>(LNPC2)) <span class="co"># The mean PC2 for all beetles</span></span>
+<span id="cb118-66"><a href="#cb118-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-67"><a href="#cb118-67" aria-hidden="true" tabindex="-1"></a>LNsize <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(plotNirLarge<span class="sc">$</span>meanSize),</span>
+<span id="cb118-68"><a href="#cb118-68" aria-hidden="true" tabindex="-1"></a>              <span class="fu">length</span>(LNPC2)) <span class="co"># mean size of the large beetles</span></span>
+<span id="cb118-69"><a href="#cb118-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-70"><a href="#cb118-70" aria-hidden="true" tabindex="-1"></a>new4<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="st">&quot;PC1&quot;</span> <span class="ot">=</span> LNPC1, <span class="st">&quot;PC2&quot;</span> <span class="ot">=</span> LNPC2, <span class="st">&quot;size&quot;</span> <span class="ot">=</span> LNsize) <span class="co"># data frame </span></span>
+<span id="cb118-71"><a href="#cb118-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-72"><a href="#cb118-72" aria-hidden="true" tabindex="-1"></a>ref4<span class="ot">&lt;-</span><span class="fu">predict</span>(pglsmodRes, <span class="at">newdata =</span> new4, </span>
+<span id="cb118-73"><a href="#cb118-73" aria-hidden="true" tabindex="-1"></a>              <span class="at">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># Expected reflectance</span></span>
+<span id="cb118-74"><a href="#cb118-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-75"><a href="#cb118-75" aria-hidden="true" tabindex="-1"></a>trend4 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(ref4,LNPC2)</span>
+<span id="cb118-76"><a href="#cb118-76" aria-hidden="true" tabindex="-1"></a>trend4<span class="sc">$</span>invLNPC2 <span class="ot">&lt;-</span> trend4<span class="sc">$</span>LNPC2<span class="sc">*-</span><span class="dv">1</span></span></code></pre></div>
 </div>
 <div id="figures" class="section level2">
 <h2>Figures</h2>
 <p>Plots</p>
 <p>PC axis were inverted here so that they are easy to interpret</p>
-<div class="sourceCode" id="cb122"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>PVS <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plotVisSmall, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">-</span>meanPC1, <span class="at">y =</span> meanVIS)) <span class="sc">+</span></span>
-<span id="cb122-2"><a href="#cb122-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
-<span id="cb122-3"><a href="#cb122-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanVIS <span class="sc">-</span> sdVIS,</span>
-<span id="cb122-4"><a href="#cb122-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanVIS <span class="sc">+</span> sdVIS</span>
-<span id="cb122-5"><a href="#cb122-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb122-6"><a href="#cb122-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
-<span id="cb122-7"><a href="#cb122-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-8"><a href="#cb122-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
-<span id="cb122-9"><a href="#cb122-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> <span class="sc">-</span>meanPC1 <span class="sc">-</span> sdPC1,</span>
-<span id="cb122-10"><a href="#cb122-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> <span class="sc">-</span>meanPC1 <span class="sc">+</span> sdPC1</span>
-<span id="cb122-11"><a href="#cb122-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb122-12"><a href="#cb122-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
-<span id="cb122-13"><a href="#cb122-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-14"><a href="#cb122-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb122-15"><a href="#cb122-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;#648fff&quot;</span>,</span>
-<span id="cb122-16"><a href="#cb122-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.9</span></span>
-<span id="cb122-17"><a href="#cb122-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-18"><a href="#cb122-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">40</span>)<span class="sc">+</span></span>
-<span id="cb122-19"><a href="#cb122-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="fl">2.8</span>,<span class="dv">5</span>)<span class="sc">+</span></span>
-<span id="cb122-20"><a href="#cb122-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb122-21"><a href="#cb122-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)<span class="sc">+</span></span>
-<span id="cb122-22"><a href="#cb122-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span> invSVPC1, <span class="at">y=</span> ref1), <span class="at">data=</span>trend1)<span class="sc">+</span></span>
-<span id="cb122-23"><a href="#cb122-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Humidity (-PC1)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb122-24"><a href="#cb122-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span> (<span class="st">&quot;VIS reflectivity (%)&quot;</span>)</span>
-<span id="cb122-25"><a href="#cb122-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb122-26"><a href="#cb122-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb122-27"><a href="#cb122-27" aria-hidden="true" tabindex="-1"></a>PVL <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plotVisLarge, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">-</span>meanPC1, <span class="at">y =</span> meanVIS)) <span class="sc">+</span></span>
-<span id="cb122-28"><a href="#cb122-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
-<span id="cb122-29"><a href="#cb122-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanVIS <span class="sc">-</span> sdVIS,</span>
-<span id="cb122-30"><a href="#cb122-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanVIS <span class="sc">+</span> sdVIS</span>
-<span id="cb122-31"><a href="#cb122-31" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb122-32"><a href="#cb122-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
-<span id="cb122-33"><a href="#cb122-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-34"><a href="#cb122-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
-<span id="cb122-35"><a href="#cb122-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> <span class="sc">-</span>meanPC1 <span class="sc">-</span> sdPC1,</span>
-<span id="cb122-36"><a href="#cb122-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> <span class="sc">-</span>meanPC1 <span class="sc">+</span> sdPC1</span>
-<span id="cb122-37"><a href="#cb122-37" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb122-38"><a href="#cb122-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
-<span id="cb122-39"><a href="#cb122-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-40"><a href="#cb122-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb122-41"><a href="#cb122-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;#ff7200&quot;</span>,</span>
-<span id="cb122-42"><a href="#cb122-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.9</span></span>
-<span id="cb122-43"><a href="#cb122-43" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-44"><a href="#cb122-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">40</span>)<span class="sc">+</span></span>
-<span id="cb122-45"><a href="#cb122-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="fl">2.8</span>,<span class="dv">4</span>)<span class="sc">+</span></span>
-<span id="cb122-46"><a href="#cb122-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb122-47"><a href="#cb122-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)<span class="sc">+</span></span>
-<span id="cb122-48"><a href="#cb122-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span> invLVPC1, <span class="at">y=</span> ref2), <span class="at">data=</span>trend2) <span class="sc">+</span></span>
-<span id="cb122-49"><a href="#cb122-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Humidity (-PC1)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb122-50"><a href="#cb122-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span> (<span class="st">&quot;VIS reflectivity (%)&quot;</span>)</span>
-<span id="cb122-51"><a href="#cb122-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb122-52"><a href="#cb122-52" aria-hidden="true" tabindex="-1"></a>PNS <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plotNirSmall, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">-</span>meanPC2, <span class="at">y =</span> meanRes)) <span class="sc">+</span></span>
-<span id="cb122-53"><a href="#cb122-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
-<span id="cb122-54"><a href="#cb122-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanRes <span class="sc">-</span> sdRes,</span>
-<span id="cb122-55"><a href="#cb122-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanRes <span class="sc">+</span> sdRes</span>
-<span id="cb122-56"><a href="#cb122-56" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb122-57"><a href="#cb122-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
-<span id="cb122-58"><a href="#cb122-58" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-59"><a href="#cb122-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
-<span id="cb122-60"><a href="#cb122-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> <span class="sc">-</span>meanPC2 <span class="sc">-</span> sdPC2,</span>
-<span id="cb122-61"><a href="#cb122-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> <span class="sc">-</span>meanPC2 <span class="sc">+</span> sdPC2</span>
-<span id="cb122-62"><a href="#cb122-62" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb122-63"><a href="#cb122-63" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
-<span id="cb122-64"><a href="#cb122-64" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-65"><a href="#cb122-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb122-66"><a href="#cb122-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;#ff2c85&quot;</span>,</span>
-<span id="cb122-67"><a href="#cb122-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.9</span></span>
-<span id="cb122-68"><a href="#cb122-68" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-69"><a href="#cb122-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">20</span>,<span class="dv">40</span>)<span class="sc">+</span></span>
-<span id="cb122-70"><a href="#cb122-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">4</span>)<span class="sc">+</span></span>
-<span id="cb122-71"><a href="#cb122-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb122-72"><a href="#cb122-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)<span class="sc">+</span></span>
-<span id="cb122-73"><a href="#cb122-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span> invSNPC2, <span class="at">y=</span> ref3), <span class="at">data=</span>trend3)  <span class="sc">+</span></span>
-<span id="cb122-74"><a href="#cb122-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Aridity &amp; Radiation (-PC2)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb122-75"><a href="#cb122-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span> (<span class="st">&quot;NIR (res) reflectivity (%)&quot;</span>)</span>
-<span id="cb122-76"><a href="#cb122-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb122-77"><a href="#cb122-77" aria-hidden="true" tabindex="-1"></a>PNL <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plotNirLarge, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">-</span>meanPC2, <span class="at">y =</span> meanRes)) <span class="sc">+</span></span>
-<span id="cb122-78"><a href="#cb122-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
-<span id="cb122-79"><a href="#cb122-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanRes <span class="sc">-</span> sdRes,</span>
-<span id="cb122-80"><a href="#cb122-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanRes <span class="sc">+</span> sdRes</span>
-<span id="cb122-81"><a href="#cb122-81" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb122-82"><a href="#cb122-82" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
-<span id="cb122-83"><a href="#cb122-83" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-84"><a href="#cb122-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
-<span id="cb122-85"><a href="#cb122-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> <span class="sc">-</span>meanPC2 <span class="sc">-</span> sdPC2,</span>
-<span id="cb122-86"><a href="#cb122-86" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> <span class="sc">-</span>meanPC2 <span class="sc">+</span> sdPC2</span>
-<span id="cb122-87"><a href="#cb122-87" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb122-88"><a href="#cb122-88" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
-<span id="cb122-89"><a href="#cb122-89" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-90"><a href="#cb122-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb122-91"><a href="#cb122-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;#ffb000&quot;</span>,</span>
-<span id="cb122-92"><a href="#cb122-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.9</span></span>
-<span id="cb122-93"><a href="#cb122-93" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb122-94"><a href="#cb122-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">20</span>,<span class="dv">40</span>)<span class="sc">+</span></span>
-<span id="cb122-95"><a href="#cb122-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="fl">2.8</span>,<span class="dv">6</span>)<span class="sc">+</span></span>
-<span id="cb122-96"><a href="#cb122-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb122-97"><a href="#cb122-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)<span class="sc">+</span></span>
-<span id="cb122-98"><a href="#cb122-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span> invLNPC2, <span class="at">y=</span> ref4), <span class="at">data=</span>trend4)  <span class="sc">+</span></span>
-<span id="cb122-99"><a href="#cb122-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Aridity &amp; Radiation (-PC2)&quot;</span>)  <span class="sc">+</span></span>
-<span id="cb122-100"><a href="#cb122-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span> (<span class="st">&quot;NIR (res) reflectivity (%)&quot;</span>)</span>
-<span id="cb122-101"><a href="#cb122-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb122-102"><a href="#cb122-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb122-103"><a href="#cb122-103" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(PVS, PVL, PNS, PNL, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb119"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>PVS <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plotVisSmall, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">-</span>meanPC1, <span class="at">y =</span> meanVIS)) <span class="sc">+</span></span>
+<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb119-3"><a href="#cb119-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanVIS <span class="sc">-</span> sdVIS,</span>
+<span id="cb119-4"><a href="#cb119-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanVIS <span class="sc">+</span> sdVIS</span>
+<span id="cb119-5"><a href="#cb119-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb119-6"><a href="#cb119-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb119-7"><a href="#cb119-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-8"><a href="#cb119-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
+<span id="cb119-9"><a href="#cb119-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> <span class="sc">-</span>meanPC1 <span class="sc">-</span> sdPC1,</span>
+<span id="cb119-10"><a href="#cb119-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> <span class="sc">-</span>meanPC1 <span class="sc">+</span> sdPC1</span>
+<span id="cb119-11"><a href="#cb119-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb119-12"><a href="#cb119-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb119-13"><a href="#cb119-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-14"><a href="#cb119-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb119-15"><a href="#cb119-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;#648fff&quot;</span>,</span>
+<span id="cb119-16"><a href="#cb119-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.9</span></span>
+<span id="cb119-17"><a href="#cb119-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-18"><a href="#cb119-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">40</span>)<span class="sc">+</span></span>
+<span id="cb119-19"><a href="#cb119-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="fl">2.8</span>,<span class="dv">5</span>)<span class="sc">+</span></span>
+<span id="cb119-20"><a href="#cb119-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb119-21"><a href="#cb119-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)<span class="sc">+</span></span>
+<span id="cb119-22"><a href="#cb119-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span> invSVPC1, <span class="at">y=</span> ref1), <span class="at">data=</span>trend1)<span class="sc">+</span></span>
+<span id="cb119-23"><a href="#cb119-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Humidity (-PC1)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb119-24"><a href="#cb119-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span> (<span class="st">&quot;VIS reflectivity (%)&quot;</span>)</span>
+<span id="cb119-25"><a href="#cb119-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb119-26"><a href="#cb119-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb119-27"><a href="#cb119-27" aria-hidden="true" tabindex="-1"></a>PVL <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plotVisLarge, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">-</span>meanPC1, <span class="at">y =</span> meanVIS)) <span class="sc">+</span></span>
+<span id="cb119-28"><a href="#cb119-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb119-29"><a href="#cb119-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanVIS <span class="sc">-</span> sdVIS,</span>
+<span id="cb119-30"><a href="#cb119-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanVIS <span class="sc">+</span> sdVIS</span>
+<span id="cb119-31"><a href="#cb119-31" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb119-32"><a href="#cb119-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb119-33"><a href="#cb119-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-34"><a href="#cb119-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
+<span id="cb119-35"><a href="#cb119-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> <span class="sc">-</span>meanPC1 <span class="sc">-</span> sdPC1,</span>
+<span id="cb119-36"><a href="#cb119-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> <span class="sc">-</span>meanPC1 <span class="sc">+</span> sdPC1</span>
+<span id="cb119-37"><a href="#cb119-37" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb119-38"><a href="#cb119-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb119-39"><a href="#cb119-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-40"><a href="#cb119-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb119-41"><a href="#cb119-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;#ff7200&quot;</span>,</span>
+<span id="cb119-42"><a href="#cb119-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.9</span></span>
+<span id="cb119-43"><a href="#cb119-43" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-44"><a href="#cb119-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">40</span>)<span class="sc">+</span></span>
+<span id="cb119-45"><a href="#cb119-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="fl">2.8</span>,<span class="dv">4</span>)<span class="sc">+</span></span>
+<span id="cb119-46"><a href="#cb119-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb119-47"><a href="#cb119-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)<span class="sc">+</span></span>
+<span id="cb119-48"><a href="#cb119-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span> invLVPC1, <span class="at">y=</span> ref2), <span class="at">data=</span>trend2) <span class="sc">+</span></span>
+<span id="cb119-49"><a href="#cb119-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Humidity (-PC1)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb119-50"><a href="#cb119-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span> (<span class="st">&quot;VIS reflectivity (%)&quot;</span>)</span>
+<span id="cb119-51"><a href="#cb119-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb119-52"><a href="#cb119-52" aria-hidden="true" tabindex="-1"></a>PNS <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plotNirSmall, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">-</span>meanPC2, <span class="at">y =</span> meanRes)) <span class="sc">+</span></span>
+<span id="cb119-53"><a href="#cb119-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb119-54"><a href="#cb119-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanRes <span class="sc">-</span> sdRes,</span>
+<span id="cb119-55"><a href="#cb119-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanRes <span class="sc">+</span> sdRes</span>
+<span id="cb119-56"><a href="#cb119-56" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb119-57"><a href="#cb119-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb119-58"><a href="#cb119-58" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-59"><a href="#cb119-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
+<span id="cb119-60"><a href="#cb119-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> <span class="sc">-</span>meanPC2 <span class="sc">-</span> sdPC2,</span>
+<span id="cb119-61"><a href="#cb119-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> <span class="sc">-</span>meanPC2 <span class="sc">+</span> sdPC2</span>
+<span id="cb119-62"><a href="#cb119-62" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb119-63"><a href="#cb119-63" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb119-64"><a href="#cb119-64" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-65"><a href="#cb119-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb119-66"><a href="#cb119-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;#ff2c85&quot;</span>,</span>
+<span id="cb119-67"><a href="#cb119-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.9</span></span>
+<span id="cb119-68"><a href="#cb119-68" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-69"><a href="#cb119-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">20</span>,<span class="dv">40</span>)<span class="sc">+</span></span>
+<span id="cb119-70"><a href="#cb119-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">4</span>)<span class="sc">+</span></span>
+<span id="cb119-71"><a href="#cb119-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb119-72"><a href="#cb119-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)<span class="sc">+</span></span>
+<span id="cb119-73"><a href="#cb119-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span> invSNPC2, <span class="at">y=</span> ref3), <span class="at">data=</span>trend3)  <span class="sc">+</span></span>
+<span id="cb119-74"><a href="#cb119-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Aridity &amp; Radiation (-PC2)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb119-75"><a href="#cb119-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span> (<span class="st">&quot;NIR (res) reflectivity (%)&quot;</span>)</span>
+<span id="cb119-76"><a href="#cb119-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb119-77"><a href="#cb119-77" aria-hidden="true" tabindex="-1"></a>PNL <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plotNirLarge, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">-</span>meanPC2, <span class="at">y =</span> meanRes)) <span class="sc">+</span></span>
+<span id="cb119-78"><a href="#cb119-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb119-79"><a href="#cb119-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> meanRes <span class="sc">-</span> sdRes,</span>
+<span id="cb119-80"><a href="#cb119-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> meanRes <span class="sc">+</span> sdRes</span>
+<span id="cb119-81"><a href="#cb119-81" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb119-82"><a href="#cb119-82" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb119-83"><a href="#cb119-83" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-84"><a href="#cb119-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(</span>
+<span id="cb119-85"><a href="#cb119-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> <span class="sc">-</span>meanPC2 <span class="sc">-</span> sdPC2,</span>
+<span id="cb119-86"><a href="#cb119-86" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmax =</span> <span class="sc">-</span>meanPC2 <span class="sc">+</span> sdPC2</span>
+<span id="cb119-87"><a href="#cb119-87" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb119-88"><a href="#cb119-88" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#cecec2&quot;</span></span>
+<span id="cb119-89"><a href="#cb119-89" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-90"><a href="#cb119-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb119-91"><a href="#cb119-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;#ffb000&quot;</span>,</span>
+<span id="cb119-92"><a href="#cb119-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.9</span></span>
+<span id="cb119-93"><a href="#cb119-93" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb119-94"><a href="#cb119-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">20</span>,<span class="dv">40</span>)<span class="sc">+</span></span>
+<span id="cb119-95"><a href="#cb119-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="fl">2.8</span>,<span class="dv">6</span>)<span class="sc">+</span></span>
+<span id="cb119-96"><a href="#cb119-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb119-97"><a href="#cb119-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)<span class="sc">+</span></span>
+<span id="cb119-98"><a href="#cb119-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span> invLNPC2, <span class="at">y=</span> ref4), <span class="at">data=</span>trend4)  <span class="sc">+</span></span>
+<span id="cb119-99"><a href="#cb119-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Aridity &amp; Radiation (-PC2)&quot;</span>)  <span class="sc">+</span></span>
+<span id="cb119-100"><a href="#cb119-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span> (<span class="st">&quot;NIR (res) reflectivity (%)&quot;</span>)</span>
+<span id="cb119-101"><a href="#cb119-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb119-102"><a href="#cb119-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb119-103"><a href="#cb119-103" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(PVS, PVL, PNS, PNL, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><img src="MacroEcol_6_ManuscriptStats_files/figure-html/unnamed-chunk-55-1.png" width="672" /></p>
 </div>
 </div>
