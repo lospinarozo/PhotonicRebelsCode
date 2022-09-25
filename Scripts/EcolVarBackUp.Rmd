@@ -296,7 +296,7 @@ ggplot(PCAvalues, aes(x = PC1, y = PC2)) +
 <br>
 <br>
 
-# New data frames
+# Results from this step
 <br>
 
 <span style="color: #04C799"> **PC values by species** </span>  <br/>
@@ -354,11 +354,10 @@ write.csv(FinalPCs,"../Data/FromCode/PCsbySpp.csv")
 Cons1oo <- read.csv("../Data/FromCode/ConsolidatedReflectivityInd.csv") [-1]
 
 Cons1 <- data.frame(Cons1oo, PC_Values) %>% 
-  dplyr::select(-Species)
+  dplyr::select(-Species, -phylogeny_name.1)
 
 write.csv(Cons1,"../Data/FromCode/ConsReflEcolInd.csv")
 
-names(Cons1)
 
 ```
 
@@ -403,101 +402,42 @@ plot(im, axes = FALSE)
 
 ```
 
-# Correlations with Size
+# One last step
 
 <br>
 <br>
 
+Checking for correlations between PCs and Size
 
-Evaluate at the species level: 
+PC1 and Size:
 
 ```{r}
-PCSZ <- 
-  Cons1 %>% 
-  dplyr::select(size, phylogeny_name, PC1, PC2) %>%
-  dplyr::group_by(phylogeny_name) %>% # group
-  dplyr::summarise(
-    meanPC1 = mean(PC1),
-    meanPC2 = mean(PC2),
-    meanSize = mean(size),
-    sdPC1 = sd(PC1),
-    sdPC2 = sd(PC2),
-    sdSize = sd(size)
-  )
+
+cor.test(Cons1$size,Cons1$PC1)
+
+cor.test(Cons1$size,Cons1$PC2)
 
 ```
 
-Checking for correlations between PCs and Size at the species level
+PC2 and Size:
 
 ```{r}
 
-cor.test(PCSZ$meanSize,PCSZ$meanPC1)
+szp1 <- ggplot(Cons1, aes(x = size, y = PC1)) +
+  geom_point(fill="#39BEB1",col="black",pch=21,size=3.2,alpha=0.4)+
+  theme_bw()+
+  geom_smooth(method = lm,
+              color="darkslategray")
 
-cor.test(PCSZ$meanSize,PCSZ$meanPC2)
-
-```
-
-Plot
-
-```{r}
-
-
-szp1 <- ggplot(PCSZ, aes(x = -meanPC1, y =  meanSize)) +
-  geom_errorbar(aes(
-    ymin = meanSize - sdSize,
-    ymax = meanSize + sdSize
-  ),
-  col = "#cecec2"
-  ) +
-  geom_errorbarh(aes(
-    xmin = -meanPC1 - sdPC1,
-    xmax = -meanPC1 + sdPC1
-  ),
-  col = "#cecec2"
-  ) +
-  
-  geom_point(
-    size = 2, pch = 21, fill = "#648fff",
-    colour = "black", alpha = 0.9
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")+
-  geom_smooth(method=lm, color="#648fff", 
-              fill="#D3D3D3", size=0.6)+
-  xlab("Humidity (-PC1)") +
-  ylab ("Size (cm)")
-
-
-szp2 <- ggplot(PCSZ, aes(x = -meanPC2, y =  meanSize)) +
-  geom_errorbar(aes(
-    ymin = meanSize - sdSize,
-    ymax = meanSize + sdSize
-  ),
-  col = "#cecec2"
-  ) +
-  geom_errorbarh(aes(
-    xmin = -meanPC2 - sdPC2,
-    xmax = -meanPC2 + sdPC2
-  ),
-  col = "#cecec2"
-  ) +
-  
-  geom_point(
-    size = 2, pch = 21, fill = "#ffb000",
-    colour = "black", alpha = 0.9
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")+
-  #geom_smooth(method=lm, color="#ffb000", fill="#D3D3D3")+ # Not different than 0
-  xlab("Temperature (-PC1)") +
-  ylab ("Size (cm)")
-
+szp2 <- ggplot(Cons1, aes(x = size, y = PC2)) +
+  geom_point(fill="#39BEB1",col="black",pch=21,size=3.2,alpha=0.4)+
+  theme_bw()+
+  geom_smooth(method = lm,
+              color="darkslategray")
 
 grid.arrange(szp1, szp2, nrow = 1)
 
-
 ```
-
 
 
 

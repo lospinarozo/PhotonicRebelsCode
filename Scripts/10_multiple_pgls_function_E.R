@@ -31,7 +31,7 @@ pgls_runE=function(x, model, dataset)
     dataord=as.data.frame(dataset_ord$dat) ### rename ordered dataset
     
     #Specify the types of variables in the dataset (numeric or character):
-    dataord$Reflectance=as.numeric(as.character(dataord$Reflectance))
+    dataord$Response=as.numeric(as.character(dataord$Response))
     
     dataord$PC=as.numeric(as.character(dataord$PC))
     

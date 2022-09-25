@@ -5,4 +5,67 @@ output:
       toc: no
 ---
 
-Hello lovely people! How're you guys doinkk? Wwwwhatsup?
+# Photonic rebels: Christmas beetle’s reflectivity, absorptivity, and polarisation do not follow one universal  ecogeographical rule 
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+library(imager)
+im<-load.image("../Data/RmdImages/Temporaryphylogeny.png")
+plot(im, axes = FALSE)
+
+```
+
+<br>
+
+<span style="color: #04C799"> **Introduction** </span>  <br/>
+Welcome to the interactive data and code sharing experience!
+
+In support of the Open Science framework, we provide an interactive HTML version of our code with the calculations and packages we used to derive our conclusions. All our code was written in R programing language and then converted into a GitHub page. Find the original data and permanent version tracking of the code here: ADD LINK TO GITHUB. 
+
+Authors have been removed to facilitate double blind review
+
+<br>
+<br>
+
+<span style="color: #04C799"> **Brief table of contents** </span>  <br/>
+
+Our code was divided into four parts: 
+
+- Introduction: Find here the main graphs and results we included in the manuscript along with the instructions on how to navigate the code to produce them.   
+
+- Setting up: Find here the table listing all the beetle species studied in this experiment and the preparation of the initial data frames importing the raw spectral data obtained from measurements in the lab. 
+
+- Variables: 
+
+  -- Refl & Abs: 
+  
+  Extraction of the absorptivity and reflectivity from the spectral curves obtained in our laboratory measurmeents with a double spectrometer and integrating sphere. 
+  
+  -- Polarisation: 
+  
+  Linearisation and equalisation of the RGB values extracted from the calibrated photographs. Calculation of the degree of polarisation  
+  
+  -- Climate data: 
+  
+  Extraction of the ecological variables from ALA and AWAP. PCA analysis as a variable reduction tool. 
+
+- Analysis: 
+
+  -- Reflectivity: 
+  
+  Correlations between reflectivity, body size and climate.
+  
+  -- Absorptivity: 
+  
+  Correlations between absorptivity, body size and climate.
+  
+  -- Polarisation:
+  
+  Correlations between polarisation, body size and climate.
+  Correlations between polarisation, reflectivity and absorptivity.
+
+
+
+
+

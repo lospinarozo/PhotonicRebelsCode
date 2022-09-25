@@ -503,12 +503,16 @@ Cons1oo <-
   data.frame(Reflectivity, Size, SppNames) %>% 
   dplyr::select(-ind.1,-Ind)
 
+head(Cons1oo)
+
 write.csv(Cons1oo,"../Data/FromCode/ConsolidatedReflectivityInd.csv")
 
 ```
 
 
-# NIR/VIS Corrected
+# Residuals corrections
+
+### NIR/VIS Reflectivity
 
 The residuals can also be calculated from a model that considers phylogeny.
 
@@ -516,7 +520,7 @@ The residuals can also be calculated from a model that considers phylogeny.
 Reflectivity by Individual
 
 ```{r}
-Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1]
+Cons1 <- read.csv("../Data/FromCode/ConsolidatedReflectivityInd.csv")[-1]
 ```
 
 Phylogeny (multiple trees)
@@ -541,8 +545,8 @@ ConsAgg <- ConsAgg [,2:length(ConsAgg)] # eliminate spp name (redundant)
 
 # Separate the data frames 
 # Useful for plotting in the tree
-names(ConsAgg) <- c("TOT", "VIS", "NIR", "Res",
-                    "PC1", "PC2", "Size" )
+names(ConsAgg) <- c("TOT", "VIS", "NIR", "Res", "size" )
+
 ```
 
 Make sure that the phylogeny names are consistent in the data frame and the phylogenetic trees
@@ -581,7 +585,7 @@ Make sure names between data and tree tips match
 Cons1agg <- as.data.frame(Cons1agg)
 row.names(Cons1agg) <- Cons1agg [, 1] 
 names(Cons1agg) <- c("phylogeny_name", "TOT", "VIS", "NIR",
-                     "Res","size", "PC1", "PC2")
+                     "Res","size")
 
 
 # Test if the species are the same
@@ -590,19 +594,6 @@ identical(
   length(Cons1agg$phylogeny_name)
 )
 
-```
-
-Create subsets
-
-```{r}
-
-FRSDataSet <-
-  Cons1agg %>% 
-  dplyr::select (VIS, NIR) %>% 
-  dplyr::rename ("Reflectance" = NIR) 
-
-head(FRSDataSet)
- 
 ```
 
 
@@ -618,26 +609,18 @@ comp_data <- comparative.data(
 
 ```
 
-Source function
-
-note that this function has to be adapted to the data frame and model on each case
-
-```{r warning=FALSE, message=FALSE}
-source("12_multiple_pgls_function_G.R")# function G is for NIR residuals
-```
 
 Define model
 
 ```{r }
-MuPGLSMod0 <- Reflectance ~ VIS
+MuPGLSMod0 <- NIR ~ VIS
 ```
 
 Run
  
 ```{r message= FALSE, warnings=FALSE}
-pglsmodFRS <- pgls(NIR ~ VIS,
-  data = comp_data, param.CI = 0.95, lambda = "ML"
-)
+pglsmodFRS <- pgls(MuPGLSMod0,
+  data = comp_data, param.CI = 0.95, lambda = "ML")
 
 summary(pglsmodFRS) 
 
@@ -648,9 +631,22 @@ Extract residuals
 ```{r}
 FixedRes <- pglsmodFRS$residuals
 
+hist(FixedRes)
+
+
+FixedRes2 <- pglsmodFRS$phyres
+
+hist(FixedRes2)
+
+
 Cons1agg$FRS <- FixedRes
 
+Cons1agg$FRS2 <- FixedRes2
+
+head(Cons1agg)
+
 ```
+
 
 
 # Final Data Frames
