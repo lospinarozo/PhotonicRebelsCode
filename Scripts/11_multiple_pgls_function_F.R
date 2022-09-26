@@ -31,7 +31,7 @@ pgls_runF=function(x, model, dataset)
     dataord=as.data.frame(dataset_ord$dat) ### rename ordered dataset
     
     #Specify the types of variables in the dataset (numeric or character):
-    dataord$Reflectance=as.numeric(as.character(dataord$Reflectance))
+    dataord$Response=as.numeric(as.character(dataord$Response))
     
     dataord$PC=as.numeric(as.character(dataord$PC))
     dataord$size=as.numeric(as.character(dataord$size))
@@ -46,7 +46,7 @@ pgls_runF=function(x, model, dataset)
                                  names.col = "TipLabel", 
                                  vcv = TRUE, 
                                  na.omit = FALSE, 
-                                 warn.dropped = TRUE)
+                                 warn.dropped = FALSE)
     
     #Model used
     modA <- pgls(model, data=compdata, param.CI = 0.95,lambda = "ML") 

@@ -6,16 +6,19 @@ editor_options:
   chunk_output_type: console
 ---
 
+<br>
+<br>
 
-In this file, we calculate the reflectance of the beetles from the RGB values measured from calibrated photographs to find the degree of circular polarization.
+We calculated the reflectance of the beetles from the RGB values measured from calibrated photographs to find the degree of circular polarization.
 
-Specifically, we first linearise the RBGs using the parameters derived from the MATLAB code adapted from Stevens et al 2007 (Biological Journal of the Linnean society, 90(2), 211-237).
+First we linearised the RBGs using the parameters derived from the MATLAB code adapted from Stevens et al 2007 (Biological Journal of the Linnean society, 90(2), 211-237). Next we equalised the RGB values with the grey standard with known reflectance. Finally, we calculated the difference between the two polarizations standardized by their sum.
 
-Next we equalise the RGB values with the grey standard with known reflectance.
+<br>
 
-Then we calculate the difference between the two polarizations standardized by their sum. 
+In the second part of this script, we correlate the polarization with reflectivity obtained in previous scripts
 
-Finally we correlate the polarization with reflectivity obtained in previous scripts
+<br>
+<br>
 
 # Setting up
 
@@ -24,7 +27,7 @@ Finally we correlate the polarization with reflectivity obtained in previous scr
 Libraries sourced from an additional script
 
 ```{r message = FALSE, warning=FALSE}
-source("./MacroEcol_1_Libraries.R")
+source("./Scripts/MacroEcol_1_Libraries.R")
 ```
 
 We included an overall option to keep as many decimals as possible in our data, which is important for our calculations
@@ -36,7 +39,7 @@ options(scipen = 100)
 We imported the data set containing ecological and phylogeny data obtained in previous steps. 
 
 ```{r}
-Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1]
+Cons1 <- read.csv("./Data/FromCode/ConsReflEcolInd.csv")[-1]
 ```
 
 
@@ -52,7 +55,7 @@ The parameters obtained from these curves were stored in .txt files, so we wrote
 
 read_parameters_from_file <- function(camera_cat, type) {
   param <- read.table(paste0(
-    "../Data/ParametersMatLab/StandardParams",
+    "./Data/ParametersMatLab/StandardParams",
     camera_cat, type, ".txt"
   ), header = TRUE) %>%
     dplyr::select(1:5, 7) %>%
@@ -104,7 +107,7 @@ This is the known reflectance (from manufacturer) of the 40% grey placed next to
 
 ```{r}
 
-grey_standard_refl <- read.csv("../Data/12_knownGreyStdReflectance.csv")
+grey_standard_refl <- read.csv("./Data/12_knownGreyStdReflectance.csv")
 ```
 
 ## Raw RGB values
@@ -112,7 +115,7 @@ grey_standard_refl <- read.csv("../Data/12_knownGreyStdReflectance.csv")
 These are the RGB valuyes extracted from the calibrated photographs. We considered one region of interest (ROI) in one elytron and one in the pronotum. We also sampled the 40% grey as a reference.
 
 ```{r import data, echo = FALSE, message = FALSE}
-RGB_raw <- read.csv("../Data/10_Polarization.csv")
+RGB_raw <- read.csv("./Data/10_Polarization.csv")
 
 # simplify
 RGB_raw_transform <-
@@ -234,9 +237,9 @@ lin_equ_RGB <- function(DataFrame, ParameterData) {
 
       # For each line in the DataFrame to linearise, we need to find
       # the correspondent set of parameters:
-      dplyr::filter(type == DataFrame$type[i] & # VIS, LCP, or RCP
-        Channel == DataFrame$Channel[i] & # R, G or B
-        camera_cat == DataFrame$camera_cat[i]) %>% # Camera conditions
+      dplyr::filter("type" == DataFrame$type[i] & # VIS, LCP, or RCP
+        "Channel" == DataFrame$Channel[i] & # R, G or B
+        "camera_cat" == DataFrame$camera_cat[i]) %>% # Camera conditions
       dplyr::arrange(., parameter) # arranged alphabetically
 
     # Apply the formula
@@ -572,6 +575,8 @@ head(RPDataAgg)
 
 This way we can conduct the analysis at both individual and species level
 
+<br>
+<br>
 
 # Questions
 

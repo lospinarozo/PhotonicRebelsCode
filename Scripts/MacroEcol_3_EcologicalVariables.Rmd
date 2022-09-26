@@ -4,7 +4,8 @@ title: "Summarising ecological variables into principal components"
 #date: "25/04/2022"
 ---
 
-Ecological Variables
+<br>
+<br>
 
 # Setting up 
 
@@ -100,6 +101,8 @@ Finally we obtained the data frame `EcoVar` which contains all the relevant ecol
 
 But before starting the analysis, we studied the correlations between the variables.
 
+<br>
+<br>
 
 # Correlations 
 
@@ -160,6 +163,8 @@ EvarCp %>%
 
 ```
 
+<br>
+<br>
 
 # PCA
 <br>
@@ -244,6 +249,8 @@ Lower PC1 = higher humidity (vapour, rain and clouds) lower aridity.</br>
 
 Lower PC2 = higher solar radiation, higher max temp, more days above 35 and more aridity
 
+<br>
+<br>
 
 # Plot
 
@@ -328,7 +335,6 @@ Cons2 <-
   filter(Species %in% (Cons2oo$ind)) %>%  # Subset the PCA values
   arrange(Species) %>% 
   bind_cols(. , Cons2oo) %>% # join with the 'Optical' Data frame 
-  dplyr::select(-Species) %>% 
   dplyr::select(ind, everything()) # rearrange the column order
 
 write.csv(Cons2,"../Data/FromCode/ConsAbsEcolInd.csv")
@@ -337,6 +343,8 @@ names(Cons2)
 
 ```
 
+<br>
+<br>
 
 # Meaning of each PC
 
@@ -349,8 +357,50 @@ names(Cons2)
 
 <br>
 
-
 ```{r warning=FALSE, message=FALSE}
 library(imager)
 im<-load.image("../Data/RmdImages/PCarrows.png")
 plot(im, axes = FALSE)
+
+```
+
+# One last step
+
+<br>
+<br>
+
+Checking for correlations between PCs and Size
+
+PC1 and Size:
+
+```{r}
+
+cor.test(Cons1$size,Cons1$PC1)
+
+cor.test(Cons1$size,Cons1$PC2)
+
+```
+
+PC2 and Size:
+
+```{r}
+
+szp1 <- ggplot(Cons1, aes(x = size, y = PC1)) +
+  geom_point(fill="#39BEB1",col="black",pch=21,size=3.2,alpha=0.4)+
+  theme_bw()+
+  geom_smooth(method = lm,
+              color="darkslategray")
+
+szp2 <- ggplot(Cons1, aes(x = size, y = PC2)) +
+  geom_point(fill="#39BEB1",col="black",pch=21,size=3.2,alpha=0.4)+
+  theme_bw()+
+  geom_smooth(method = lm,
+              color="darkslategray")
+
+grid.arrange(szp1, szp2, nrow = 1)
+
+```
+
+
+
+

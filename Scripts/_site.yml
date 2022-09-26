@@ -1,26 +1,32 @@
 name: Shady Christmas Beetles
-output_dir: "../docs"
+output_dir: "../docs" 
+exclude:
+  - "Scripts/*.R"
 navbar:
   title: Shady Xmas Beetles
   left:
    - text: Home
      href: index.html
+   - text: Introduction
+     href: MacroEcol_7_Summary.html
    - text: Setting up
      href: MacroEcol_1_SettingUp.html
-   - text: Optical properties
-     href: MacroEcol_2_OpticalProperties.html
-   - text: Ecological variables
-     href: MacroEcol_3_EcologicalVariables.html
-   - text: Polarisation
-     href: MacroEcol_5_Polarization.html
-   - text: Polarisation PGLS
-     href: MacroEcol_5_Polarization2.html
-   - text: Reflectivity PGLS
-     href: MacroEcol_6_ManuscriptStats.html
-   - text: Summary
-     href: MacroEcol_7_Summary.html
-#   - text: Supplementary
-#     href: MacroEcol_8_Supplementary.html
+   - text: Extracting variables
+     menu:
+       - text: Reflectivity & Absorptivity
+         href: MacroEcol_2_OpticalProperties.html
+       - text: Polarisation
+         href: MacroEcol_5_Polarization.html
+       - text: Ecology
+         href: MacroEcol_3_EcologicalVariables.html
+   - text: Analysis
+     menu:
+       - text: Reflectivity
+         href: MacroEcol_6_ManuscriptStats.html
+       - text: Absorptivity
+         href: MacroEcol_6b_ManuscriptStatsAbsorptivity.html
+       - text: Polarisation
+         href: MacroEcol_5_PolarisationAnalysis.html
 output:
   html_document:
    highlight: kate
