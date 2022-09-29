@@ -18,13 +18,12 @@ source("./MacroEcol_1_Libraries.R")
 Ecological data was obtained from ALA and AWAP data bases through additional scripts (available in the scripts folder of this same project) 
 
 ```{r eval=FALSE}
-#Data sourced from additional scripts:
+# Data sourced from additional scripts:
 
-#ALA Data
+# ALA Data
 source("./1_ALA_variables.R")
-#AWAP Data
+# AWAP Data
 source("./4_AWAPDailyQueries_2022.R")
-
 ```
 
 We extracted the climate variables correspondent to the activity period of each species (see additional scripts for more details)
@@ -33,49 +32,50 @@ We extracted the climate variables correspondent to the activity period of each 
 
 vegeta <- read_csv("../Data/6_VegetationVariables.csv")
 climat <- read_csv("../Data/7_ClimateVariables.csv")
-
 ```
 
 The climate data we extracted contained many additional variables, but we decided to use only the most informative ones
 
 ```{r}
 
-climat <- 
-  climat %>% 
-  filter (species != "xyle3" & 
-          species != "oliv3") %>% # removed. vegetation data not available
-  arrange (species) %>% 
-  dplyr::select (c(1,5:8,11:19)) %>% 
+climat <-
+  climat %>%
+  filter(species != "xyle3" &
+    species != "oliv3") %>% # removed. vegetation data not available
+  arrange(species) %>%
+  dplyr::select(c(1, 5:8, 11:19)) %>%
   dplyr::rename(
     over35 = avg_temp_over_35, # days over 35deg averaged through 10 years
     MaxT = avg_max_temp, # daily -> mean in one month -> mean over 10 y
     MinT = avg_min_temp, # daily -> mean in one month -> mean over 10 y
     Solar = avg_sol, # daily radiation -> mean in month -> mean over 10 y
-    Vapour =avg_vpr, # vapor pressure -> mean in month -> mean over 10 y
-    Clouds = cloud_cover, # cloud cover per year 
-    Rain = avg_rr) # rainfall per day -> mean in one month -> mean over 10 years
+    Vapour = avg_vpr, # vapor pressure -> mean in month -> mean over 10 y
+    Clouds = cloud_cover, # cloud cover per year
+    Rain = avg_rr
+  ) # rainfall per day -> mean in one month -> mean over 10 years
 
-names(climat) 
-# Suffix Coll = value for the parameter in the collection month. 
+names(climat)
+# Suffix Coll = value for the parameter in the collection month.
 # No suffix = average value for this variable across the activity period
 
-vegeta <- 
-  vegeta %>% 
-  filter (spp != "vrdi1"&
-          spp != "rose05") %>% # removed. climate data not available
-  arrange (spp) %>% 
-  dplyr::select (c(1,11:18)) # Keep only the vegetation variables
+vegeta <-
+  vegeta %>%
+  filter(spp != "vrdi1" &
+    spp != "rose05") %>% # removed. climate data not available
+  arrange(spp) %>%
+  dplyr::select(c(1, 11:18)) # Keep only the vegetation variables
 
-names(vegeta) <- (c("beetle", "NPP", "BareSoil", "LeafArea",
-                "FPAR", "Aridity", "C3Macro", "C3Meso", "C4Mega")) # rename
+names(vegeta) <- (c(
+  "beetle", "NPP", "BareSoil", "LeafArea",
+  "FPAR", "Aridity", "C3Macro", "C3Meso", "C4Mega"
+)) # rename
 
 EcoVar <-
-  data.frame(vegeta,climat) %>% 
-  dplyr::select (- species) %>% 
-  dplyr::select (c(1,6:16)) %>%  # Keep only variables for the period of activity 
-  mutate (AridityN = Aridity * -1) %>%  # Because arid = closer to 0
-  dplyr::select (- Aridity)
-
+  data.frame(vegeta, climat) %>%
+  dplyr::select(-species) %>%
+  dplyr::select(c(1, 6:16)) %>% # Keep only variables for the period of activity
+  mutate(AridityN = Aridity * -1) %>% # Because arid = closer to 0
+  dplyr::select(-Aridity)
 ```
 
 Some beetles were removed from the analysis because their position on the phylogeny is uncertain. 
@@ -83,17 +83,17 @@ Some beetles were removed from the analysis because their position on the phylog
 ```{r}
 
 EcoVar <-
-  EcoVar %>% 
-  mutate (spp = substr(beetle, 1, 4)) %>% 
-  filter (spp != "ambl"& # Amblyterus cicatricosus
-          spp != "psqz"& # Pseudoschizongnatus schoenfeldti
-          spp != "saul"& # Saulostomus villosus
-          spp != "sqzb"& # Schizognathus burmeisteri
-          spp != "sqzc"& # Schizognathus compressicornis
-          spp != "sqzm"  # Schizognathus mesosternalis
-            ) %>% # These species were removed. No phylogenetic info
-  dplyr::select (-spp)
-
+  EcoVar %>%
+  mutate(spp = substr(beetle, 1, 4)) %>%
+  filter(
+    spp != "ambl" & # Amblyterus cicatricosus
+      spp != "psqz" & # Pseudoschizongnatus schoenfeldti
+      spp != "saul" & # Saulostomus villosus
+      spp != "sqzb" & # Schizognathus burmeisteri
+      spp != "sqzc" & # Schizognathus compressicornis
+      spp != "sqzm" # Schizognathus mesosternalis
+  ) %>% # These species were removed. No phylogenetic info
+  dplyr::select(-spp)
 ```
 
 
@@ -110,12 +110,11 @@ We obtained the $R^2$ and correspondent p values for all combinations between th
 
 ```{r}
 
-EVarP <- EcoVar[,c(2:length(EcoVar))] # remove the categorical variables
+EVarP <- EcoVar[, c(2:length(EcoVar))] # remove the categorical variables
 
-EVarMatP<- Hmisc::rcorr(as.matrix(EVarP)) 
+EVarMatP <- Hmisc::rcorr(as.matrix(EVarP))
 EVarR2P <- round(EVarMatP$r, 2) # R2 values
 EvarCpP <- round(EVarMatP$P, 5) # p  values
-
 ```
 
 The following are the results for all variables including Vegetation and climate for activity period:
@@ -129,7 +128,6 @@ EVarR2P %>%
 EvarCpP %>%
   kbl() %>%
   kable_paper("hover", full_width = F)
-
 ```
 
 
@@ -137,16 +135,15 @@ Afterwards we removed the variables with correlations of R > 0.8
 
 ```{r}
 
-EcolVar <- 
-  EcoVar %>% 
-  dplyr::select (- C3Macro, -C4Mega, -C3Meso, -MinT)
+EcolVar <-
+  EcoVar %>%
+  dplyr::select(-C3Macro, -C4Mega, -C3Meso, -MinT)
 
-EVar <- EcolVar[,c(2:length(EcolVar))] # remove the categorical variables
+EVar <- EcolVar[, c(2:length(EcolVar))] # remove the categorical variables
 
-EVarMat<- Hmisc::rcorr(as.matrix(EVar)) 
+EVarMat <- Hmisc::rcorr(as.matrix(EVar))
 EVarR2 <- round(EVarMat$r, 2) # R2 values
 EvarCp <- round(EVarMat$P, 5) # p  values
-
 ```
 
 Finally, we considered only these variables:
@@ -160,7 +157,6 @@ EVarR2 %>%
 EvarCp %>%
   kbl() %>%
   kable_paper("hover", full_width = F)
-
 ```
 
 <br>
@@ -176,7 +172,7 @@ Running a PCA is only possible if variables can be correlated:
 ```{r}
 cord <- cor(EVar) # default: pearsons correlation coeficient
 N <- dim(EVar)[1] # number of observations
-cortest.bartlett(cord,n=N) # Are the variables correlated? Yes p < 0.05
+cortest.bartlett(cord, n = N) # Are the variables correlated? Yes p < 0.05
 ```
 
 Yes, they can be summarised in the new variables called components
@@ -190,9 +186,8 @@ Here we extracted the eigen values, components and loadings matrix
 
 eigVal <- eigen(cord) # Extract eigen values
 vectorev <- eigVal$vectors # vector with the eigen values
-compv <- prcomp(EVar, retx=TRUE, center=TRUE, scale. = TRUE) # components
-load<-compv$rotation # Loadings matrix 
-
+compv <- prcomp(EVar, retx = TRUE, center = TRUE, scale. = TRUE) # components
+load <- compv$rotation # Loadings matrix
 ```
 
 <span style="color: #04C799"> **Scree Plot** </span>  <br/>
@@ -201,11 +196,14 @@ Represents the eigen values associated to each component. We used only the ones 
 
 ```{r}
 
-{ plot(c(1:length(eigVal$values)),eigVal$values,type="b", cex=1.4,
-     ylab="Eigen Values",xlab="Principal components",
-     pch=21,bg="#04C799") 
-abline(h=1,col="dodgerblue3",lwd=2,lty=2)}
-
+{
+  plot(c(1:length(eigVal$values)), eigVal$values,
+    type = "b", cex = 1.4,
+    ylab = "Eigen Values", xlab = "Principal components",
+    pch = 21, bg = "#04C799"
+  )
+  abline(h = 1, col = "dodgerblue3", lwd = 2, lty = 2)
+}
 ```
 
 <span style="color: #04C799"> **Variance Explained** </span>  <br/>
@@ -215,7 +213,6 @@ The following table shows the proportion of variance explained by each component
 ```{r}
 
 summary(compv)
-
 ```
 
 PC1 and PC2 are able to explain 82% of all the variance in ecological habitats for our samples.
@@ -228,20 +225,20 @@ The colours in the following figure represent the correlations of each variable 
 
 ```{r}
 
-par(mar=c(4, 8, 4, 4))
+par(mar = c(4, 8, 4, 4))
 
-plot(load[,1:2],cex=0.8,breaks=c(-1,-0.5,-0.4,-0.3,0.3,0.4,0.5,1),
-     las=2,ylab=" ",xlab=" ",
-     digits=2,
-     col=c(
-       "#762A83", "#AF8DC3",
-       "#E7D4E8", "#F7F7F7",
-       "#D9F0D3", "#7FBF7B",
-       "#1B7837" 
-     ),
-     main="Loadings matrix ") 
-
-
+plot(load[, 1:2],
+  cex = 0.8, breaks = c(-1, -0.5, -0.4, -0.3, 0.3, 0.4, 0.5, 1),
+  las = 2, ylab = " ", xlab = " ",
+  digits = 2,
+  col = c(
+    "#762A83", "#AF8DC3",
+    "#E7D4E8", "#F7F7F7",
+    "#D9F0D3", "#7FBF7B",
+    "#1B7837"
+  ),
+  main = "Loadings matrix "
+)
 ```
 
 
@@ -258,69 +255,121 @@ Lower PC2 = higher solar radiation, higher max temp, more days above 35 and more
 # brewer.pal(n = 7, name = "Accent")
 
 # Extract PC axes for plotting
-PCAvalues <- data.frame(Species = EcolVar$beetle, 
-                        compv$x)
+PCAvalues <- data.frame(
+  Species = EcolVar$beetle,
+  compv$x
+)
 
 # Extract loadings of the variables
 PCAloadings <- data.frame(Variables = rownames(compv$rotation), compv$rotation)
 
 # PC1 vs PC2
 ggplot(PCAvalues, aes(x = PC1, y = PC2)) +
-  geom_point(fill="#39BEB1",col="black",pch=21,size=3.2,alpha=0.4)+
-  theme_bw()+
-  geom_text(data = subset (PCAvalues, PC1 > 2 | PC1 < -2.5 | PC2 < -2.5),
-            alpha=.3, size=1, aes(label=Species),col="black")+
-  annotate("text", size=3, 
-           x = (PCAloadings$PC1*11.5), 
-           y = (PCAloadings$PC2*11.5),
-           label = (PCAloadings$Variables))+
-  geom_segment(data = PCAloadings[c(1,2,3),], 
-           aes(x = 0, y = 0, 
-               xend = (PC1*11), yend = (PC2*11)), 
-           arrow = arrow(
-             length = unit(1/2,"picas")), 
-             color = "#c23a58") +
-  geom_segment(data = PCAloadings[c(4,5,6,7),], 
-           aes(x = 0, y = 0, 
-               xend = (PC1*11), yend = (PC2*11)), 
-           arrow = arrow( 
-             length = unit(1/2,"picas")), 
-             color = "#3a97c2") +
-  geom_hline(yintercept = 0, linetype ="dashed",colour="gray")+
-  geom_vline(xintercept = 0, linetype ="dashed",colour="gray") +
+  geom_point(fill = "#39BEB1", col = "black", pch = 21, size = 3.2, alpha = 0.4) +
+  theme_bw() +
+  geom_text(
+    data = subset(PCAvalues, PC1 > 2 | PC1 < -2.5 | PC2 < -2.5),
+    alpha = .3, size = 1, aes(label = Species), col = "black"
+  ) +
+  annotate("text",
+    size = 3,
+    x = (PCAloadings$PC1 * 11.5),
+    y = (PCAloadings$PC2 * 11.5),
+    label = (PCAloadings$Variables)
+  ) +
+  geom_segment(
+    data = PCAloadings[c(1, 2, 3), ],
+    aes(
+      x = 0, y = 0,
+      xend = (PC1 * 11), yend = (PC2 * 11)
+    ),
+    arrow = arrow(
+      length = unit(1 / 2, "picas")
+    ),
+    color = "#c23a58"
+  ) +
+  geom_segment(
+    data = PCAloadings[c(4, 5, 6, 7), ],
+    aes(
+      x = 0, y = 0,
+      xend = (PC1 * 11), yend = (PC2 * 11)
+    ),
+    arrow = arrow(
+      length = unit(1 / 2, "picas")
+    ),
+    color = "#3a97c2"
+  ) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "gray") +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "gray") +
   ylim(-10, 5) +
   xlim(-7, 5)
-
 ```
 
 <br>
 <br>
 
-# Results from this step
+# New data frames
 <br>
+
+<span style="color: #04C799"> **PC values by species** </span>  <br/>
 
 We obtained a data frame with the PC values that summarise the ecological variables considered in our analysis.
 
 ```{r}
-PC_Values <- PCAvalues[ , 1 : 3]
+PC_Values <- PCAvalues[, 1:3]
+```
+
+We need one PC value per species. 
+
+```{r}
+
+# Import species names
+SppNames <- read.csv("../Data/9_CodesAndSpecies.csv")
+
+SppNames <-
+  SppNames %>%
+  mutate(spp = substr(Ind, 1, 4)) %>%
+  filter(
+    spp != "ambl" & # Amblyterus cicatricosus
+      spp != "psqz" & # Pseudoschizongnatus schoenfeldti
+      spp != "saul" & # Saulostomus villosus
+      spp != "sqzb" & # Schizognathus burmeisteri
+      spp != "sqzc" & # Schizognathus compressicornis
+      spp != "sqzm" # Schizognathus mesosternalis
+  ) %>% # These species were removed. No phylogenetic info
+  dplyr::select(-spp) %>%
+  arrange(Ind)
+
+
+# Add specie snames to the PC values data frame
+PC_Values$phylogeny_name <- SppNames$phylogeny_name
+
+# Find the mean per species:
+FinalPCs <-
+  PC_Values %>%
+  dplyr::select(-Species) %>%
+  dplyr::group_by(phylogeny_name) %>% # group
+  dplyr::summarise(across(everything(), list(mean))) # mean
+
+# Print results
+
+write.csv(FinalPCs, "../Data/FromCode/PCsbySpp.csv")
 ```
 
 
-Then, we added the PC values to the consolidated files obtained in previous steps which includes the optical variables, size and phylogeny name:
 
 <span style="color: #04C799"> **Reflectivity by individual** </span>  <br/>
 
 ```{r}
 
-Cons1oo <- read.csv("../Data/FromCode/ConsolidatedReflectivityInd.csv") [-1]
+Cons1oo <- read.csv("../Data/FromCode/ConsolidatedReflectivityInd.csv")[-1]
 
-Cons1 <- data.frame(Cons1oo, PC_Values) %>% 
+Cons1 <- data.frame(Cons1oo, PC_Values) %>%
   dplyr::select(-Species)
 
-write.csv(Cons1,"../Data/FromCode/ConsReflEcolInd.csv")
+write.csv(Cons1, "../Data/FromCode/ConsReflEcolInd.csv")
 
 names(Cons1)
-
 ```
 
 
@@ -328,19 +377,18 @@ names(Cons1)
 
 ```{r}
 
-Cons2oo <- read.csv("../Data/FromCode/ConsolidatedAbsoptivityInd.csv") [-1]
+Cons2oo <- read.csv("../Data/FromCode/ConsolidatedAbsoptivityInd.csv")[-1]
 
-Cons2 <- 
-  PC_Values %>% 
-  filter(Species %in% (Cons2oo$ind)) %>%  # Subset the PCA values
-  arrange(Species) %>% 
-  bind_cols(. , Cons2oo) %>% # join with the 'Optical' Data frame 
+Cons2 <-
+  PC_Values %>%
+  filter(Species %in% (Cons2oo$ind)) %>% # Subset the PCA values
+  arrange(Species) %>%
+  bind_cols(., Cons2oo) %>% # join with the 'Optical' Data frame
   dplyr::select(ind, everything()) # rearrange the column order
 
-write.csv(Cons2,"../Data/FromCode/ConsAbsEcolInd.csv")
-  
-names(Cons2)
+write.csv(Cons2, "../Data/FromCode/ConsAbsEcolInd.csv")
 
+names(Cons2)
 ```
 
 <br>
@@ -359,46 +407,98 @@ names(Cons2)
 
 ```{r warning=FALSE, message=FALSE}
 library(imager)
-im<-load.image("../Data/RmdImages/PCarrows.png")
+im <- load.image("../Data/RmdImages/PCarrows.png")
 plot(im, axes = FALSE)
-
 ```
 
-# One last step
+# Correlations with Size
 
 <br>
 <br>
 
-Checking for correlations between PCs and Size
-
-PC1 and Size:
+Evaluate at the species level: 
 
 ```{r}
-
-cor.test(Cons1$size,Cons1$PC1)
-
-cor.test(Cons1$size,Cons1$PC2)
-
+PCSZ <-
+  Cons1 %>%
+  dplyr::select(size, phylogeny_name, PC1, PC2) %>%
+  dplyr::group_by(phylogeny_name) %>% # group
+  dplyr::summarise(
+    meanPC1 = mean(PC1),
+    meanPC2 = mean(PC2),
+    meanSize = mean(size),
+    sdPC1 = sd(PC1),
+    sdPC2 = sd(PC2),
+    sdSize = sd(size)
+  )
 ```
 
-PC2 and Size:
+Checking for correlations between PCs and Size at the species level
 
 ```{r}
 
-szp1 <- ggplot(Cons1, aes(x = size, y = PC1)) +
-  geom_point(fill="#39BEB1",col="black",pch=21,size=3.2,alpha=0.4)+
-  theme_bw()+
-  geom_smooth(method = lm,
-              color="darkslategray")
+cor.test(PCSZ$meanSize, PCSZ$meanPC1)
 
-szp2 <- ggplot(Cons1, aes(x = size, y = PC2)) +
-  geom_point(fill="#39BEB1",col="black",pch=21,size=3.2,alpha=0.4)+
-  theme_bw()+
-  geom_smooth(method = lm,
-              color="darkslategray")
+cor.test(PCSZ$meanSize, PCSZ$meanPC2)
+```
+
+Plot
+
+```{r}
+
+
+szp1 <- ggplot(PCSZ, aes(x = -meanPC1, y = meanSize)) +
+  geom_errorbar(aes(
+    ymin = meanSize - sdSize,
+    ymax = meanSize + sdSize
+  ),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = -meanPC1 - sdPC1,
+    xmax = -meanPC1 + sdPC1
+  ),
+  col = "#cecec2"
+  ) +
+  geom_point(
+    size = 2, pch = 21, fill = "#648fff",
+    colour = "black", alpha = 0.9
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_smooth(
+    method = lm, color = "#648fff",
+    fill = "#D3D3D3", size = 0.6
+  ) +
+  xlab("Humidity (-PC1)") +
+  ylab("Size (cm)")
+
+
+szp2 <- ggplot(PCSZ, aes(x = -meanPC2, y = meanSize)) +
+  geom_errorbar(aes(
+    ymin = meanSize - sdSize,
+    ymax = meanSize + sdSize
+  ),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = -meanPC2 - sdPC2,
+    xmax = -meanPC2 + sdPC2
+  ),
+  col = "#cecec2"
+  ) +
+  geom_point(
+    size = 2, pch = 21, fill = "#ffb000",
+    colour = "black", alpha = 0.9
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  # geom_smooth(method=lm, color="#ffb000", fill="#D3D3D3")+ # Not different than 0
+  xlab("Temperature (-PC1)") +
+  ylab("Size (cm)")
+
 
 grid.arrange(szp1, szp2, nrow = 1)
-
 ```
 
 

@@ -399,7 +399,7 @@ where $l$ represents the mean reflectance under the filter for left handed circu
 
 ## Elytra
 
-Thus we obtained the polarization values for the elytron ROI by individual:
+Thus we obtained the polarization values for the elytron ROI by individual and by species:
 
 ```{r}
 
@@ -410,24 +410,43 @@ ElyPol <-
   dplyr::mutate(Polarization = (LCP - RCP) / (LCP + RCP))
 
 head(ElyPol) # by individual
-```
 
-And by species:
+# To find the mean value per spp: 
 
-```{r}
-
-# Average: One polarization value by spp
-ElyPolbysp <-
+ElyPolbb <-
   ElyPol %>%
   dplyr::select(ind, Polarization) %>%
   dplyr::mutate(spp = substr(ind, 1, 4)) # Add column for spp
 
+ElyPolbb <-  as.data.frame(ElyPolbb)
+
+# Import species names
+SppNames <- read.csv("../Data/9_CodesAndSpecies.csv")
+
+SppNames <-
+  SppNames %>% 
+  mutate (spp = substr(Ind, 1, 4)) %>% 
+  filter (spp != "ambl"& # Amblyterus cicatricosus
+          spp != "psqz"& # Pseudoschizongnatus schoenfeldti
+          spp != "saul"& # Saulostomus villosus
+          spp != "sqzb"& # Schizognathus burmeisteri
+          spp != "sqzc"& # Schizognathus compressicornis
+          spp != "sqzm"  # Schizognathus mesosternalis
+            ) %>% # These species were removed. No phylogenetic info
+  dplyr::select (-spp) %>% 
+  arrange(Ind) %>% 
+  rename(ind = Ind)
+
+# Combine the two data frames
+ElyPolbyindN <- merge (ElyPolbb, SppNames, by="ind") # merge as "inner join"
+
+# mean by species
 EPolbs <-
-  ElyPolbysp[2:3] %>%
-  dplyr::group_by(spp) %>%
+  ElyPolbyindN%>%
+  select(Polarization, phylogeny_name) %>% 
+  dplyr::group_by(phylogeny_name) %>%
   dplyr::summarise(Pol = mean(Polarization)) # by species
 
-head(EPolbs)
 ```
 
 
@@ -464,9 +483,9 @@ head(PPolbs)
 ```
 
 
-## Consolidates
+## Combined 
 
-### Body Part
+Join the two data frames of polarisation by elytra and pronotum.
 
 First make sure the two data frames contain the same number of species, thus the differences between the individuals in both data frames should be 0
 
@@ -512,9 +531,19 @@ BeetlePol <-
   dplyr::mutate(Difference = ElytrPol - PronotPol)
 
 head(BeetlePol)
+
 ```
 
-### Ecological variables
+
+
+
+
+
+
+###################### REMOVE ############################################
+
+
+Ecological variables
 
 We merged the polarization data with the data frames obtained in previous steps that contain ecological variables, reflectivity, size and the species name as follows: 
 
@@ -633,13 +662,20 @@ PronotumMoreP$ind
 <br>
 <br>
 
-## VIS Reflectivity
+## Correlations with other optical properties
+<br>
+
+This was an explratory analysis to evaluate the general correlations between the optical variables. However, further in the next section we repeated this step while considering the mechanisms (as it is presented in the manuscript)
+
+<br>
+
+### VIS Reflectivity
 
 <span style="color: #04C799"> **Question** </span>  <br/>
 
-It has been hypothesized that the chiral structures associated to polarization sensitivity are more effective reflecting light than pigments or other structures. This may be true considering that they can produce broad band metallic colours. However, it is also possible that chiral structures produce highly saturated angle-dependent colours which would mean reflecting a very narrow section of the spectrum.  
+It has been hypothesized that the chiral structures associated to polarization sensitivity are more effective reflecting light than pigments or other structures. This may be true if coupled with disorder and additional structures to produce broad band colours. However, it is also possible that simple chiral structures produce highly saturated angle-dependent colours which would mean reflecting a very narrow section of the spectrum.  
 
-**Is more polarization correlated with more reflectivity in the visible spectrum?**
+**Is a higer degree of polarization correlated with more reflectivity in the visible spectrum?**
 
 <span style="color: #04C799"> **Tests** </span>  <br/>
 
@@ -743,7 +779,7 @@ ggplot(ToPlotPolbsp, aes(x = meanPol, y = meanVIS)) +
 <br>
 <br>
 
-## NIR Reflectivity
+### NIR Reflectivity
 
 <span style="color: #04C799"> **Question** </span>  <br/>
 
@@ -817,7 +853,7 @@ The reason for this could be that the mechanisms used to produce high NIR reflec
 <br>
 <br>
 
-## TOT Reflectivity
+### TOT Reflectivity
 
 <span style="color: #04C799"> **Question** </span>  <br/>
 
@@ -883,12 +919,20 @@ This could be the result of the fact that visible and NIR reflectivity have oppo
 <br>
 <br>
 
-## Mechanism 1
 
+## Correlations considering mechanisms
+<br>
+<br>
+
+The section chiral vs. non-chiral only considers two mechanisms, however in our manuscript we divided the beetles into three categories according to the available knowledge of their mechanisms. Thus, these two sections are just two ways to study the relevance of the mechanism
+
+<br>
+
+### Chiral vs non-chiral
 
 <span style="color: #04C799"> **Question** </span>  <br/>
 
-In our previous studies we discovered that some species have an unusual bilayered composite material in their elytra. This material consist in a white underlay that reflects visible and NIR light with a thin cuticle on top that acts like a pigment-based filter only in the visible. As a result they produce a unique pattern of broadband NIR reflectance. This mechanism does not coexist  with chiral nanostructures in the cuticle.  
+In our previous studies we discovered that some species have an unusual bilayered composite material in their elytra. This material consist in a white underlay that reflects visible and NIR light with a thin cuticle on top that acts like a pigment-based filter only in the visible. As a result they produce a unique pattern of broadband NIR reflectance. This mechanism does not coexist  with chiral nanostructures in the cuticle. 
 
 **Is it possible that the correlations with VIS and NIR are mainly driven by the species with white underlay?**  
 
@@ -966,11 +1010,11 @@ ggplot() +
 <br>
 <br>
 
-## Mechanisms 2
+### Three different mechanisms
 
-Can we extend that analysis even further? Perhaps we can identify three mechanisms in total: a traditional chiral mechanism, the white underlay and a white/gold chiral structure.
+Based on the available knowledge about the mechanisms in beetles, we can consider three broad categories: a simple chiral mechanism, a composite chiral mechanism and a composite non-chiral (white underlay)
 
-We can analyze what happens with VIS and NIR reflectance when excluding the last two 
+We can analyze correlations between reflectivity in VIS and NIR, and polarisation considering the mechanism 
 <br>
 
 ### VIS
@@ -1031,7 +1075,7 @@ WhiteUnderlay <-
                 spp == "pczv" |
                 spp == "prsi") 
   
-WhiteAndGold <- 
+ChiralComposite <- 
   ToPlotPolbsp %>%
   dplyr::filter(spp == "opal" |
                 spp == "ecry" |
@@ -1069,18 +1113,18 @@ ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanVIS),
   col = "#cecec2"
   ) +
   
-  # Almost all species
+  # Simple chiral
   geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanVIS),
              size = 2.2, alpha = 0.6, colour = "#ffc100") +
   geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanVIS),
              size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
   
-  # White underlay
+  # composite non-chiral
   geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanVIS),
              size = 2.2, pch = 25, fill= "#785ef0", colour = "black", alpha = 0.7) +
   
-  # White and Gold polarized
-  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanVIS),
+  # Composite Chiral
+  geom_point(data = ChiralComposite, aes(x = meanPol, y = meanVIS),
              size = 2.2, pch = 23, fill= "#fe6100", colour = "black", alpha = 0.7) +
   
   theme_minimal() +
@@ -1099,7 +1143,7 @@ ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanVIS),
 But we need to check if this relationship is driven only by non polarized beetles:
 <br>
 
-These are the models excluding gold, pearl and white underlay
+These are the models excluding composite chiral and composite non-chiral
 
 ```{r}
 dummydum3 <- lm(nospecialcases$R_NIR ~ nospecialcases$ElytrPol)
@@ -1135,18 +1179,18 @@ ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanNIR),
   col = "#cecec2"
   ) +
   
-  # Almost all species
+  # Simple chiral
   geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanNIR),
              size = 2.2, alpha = 0.6, colour = "#ffc100") +
   geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanNIR),
              size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
   
-  # White underlay
+  # Composite non chiral
   geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanNIR),
              size = 2.2, pch = 25, fill = "#785ef0", colour = "black", alpha = 0.7) +
   
-  # White and Gold polarized
-  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanNIR),
+  # Composite chiral
+  geom_point(data = ChiralComposite, aes(x = meanPol, y = meanNIR),
              size = 2.2, pch = 23, colour = "black", fill= "#fe6100",  alpha = 0.7) +
   
   theme_minimal() +
@@ -1156,6 +1200,13 @@ ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanNIR),
 
 
 ```
+
+############# All the chunks in the section above should be removed or relocated ##################
+
+
+
+
+
 
 
 
@@ -1171,10 +1222,14 @@ We obtained a data frame useful to compare the degree of polarization between tw
 write.csv(BeetlePol, "../Data/FromCode/PolarzElytraPronot.csv")
 ```
 
-And we also added the polarization of the elytra to a subset of the dataframe with the ecological variables and reflectance. Note that this subset may have fewer individuals that the one we will use for the phylogenetic analysis of the reflectance, but they both have the same number of species.
+
+We also obtained data frames with the degree of polarisation by individual and by species: 
 
 ```{r}
-write.csv(RPData, "../Data/FromCode/PolarzElytraRefl.csv")
+
+write.csv(ElyPolbyindN, "../Data/FromCode/PolarzElytraByInd.csv") # by individual
+write.csv(EPolbs, "../Data/FromCode/PolarzElytraBySpp.csv") # by species
+
 ```
 
 

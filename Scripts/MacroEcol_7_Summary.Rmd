@@ -6,29 +6,28 @@ editor_options:
   chunk_output_type: console
 ---
 
-Libraries
 
 
-```{r, warning=FALSE, message=FALSE}
+
+```{r, warning=FALSE, message=FALSE, r echo=FALSE}
 source("./MacroEcol_1_Libraries.R")
 
 library(matrixStats)
 ```
 
-# Hypothesis fig.
+# Main manuscript
+
+## Figures
+
+### Figure 1 - Phylogenetic tree with traits
 
 
 ```{r warning=FALSE, message=FALSE}
+
+# Prepare data sets ###################
+
 Reflectance <- read.csv("../Data/FromCode/Reflectance_PData.csv")[-1]
-```
 
-
-
-Polarization and NIR in the tree
-
-Data
-
-```{r warning=FALSE, message=FALSE}
 RPDataAgg <- read.csv("../Data/FromCode/PolarzElytraRefl.csv")[-1]
 
 RPDAgg1 <-
@@ -60,15 +59,10 @@ VISdf <- ConsAgg %>% dplyr::select(VIS)
 Resdf <- ConsAgg %>% dplyr::select(Res)
 Poldf <- ConsAgg %>% dplyr::select(Pol)
 
-```
 
-
-```{r}
+# Combine with phylogeny ###################
 # Phylogeny
 trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
-```
-
-```{r warning = FALSE}
 
 # read the tree
 MCCtree.raw <-
@@ -90,12 +84,8 @@ temp.MCC <- name.check(MCCtree.raw, species.MCC)
 # Instead, changed the name
 MCCtree <- MCCtree.raw
 
-```
+# Add traits to the tree ######################
 
-Add traits
-
-
-```{r}
 
 # create a MCC tree without tip names for the plot
 tree_only <- ggtree(MCCtree, layout = "rectangular")
@@ -159,322 +149,25 @@ p3 +
     legend.text = element_text(size = 8), # text size
     title = element_text(size = 8))
 
-```
-
-
-
-
-# Reflectivity PGLS
-
-Light reflectance PGLS in multiple trees
-
-```{r}
-TOTmumo <- read.csv("../Data/FromCode/MuTPglsResultsTOT.csv")[-1]
-VISmumo <- read.csv("../Data/FromCode/MuTPglsResultsVIS.csv")[-1]
-NIRmumo <- read.csv("../Data/FromCode/MuTPglsResultsNmo.csv")[-1]
-Resmumo <- read.csv("../Data/FromCode/MuTPglsResultsRes.csv")[-1]
-FRSmumo <- read.csv("../Data/FromCode/MuTPglsFRSultsFRS.csv")[-1]
-
-FinTotM <- HPDinterval(as.mcmc(TOTmumo))
-FinVisM <- HPDinterval(as.mcmc(VISmumo))
-FinNirM <- HPDinterval(as.mcmc(NIRmumo))
-FinResM <- HPDinterval(as.mcmc(Resmumo))
-
-```
-
-Assemble a summary table
-
-```{r warning=FALSE, message=FALSE}
-
-rvTOTl <- as.character(
-            round(as.numeric(c(
-              FinTotM[1,1],FinTotM[3,1],FinTotM[4,1],FinTotM[6,1],
-              FinTotM[7,1],FinTotM[9,1],"NA","NA",
-              FinTotM[10,1],FinTotM[12,1],
-              FinTotM[13,1],FinTotM[15,1])),3))
-
-rvTOTu <- as.character(
-            format(round(as.numeric(c(
-              FinTotM[1,2],FinTotM[3,2],FinTotM[4,2],FinTotM[6,2],
-              FinTotM[7,2],FinTotM[9,2],"NA","NA",
-              FinTotM[10,2],FinTotM[12,2],
-              FinTotM[13,2],FinTotM[15,2])),3),nsmall=3))
-
-
-rvVISl <- as.character(
-  round(as.numeric(c(
-              FinVisM[1,1],FinVisM[3,1],FinVisM[4,1],FinVisM[6,1],
-              FinVisM[7,1],FinVisM[9,1],"NA","NA",
-              FinVisM[10,1],FinVisM[12,1],
-              FinVisM[13,1],FinVisM[15,1])),3))
-
-rvVISu <- as.character(
-            format(round(as.numeric(c(
-              FinVisM[1,2],FinVisM[3,2],FinVisM[4,2],FinVisM[6,2],
-              FinVisM[7,2],FinVisM[9,2],"NA","NA",
-              FinVisM[10,2],FinVisM[12,2],
-              FinVisM[13,2],FinVisM[15,2])),3),nsmall=3))
-
-
-rvNIRl <- as.character(
-            format(round(as.numeric(c(
-              FinNirM[1,1],FinNirM[3,1],FinNirM[4,1],FinNirM[6,1],
-              FinNirM[7,1],FinNirM[9,1],FinNirM[10,1],FinNirM[12,1],
-              FinNirM[13,1],FinNirM[15,1], FinNirM[16,1],FinNirM[18,1]
-              )),3),nsmall=3))
-
-rvNIRu <- as.character(
-           format(round(as.numeric(c(
-              FinNirM[1,2],FinNirM[3,2],FinNirM[4,2],FinNirM[6,2],
-              FinNirM[7,2],FinNirM[9,2],FinNirM[10,2],FinNirM[12,2],
-              FinNirM[13,2],FinNirM[15,2], FinNirM[16,2],FinNirM[18,2]
-              )),3),nsmall=3))
-
-rvResl <- as.character(
-            format(round(as.numeric(c(
-              FinResM[1,1],FinResM[3,1],FinResM[4,1],FinResM[6,1],
-              FinResM[7,1],FinResM[9,1],"NA","NA",
-              FinResM[10,1],FinResM[12,1],
-              FinResM[13,1],FinResM[15,1])),3),nsmall=3))
-
-rvResu <- as.character(
-            format(round(as.numeric(c(
-              FinResM[1,2],FinResM[3,2],FinResM[4,2],FinResM[6,2],
-              FinResM[7,2],FinResM[9,2],"NA","NA",
-              FinResM[10,2],FinResM[12,2],
-              FinResM[13,2],FinResM[15,2])),3),nsmall=3))
-
-
-rvTOTi<-paste(rvTOTl,rvTOTu, sep = " ; ")
-rvVISi<-paste(rvVISl,rvVISu, sep = " ; ")
-rvNIRi<-paste(rvNIRl,rvNIRu, sep = " ; ")
-rvResi<-paste(rvResl,rvResu, sep = " ; ")
-
-rvVISi[1] <- cell_spec(rvVISi[1],bold = TRUE, color="#367D91")
-rvVISi[2] <- cell_spec(rvVISi[2],bold = TRUE, color="#B2B9BF")
-
-rvVISi[5] <- cell_spec(rvVISi[5],bold = TRUE, color="#D40481")
-rvVISi[6] <- cell_spec(rvVISi[6],bold = TRUE)
-
-rvVISi[9] <- cell_spec(rvVISi[9],bold = TRUE, color="#367D91")
-rvVISi[10] <- cell_spec(rvVISi[10],bold = TRUE,  color="#B2B9BF")
-
-rvNIRi[3] <- cell_spec(rvNIRi[3],bold = TRUE, color="#D40481")
-rvNIRi[4] <- cell_spec(rvNIRi[4],bold = TRUE)
-
-rvNIRi[7] <- cell_spec(rvNIRi[7],bold = TRUE, color="#D40481")
-rvNIRi[8] <- cell_spec(rvNIRi[8],bold = TRUE)
-
-rvNIRi[11] <- cell_spec(rvNIRi[11],bold = TRUE, color="#D40481")
-rvNIRi[12] <- cell_spec(rvNIRi[12],bold = TRUE)
-
-rvResi[3] <- cell_spec(rvResi[3],bold = TRUE, color="#D40481")
-rvResi[4] <- cell_spec(rvResi[4],bold = TRUE)
-
-rvResi[11] <- cell_spec(rvResi[11],bold = TRUE, color="#D40481")
-rvResi[12] <- cell_spec(rvResi[12],bold = TRUE)
-
-Predictor <- c("PC1","PC1 p-val" , 
-               "PC2", "PC2 p-val", 
-               "Size", "Size p-val",
-               "VIS", "VIS p-val",
-               "PC1:size", "PC1:size p-val", 
-               "PC2:size", "PC2:size p-val")
-
-Resultspgls <- data.frame(Predictor,  
-                          "TOT" = rvTOTi,
-                          "VIS" = rvVISi,
-                          "NIR" = rvNIRi,
-                          "Res" = rvResi) 
-
-
-Resultspgls %>% 
-  kbl(align ="c", escape = FALSE) %>%
-  kable_classic() %>% 
-  add_indent(c(1, 3, 5, 7, 9)) 
-
-
-```
-
-<br>
-<br>
-
-# Polarization
-
-Prepare data
-
-```{r}
-
-RPData<- read.csv("../Data/FromCode/PolarzElytraRefl.csv")[-1]
-
-ToPlotPolbsp <-
-  RPData %>%
-  dplyr::select(-phylogeny_name) %>%
-  dplyr::mutate("spp" = substr(ind, 1, 4)) %>%
-  dplyr::select(-1) %>%
-  dplyr::group_by(spp) %>%
-  dplyr::summarise(
-    meanAll = mean(R_ALL),
-    meanVIS = mean(R_VIS),
-    meanNIR = mean(R_NIR),
-    meanRes = mean(Res),
-    meanPol = mean(ElytrPol),
-    meanSize = mean(size),
-    sdAll = sd(R_ALL),
-    sdVIS = sd(R_VIS),
-    sdNIR = sd(R_NIR),
-    sdRes = sd(Res),
-    sdPol = sd(ElytrPol),
-    sdSize = sd(size)
-  )
-
-ToPlotPolbsp <- as.data.frame(ToPlotPolbsp)
-rownames(ToPlotPolbsp) <- ToPlotPolbsp$spp
-
-# Create subset excluding the special cases (different mechanisms)
-nospecialcasesspp <- 
-  ToPlotPolbsp %>%
-  dplyr::filter(spp != "ecry" &
-                spp != "opal" &
-                spp != "lats" &
-                spp != "rose" &
-                spp != "pvul" &
-                spp != "aurs" &
-                spp != "xyls" &
-                spp != "xyle" & 
-                spp != "pczo" &
-                spp != "pczp" &
-                spp != "pczv" &
-                spp != "prsi" ) 
-  
-# Create a subset with only the species with a bilayered mechanism
-WhiteUnderlay <- 
-  ToPlotPolbsp %>%
-  dplyr::filter(spp == "xyls" |
-                spp == "xyle" | 
-                spp == "pczo" |
-                spp == "pczp" |
-                spp == "pczv" |
-                spp == "prsi") 
-  
-# subset the species with white and gold appearance 
-#(pottentially different mechanism)
-WhiteAndGold <- 
-  ToPlotPolbsp %>%
-  dplyr::filter(spp == "opal" |
-                spp == "ecry" |
-                spp == "lats" | 
-                spp == "rose" |
-                spp == "pvul" |
-                spp == "aurs" ) 
-
-```
-
-
-Plot for VIS
-
-```{r}
-
-ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanVIS),
-             size = 2.2, alpha = 0.6, colour = "white") +
-  geom_text(
-    label=rownames(ToPlotPolbsp), 
-    nudge_x = 0.02, nudge_y = -0.04, 
-    col="gray", size=2
-  ) +
-  # error bars
-  geom_errorbar(aes(
-                ymin = meanVIS - sdVIS,
-                ymax = meanVIS + sdVIS),
-  col = "#cecec2"
-  ) +
-  geom_errorbarh(aes(
-    xmin = meanPol - sdPol,
-    xmax = meanPol + sdPol
-  ),
-  col = "#cecec2"
-  ) +
-  
-  # Almost all species
-  geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanVIS),
-             size = 2.2, alpha = 0.6, colour = "#ffc100") +
-  geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanVIS),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
-  
-  # White underlay
-  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanVIS),
-             size = 2.2, alpha = 0.6, colour = "#785ef0") +
-  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanVIS),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
-  
-  # White and Gold polarized
-  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanVIS),
-             size = 2.2, alpha = 0.8, colour = "#fe6100") +
-  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanVIS),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
-  
-  theme_minimal() +
-  theme(legend.position = "none") + 
-  xlab("Degree of Polarization (L - R)/(L + R)")+
-  ylab("Visible reflectivity (%)")
-
-
-```
-
-Plot for NIR
-
-```{r}
-
-ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanNIR),
-             size = 2.2, alpha = 0.6, colour = "white") +
-  geom_text(
-    label=rownames(ToPlotPolbsp), 
-    nudge_x = 0.02, nudge_y = -0.04, 
-    col="gray", size=2
-  ) +
-  # error bars
-  geom_errorbar(aes(
-                ymin = meanNIR - sdNIR,
-                ymax = meanNIR + sdNIR),
-  col = "#cecec2"
-  ) +
-  geom_errorbarh(aes(
-    xmin = meanPol - sdPol,
-    xmax = meanPol + sdPol
-  ),
-  col = "#cecec2"
-  ) +
-  
-  # Almost all species
-  geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanNIR),
-             size = 2.2, alpha = 0.6, colour = "#ffc100") +
-  geom_point(data = nospecialcasesspp, aes(x = meanPol, y = meanNIR),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
-  
-  # White underlay
-  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanNIR),
-             size = 2.2, alpha = 0.6, colour = "#785ef0") +
-  geom_point(data = WhiteUnderlay, aes(x = meanPol, y = meanNIR),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
-  
-  # White and Gold polarized
-  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanNIR),
-             size = 2.2, alpha = 0.8, colour = "#fe6100") +
-  geom_point(data = WhiteAndGold, aes(x = meanPol, y = meanNIR),
-             size = 2.2, pch = 21, colour = "black", alpha = 0.7) +
-  
-  theme_minimal() +
-  theme(legend.position = "none") + 
-  xlab("Degree of Polarization (L - R)/(L + R)")+
-  ylab("NIR reflectivity (%)")
-
 
 ```
 
 
 
+### Figure 2 -  Interactions Climate and Size
+
+### Figure 3 -  Size
+
+### Figure 4 - Polarisation correlations
 
 
+##  Tables 
+
+### Table 1
+
+### Table 2
+
+### Table 3
 
 <br>
 <br>
@@ -486,14 +179,11 @@ ggplot(data = ToPlotPolbsp, aes(x = meanPol, y = meanNIR),
 ```{r}
 # create phylogeny object for ggtree()
 phylo.MCC <- ggtree(MCCtree, layout = "rectangular") 
-```
 
-```{r, fig.height = 8}
 # set xlim
 phylo.MCC + xlim(0, 33) +
   geom_nodepoint(col = "blue", alpha = 0.4)+
   geom_tiplab(size=2.3)
-
 ```
 
 <br>
