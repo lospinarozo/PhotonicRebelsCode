@@ -408,7 +408,6 @@ plot(im, axes = FALSE)
 <br>
 <br>
 
-
 Evaluate at the species level: 
 
 ```{r}
@@ -494,8 +493,6 @@ szp2 <- ggplot(PCSZ, aes(x = -meanPC2, y =  meanSize)) +
 
 
 grid.arrange(szp1, szp2, nrow = 1)
-
-
 ```
 
 

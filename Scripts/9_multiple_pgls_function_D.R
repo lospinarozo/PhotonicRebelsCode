@@ -48,7 +48,7 @@ pgls_runD=function(x, model, dataset)
                                  names.col = "TipLabel", 
                                  vcv = TRUE, 
                                  na.omit = FALSE, 
-                                 warn.dropped = TRUE)
+                                 warn.dropped = FALSE)
     
     #Model used
     modA <- pgls(model, data=compdata, param.CI = 0.95,lambda = "ML") 
