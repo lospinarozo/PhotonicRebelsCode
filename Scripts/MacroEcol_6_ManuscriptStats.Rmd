@@ -53,7 +53,7 @@ In our analyses we use a subset of the 1300 posterior sample trees to represent 
 ```{r, warning=FALSE, message=FALSE}
 # Set subset limits
 trees_subset_min<-1000
-trees_subset_max<-1100
+trees_subset_max<-2000
 ```
 
 Import phylogeny (multiple trees)
@@ -702,7 +702,9 @@ FinPRSS <-HPDinterval(as.mcmc(dfPRSsimple))
 
 ```
 
+## NIR no outliers
 
+## FRS no outliers
 
 # Final results
 
@@ -1182,6 +1184,9 @@ ToPlotInt <-
     sdSize = sd(size)
   )
 
+ToPlotInt <- as.data.frame(ToPlotInt)
+rownames(ToPlotInt) <- ToPlotInt[, 1]
+
 plotVisSmall <- 
   ToPlotInt %>% 
   dplyr::filter(meanSize<2.5) %>%  # Small beetles
@@ -1411,6 +1416,11 @@ PC axis were inverted here so that they are easy to interpret
 
 ```{r message=FALSE, warning=FALSE}
 PVS <- ggplot(plotVisSmall, aes(x = -meanPC1, y = meanVIS)) +
+  geom_text(
+    label=rownames(plotVisSmall), 
+    nudge_x = 0.2, nudge_y = 0.8, 
+    col="gray", size=3
+  ) +
   geom_errorbar(aes(
     ymin = meanVIS - sdVIS,
     ymax = meanVIS + sdVIS
@@ -1437,6 +1447,11 @@ PVS <- ggplot(plotVisSmall, aes(x = -meanPC1, y = meanVIS)) +
 
 
 PVL <- ggplot(plotVisLarge, aes(x = -meanPC1, y = meanVIS)) +
+  geom_text(
+    label=rownames(plotVisLarge), 
+    nudge_x = 0.2, nudge_y = 0.8, 
+    col="gray", size=3
+  ) +
   geom_errorbar(aes(
     ymin = meanVIS - sdVIS,
     ymax = meanVIS + sdVIS
@@ -1462,6 +1477,11 @@ PVL <- ggplot(plotVisLarge, aes(x = -meanPC1, y = meanVIS)) +
   ylab ("VIS reflectivity (%)")
 
 PNS <- ggplot(plotNirSmall, aes(x = -meanPC2, y = meanRes)) +
+  geom_text(
+    label=rownames(plotNirSmall), 
+    nudge_x = 0.2, nudge_y = 0.8, 
+    col="gray", size=3
+  ) +
   geom_errorbar(aes(
     ymin = meanRes - sdRes,
     ymax = meanRes + sdRes
@@ -1487,6 +1507,11 @@ PNS <- ggplot(plotNirSmall, aes(x = -meanPC2, y = meanRes)) +
   ylab ("NIR (res) reflectivity (%)")
 
 PNL <- ggplot(plotNirLarge, aes(x = -meanPC2, y = meanRes)) +
+  geom_text(
+    label=rownames(plotNirLarge), 
+    nudge_x = 0.2, nudge_y = 0.8, 
+    col="gray", size=3
+  ) +
   geom_errorbar(aes(
     ymin = meanRes - sdRes,
     ymax = meanRes + sdRes
