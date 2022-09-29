@@ -52,8 +52,8 @@ In our analyses we use a subset of the 1300 posterior sample trees to represent 
 
 ```{r, warning=FALSE, message=FALSE}
 # Set subset limits
-trees_subset_min<-10
-trees_subset_max<-13
+trees_subset_min<-1000
+trees_subset_max<-2000
 ```
 
 Import phylogeny (multiple trees)
