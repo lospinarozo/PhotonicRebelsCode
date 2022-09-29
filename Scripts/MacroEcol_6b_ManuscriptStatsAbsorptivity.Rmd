@@ -1,0 +1,839 @@
+---
+title: "Absorptivity PGLS"
+# author: "Laura Ospina-Rozo"
+# date: "25/04/2022"
+editor_options: 
+  chunk_output_type: console
+---
+
+In this script we use a combination of phylogenetically controlled models to evaluate if VIS and NIR absorptivity in the Christmas beetles’ elytra can be predicted by climate and size. Climate here is determined by the ecological variables: maximum temperature, number of days above 35°C, solar radiation, cloud cover, rain, water vapour and aridity summarised in two principal components.
+
+# Setting up data
+
+## Libraries
+
+```{r, warning=FALSE, message=FALSE}
+source("./Scripts/MacroEcol_1_Libraries.R") # we source the libraries from this file
+```
+
+## Data Sets
+
+<span style="color: #04C799"> **Absorptivity data** </span>  <br/>
+
+Initially we import the absorptivity data obtained in the script "optical properties" and join it with the environmental data obtained in "Ecological variables"
+
+```{r}
+Cons1aggA <- read.csv("./Data/FromCode/ConsolidatedAbsorptivitySpp.csv")[-1] %>%
+  dplyr::arrange(phylogeny_name)
+# PC Values
+PCValuesF <- read.csv("./Data/FromCode/PCsbySpp.csv")[-1] %>%
+  dplyr::arrange(phylogeny_name)
+
+Cons1aggA <-
+    PCValuesF %>% 
+  filter(phylogeny_name %in% Cons1aggA$phylogeny_name) %>% 
+  arrange(phylogeny_name) %>% 
+  bind_cols(., Cons1aggA) %>%
+  dplyr::select(1:3,5:10) %>% 
+  dplyr::rename("phylogeny_name" = phylogeny_name...1, "PC1" = PC1_1, "PC2" = PC2_1)
+```
+
+<span style="color: #04C799"> **Phylogenetic data** </span>  <br/>
+
+In our analyses we use a subset of the 1300 posterior sample trees to represent the phylogenetic information accounting for uncertainty in node ages and topology
+
+```{r}
+# set subset limits
+trees_subset_min<-0
+trees_subset_max<-1000
+```
+
+Phylogeny (multiple trees)
+
+```{r}
+trees <- ape::read.tree("./Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
+
+MCCtree.raw <- 
+  ape::read.nexus("./Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+```
+
+The MCC (Maximum clade credibility) tree used here is the BEAST MCC tree. We did not need to prun the tree. The equivalence between specie sin the tree and data frame was tested in previous steps (tab optical properties). 
+
+<span style="color: #04C799"> **Merge** </span>  <br/>
+
+```{r}
+# Modify to make it compatible with tree tips
+Cons1aggA <- as.data.frame(Cons1aggA) # convert to a data frame
+rownames(Cons1aggA) <- Cons1aggA[, 1] # make species the row names 
+ConsAggA <- Cons1aggA [,2:length(Cons1aggA)] # eliminate spp name (redundant)
+```
+
+The names between data and tree tips should match.
+
+```{r}
+
+# Prune extra spp in the tree, not contain in the test sample
+species.MCC <- as.data.frame(unique(Cons1aggA$phylogeny_name))
+
+# Convert to "row names" (required for following steps)
+row.names(species.MCC) <- species.MCC[, 1] 
+
+# Make sure the names in data set and tree match
+temp.MCC <- name.check(MCCtree.raw, species.MCC)
+
+# This step is necessary because the tips are different.
+MCCtree <- drop.tip(MCCtree.raw, temp.MCC$tree_not_data)
+
+# Test if the species are the same
+identical(
+  length(name.check(MCCtree, Cons1aggA$phylogeny_name)$tree_not_data),
+  length(Cons1aggA$phylogeny_name)
+)
+```
+
+<span style="color: #04C799"> **Subsets** </span>  <br/>
+
+Create subsets for each spectral band. In these subsets the response variable is always called "response" so that we can use the same function to run various models. 
+
+In this script, the response variable is the reflectance on each spectral band or the NIR/VIS residuals.
+
+```{r}
+
+ALLDataSetA <- 
+  Cons1aggA %>% 
+  dplyr::select (-VIS, -NIR, -FRS, -FRSP) %>% 
+  dplyr::rename ("Response" = TOT) 
+
+NIRDataSetA <- 
+  Cons1aggA %>% 
+  dplyr::select (-TOT, -VIS, -FRS, -FRSP) %>% 
+  dplyr::rename ("Response" = NIR) 
+
+VISDataSetA <- 
+  Cons1aggA %>% 
+  dplyr::select (-TOT, -NIR, -FRS, -FRSP) %>% 
+  dplyr::rename ("Response" = VIS) 
+
+NmoDataSetA <-
+  Cons1aggA %>% 
+  dplyr::select (-TOT, -FRS, -FRSP) %>% # keep VIS as predictor
+  dplyr::rename ("Response" = NIR) # Raw NIR 
+
+FRSDataSetA <-
+  Cons1aggA %>% 
+  dplyr::select (-TOT, -NIR, -VIS, -FRSP) %>% 
+  dplyr::rename ("Response" = FRS) # PGLS Residuals
+
+PRSDataSetA <-
+  Cons1aggA %>% 
+  dplyr::select (-TOT, -NIR, -VIS, -FRS) %>% 
+  dplyr::rename ("Response" = FRSP) # PGLS Phyres residuals
+```
+
+# Setting up models
+
+The PGLS function has to be adapted to the data frame and model on each case.
+
+## Model 1
+
+PGLS in the MCC
+
+```{r}
+
+comp_data <- comparative.data(
+  phy = MCCtree, data = Cons1aggA,
+  names.col = "phylogeny_name", vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+
+```
+
+## Model 2
+
+PGLS Multiple Trees with 5 predictors + intercept
+
+Source function
+
+note that this function has to be adapted to the data frame and model on each case
+
+```{r warning=FALSE, message=FALSE}
+source("./Scripts/8_multiple_pgls_function_C.R") # function C is for absorptivity as response
+```
+
+Define model
+
+```{r }
+MuPGLSMod2A <- Response ~ PC1 + PC2 + size + PC1*size + PC2*size
+```
+
+## Model 3
+
+PGLS in multiple trees for NIR contains 6 predictors + intercept. The extra predictor here is the "VIS" absorptivity to account for the correlation of these two variables.
+
+
+```{r warning=FALSE, message=FALSE}
+source("./Scripts/9_multiple_pgls_function_D.R") # function D: NIR explained by PCs and VIS
+```
+
+
+Define model
+
+```{r}
+MuPGLSMod3A <- Response ~ PC1 + PC2 + size + PC1*size + PC2*size + VIS
+```
+
+## Model 4
+
+PGLS Multiple Trees with 3 predictors + intercept
+
+We run simplified models with only one pc for each spectral band including only the predictors that were significant in the full model. 
+(because the visible absorptivity seems to be more correlated to PC1 and the NIR to PC2) 
+
+Source function
+
+note that this function has to be adapted to the data frame and model on each case
+
+```{r warning=FALSE, message=FALSE}
+source("./Scripts/10_multiple_pgls_function_E.R") # function E: simplified. One PC and size
+```
+
+Define model
+
+```{r }
+MuPGLSMod4A <- Response ~ PC + size + PC*size 
+```
+
+
+## Model 5
+
+PGLS Multiple Trees with 4 predictors + intercept
+
+We run simplified models with only one pc for each spectral band including only the predictors that were signifficant in the full model (because the visible reflectance seems to be more correlated to PC1 and the NIR to PC2). However, for NIR we need to include VIS reflectance as a predictor
+
+Source function
+
+note that this function has to be adapted to the data frame and model on each case
+
+```{r warning=FALSE, message=FALSE}
+source("./Scripts/11_multiple_pgls_function_F.R") # F: One PC, size and VIS as predictors
+```
+
+Define model
+
+```{r }
+MuPGLSMod5A <- Response ~ PC + size + PC*size + VIS
+```
+
+# Results per spectral band
+
+The PGLS model tests if the correlations we found in the previous step remain after correcting by phylogeny. This model does not consider instraspecific variation. We averaged both location and absorptivity and obtained only one value per species. 
+
+
+## TOT
+
+### MCC Tree
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodTOTA <- pgls(TOT ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML",
+  bounds = list(lambda=c(1e-5,1)) # modify bounds (defaults are c(1e-6,1))
+)
+
+FinMccTotcA <- as.numeric(round(summary(pglsmodTOTA)$coefficients[,1],3))
+FinMccTotpA <- as.numeric(round(summary(pglsmodTOTA)$coefficients[,4],3)) 
+
+```
+
+None of the variables has an effect in the total absorptivity.
+
+### multiple trees
+
+```{r message=FALSE, warning=FALSE}
+runsTOTA<-lapply(trees[trees_subset_min:trees_subset_max],
+                pgls_runC,
+                model=MuPGLSMod2A,
+                dataset=ALLDataSetA) 
+
+dfTOTA <- ldply(runsTOTA, data.frame)
+
+write.csv(dfTOTA,"./Data/FromCode/MuTPglsResultsTOTAbsorptivity.csv")
+
+FinTotMA <- HPDinterval(as.mcmc(dfTOTA))
+```
+
+## VIS 
+
+### full model
+
+#### MCC Tree
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodVISA <- pgls(VIS ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+FinMccViscA <- as.numeric(round(summary(pglsmodVISA)$coefficients[,1],3)) 
+FinMccVispA <- as.numeric(round(summary(pglsmodVISA)$coefficients[,4],3))
+```
+
+#### multiple trees
+
+```{r message=FALSE, warning=FALSE}
+runsVISA<-lapply(trees[trees_subset_min:trees_subset_max],
+                pgls_runC,
+                model=MuPGLSMod2A,
+                dataset=VISDataSetA) 
+
+dfVISA <- ldply (runsVISA, data.frame)
+
+write.csv(dfVISA,"./Data/FromCode/MuTPglsResultsVISAbsorptivity.csv")
+
+FinVisMA <- HPDinterval(as.mcmc(dfVISA))
+```
+
+### simple model
+
+#### MCC Tree
+
+```{r message= FALSE, warnings=FALSE}
+spglsmodVISA <- pgls(VIS ~ PC1 + size + PC1*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(spglsmodVISA)
+
+sFinMccViscA <- as.numeric(round(summary(spglsmodVISA)$coefficients[,1],3)) 
+sFinMccVispA <- as.numeric(round(summary(spglsmodVISA)$coefficients[,4],3))
+```
+
+#### multiple trees
+
+First step is to modify the data frame. 
+
+```{r}
+SimpleVISA <- 
+  VISDataSetA %>% 
+  dplyr::select(phylogeny_name, Response, size, PC1) %>% 
+  dplyr::rename("PC" = PC1)
+
+SimpleVISA <- as.data.frame(SimpleVISA)
+```
+
+Now run the model
+
+```{r message=FALSE, warning=FALSE}
+runsVISsimpleA<-lapply(trees[trees_subset_min:trees_subset_max],
+                      pgls_runE,
+                      model=MuPGLSMod4A,
+                      dataset=SimpleVISA) 
+
+dfVISsimpleA <- ldply(runsVISsimpleA, data.frame)
+
+FinVisSA <- HPDinterval(as.mcmc(dfVISsimpleA))
+```
+
+## NIR 
+
+### Full model
+
+#### MCC Tree
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodNIRA <- pgls(NIR ~ PC1 + PC2 + size + PC1*size + PC2*size + VIS,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+FinMccNircA <- as.numeric(round(summary(pglsmodNIRA)$coefficients[,1],3)) 
+FinMccNirpA <- as.numeric(round(summary(pglsmodNIRA)$coefficients[,4],3))
+```
+
+Results after correcting by phylogeny: 
+
+None of the variables has an effect in the NIR absorptivity.
+
+#### multiple trees 
+
+```{r message=FALSE, warning=FALSE}
+runsNIRA<-lapply(trees[trees_subset_min:trees_subset_max],
+                pgls_runD,
+                model=MuPGLSMod3A,
+                dataset=NmoDataSetA) 
+
+dfNIRA <- ldply(runsNIRA, data.frame)
+
+write.csv(dfNIRA,"./Data/FromCode/MuTPglsResultsNmoAbsorptivity.csv")
+
+FinNirMA <- HPDinterval(as.mcmc(dfNIRA))
+```
+
+### Simple model
+
+#### MCC Tree
+
+```{r message= FALSE, warnings=FALSE}
+spglsmodNIRA <- pgls(NIR ~ PC2 + size + PC2*size + VIS,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+sFinMccNircA <- as.numeric(round(summary(spglsmodNIRA)$coefficients[,1],3)) 
+sFinMccNirpA <- as.numeric(round(summary(spglsmodNIRA)$coefficients[,4],3))
+```
+
+#### multiple trees
+
+First step is to modify the data frame. 
+
+```{r}
+SimpleNIRA <- 
+  NmoDataSetA %>% 
+  dplyr::select(phylogeny_name, Response, size, VIS, PC2) %>% 
+  dplyr::rename("PC" = PC2)
+
+SimpleNIRA <- as.data.frame(SimpleNIRA)
+head(SimpleNIRA)
+```
+
+Now run the model
+
+```{r message=FALSE, warning=FALSE}
+runsNIRsimpleA<-lapply(trees[trees_subset_min:trees_subset_max],
+                      pgls_runF,
+                      model=MuPGLSMod5A,
+                      dataset=SimpleNIRA) 
+
+dfNIRsimpleA <- ldply(runsNIRsimpleA, data.frame)
+
+FinNirSA <- HPDinterval(as.mcmc(dfNIRsimpleA))
+```
+
+## FRS
+
+Residuals between NIR ~ VIS corrected by phylogeny. Extracted as model$residuals
+
+### Full model
+
+#### MCC Tree
+
+```{r message= FALSE}
+pglsmodFRSA <- pgls(FRS ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+FinMccFRScA <- as.numeric(round(summary(pglsmodFRSA)$coefficients[,1],3)) 
+FinMccFRSpA <- as.numeric(round(summary(pglsmodFRSA)$coefficients[,4],3))
+```
+
+#### multiple trees
+
+Residuals between NIR ~ VIS corrected by phylogeny. Extracted as model$residuals
+
+```{r message=FALSE, warning=FALSE}
+runsFRSA<-lapply(trees[trees_subset_min:trees_subset_max],
+                pgls_runC,
+                model=MuPGLSMod2A,
+                dataset=FRSDataSetA) 
+
+dfFRSA <- ldply(runsFRSA, data.frame)
+
+write.csv(dfFRSA,"./Data/FromCode/MuTPglsFRSultsFRSAbsorptivity.csv")
+
+FinFRSMA <- HPDinterval(as.mcmc(dfFRSA))
+```
+
+### Simple model
+
+#### MCC Tree
+
+```{r message= FALSE}
+spglsmodFRSA <- pgls(FRS ~ PC2 + size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+sFinMccFRScA <- as.numeric(round(summary(spglsmodFRSA)$coefficients[,1],3)) 
+sFinMccFRSpA <- as.numeric(round(summary(spglsmodFRSA)$coefficients[,4],3))
+```
+
+#### multiple trees
+
+First step is to modify the data frame. 
+
+```{r}
+SimpleFRSA <- 
+  FRSDataSetA %>% 
+  dplyr::select(phylogeny_name, Response, size, PC2) %>% 
+  dplyr::rename(PC = PC2)
+
+SimpleFRSA <- as.data.frame(SimpleFRSA)
+```
+
+Now run the model
+
+```{r message=FALSE, warning=FALSE}
+runsFRSsimpleA <- lapply(trees[trees_subset_min:trees_subset_max],
+                      pgls_runE,
+                      model=MuPGLSMod4A,
+                      dataset=SimpleFRSA) 
+
+dfFRSsimpleA <- ldply(runsFRSsimpleA, data.frame)
+
+FinFRSSA <-HPDinterval(as.mcmc(dfFRSsimpleA))
+```
+
+## PRS
+
+Residuals between NIR ~ VIS corrected by phylogeny. Phylogenetic signal eliminated by the PGLS correction. Extracted as model$phyres.
+
+### Full model
+
+#### MCC Tree
+
+```{r message= FALSE}
+pglsmodPRSA <- pgls(FRSP ~ PC1 + PC2 + size + PC1*size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+FinMccPRScA <- as.numeric(round(summary(pglsmodPRSA)$coefficients[,1],3)) 
+FinMccPRSpA <- as.numeric(round(summary(pglsmodPRSA)$coefficients[,4],3))
+```
+
+#### multiple trees
+
+Residuals between NIR ~ VIS corrected by phylogeny. Phylogenetic signal eliminated by the PGLS correction. Extracted as model$phyres.
+
+```{r message=FALSE, warning=FALSE}
+runsPRSA<-lapply(trees[trees_subset_min:trees_subset_max],
+                pgls_runC,
+                model=MuPGLSMod2A,
+                dataset=PRSDataSetA) 
+
+dfPRSA <- ldply(runsPRSA, data.frame)
+
+write.csv(dfPRSA,"./Data/FromCode/MuTPglsFRSultsPRSAbsorptivity.csv")
+
+FinPRSMA <- HPDinterval(as.mcmc(dfPRSA))
+```
+
+### Simple model
+
+#### MCC Tree
+
+```{r message= FALSE}
+spglsmodPRSA <- pgls(FRSP ~ PC2 + size + PC2*size,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+sFinMccPRScA <- as.numeric(round(summary(spglsmodPRSA)$coefficients[,1],3)) 
+sFinMccPRSpA <- as.numeric(round(summary(spglsmodPRSA)$coefficients[,4],3))
+```
+
+#### multiple trees
+
+First step is to modify the data frame. 
+
+```{r}
+SimplePRSA <- 
+  PRSDataSetA %>% 
+  dplyr::select(phylogeny_name, Response, size, PC2) %>% 
+  dplyr::rename(PC = PC2)
+
+SimplePRSA <- as.data.frame(SimplePRSA)
+```
+
+Now run the model
+
+```{r message=FALSE, warning=FALSE}
+runsPRSsimpleA <- lapply(trees[trees_subset_min:trees_subset_max],
+                      pgls_runE,
+                      model=MuPGLSMod4A,
+                      dataset=SimplePRSA) 
+
+dfPRSsimpleA <- ldply(runsPRSsimpleA, data.frame)
+
+FinPRSSA <-HPDinterval(as.mcmc(dfPRSsimpleA))
+```
+
+# Final results
+
+## Full models
+
+### MCC Tree
+
+```{r message=FALSE, warning=FALSE}
+
+PredictorA <- c("PC1","PC1 p-val" , 
+               "PC2", "PC2 p-val", 
+               "Size", "Size p-val",
+               "VIS", "VIS p-val",
+               "PC1:size", "PC1:size p-val", 
+               "PC2:size", "PC2:size p-val")
+
+# Arrange the vectors to build the data frame
+# New vectors alternate coefficient and p-values to match "predictors"
+
+TotiA <- as.character(as.numeric(c(rbind((c(
+            FinMccTotcA[2:4],"NA",FinMccTotcA[5:6])),
+                (c(FinMccTotpA[2:4],"NA",FinMccTotpA[5:6]))))))
+
+VisiA <- as.character(as.numeric(c(rbind((c(
+            FinMccViscA[2:4],"NA",FinMccViscA[5:6])),
+                (c(FinMccVispA[2:4],"NA",FinMccVispA[5:6]))))))
+
+NiriA <- as.character(as.numeric(c(rbind(
+            FinMccNircA[2:7], FinMccNirpA[2:7]))))
+
+FRSiA <- as.character(as.numeric(c(rbind((c(
+            FinMccFRScA[2:4],"NA",FinMccFRScA[5:6])),
+                (c(FinMccFRSpA[2:4],"NA",FinMccFRSpA[5:6]))))))
+
+PRSiA <- as.character(as.numeric(c(rbind((c(
+            FinMccPRScA[2:4],"NA",FinMccPRScA[5:6])),
+                (c(FinMccPRSpA[2:4],"NA",FinMccPRSpA[5:6]))))))
+  
+# This section colours the significant p-values and their coefficients
+
+#Visi[1] <- cell_spec(Visi[1],bold = TRUE, color="#D40481")
+#Visi[2] <- cell_spec(Visi[2],bold = TRUE)
+
+#Visi[5] <- cell_spec(Visi[5],bold = TRUE, color="#D40481")
+#Visi[6] <- cell_spec(Visi[6],bold = TRUE)
+
+#Visi[9] <- cell_spec(Visi[9],bold = TRUE, color="#D40481")
+#Visi[10] <- cell_spec(Visi[10],bold = TRUE)
+
+#Niri[3] <- cell_spec(Niri[3],bold = TRUE, color="#D40481")
+#Niri[4] <- cell_spec(Niri[4],bold = TRUE)
+
+#Niri[7] <- cell_spec(Niri[7],bold = TRUE, color="#D40481")
+#Niri[8] <- cell_spec(Niri[8],bold = TRUE)
+
+#Niri[11] <- cell_spec(Niri[11],bold = TRUE, color="#D40481")
+#Niri[12] <- cell_spec(Niri[12],bold = TRUE)
+
+#FRSi[3] <- cell_spec(FRSi[3],bold = TRUE, color="#D40481")
+#FRSi[4] <- cell_spec(FRSi[4],bold = TRUE)
+
+#FRSi[11] <- cell_spec(FRSi[11],bold = TRUE, color="#D40481")
+#FRSi[12] <- cell_spec(FRSi[12],bold = TRUE)
+
+# Assemble the table
+
+ResultspglsA <- data.frame("Predictor" = PredictorA,  
+                          "TOT" = TotiA,
+                          "VIS" = VisiA,
+                          "NIR" = NiriA,
+                          "FRS" = FRSiA,
+                          "PRS" = PRSiA) 
+
+ResultspglsA %>% 
+  kbl(align ="c", escape = FALSE) %>%
+  kable_classic() %>% 
+  add_indent(c(1, 3, 5, 7, 9)) 
+```
+
+
+### multiple trees
+
+```{r message=FALSE, warning=FALSE}
+rvTOTlA <- as.character(
+            round(as.numeric(c(
+              FinTotMA[1,1],FinTotMA[3,1],FinTotMA[4,1],FinTotMA[6,1],
+              FinTotMA[7,1],FinTotMA[9,1],"NA","NA",
+              FinTotMA[10,1],FinTotMA[12,1],
+              FinTotMA[13,1],FinTotMA[15,1])),3))
+
+rvTOTuA <- as.character(
+            format(round(as.numeric(c(
+              FinTotMA[1,2],FinTotMA[3,2],FinTotMA[4,2],FinTotMA[6,2],
+              FinTotMA[7,2],FinTotMA[9,2],"NA","NA",
+              FinTotMA[10,2],FinTotMA[12,2],
+              FinTotMA[13,2],FinTotMA[15,2])),3),nsmall=3))
+
+
+rvVISlA <- as.character(
+          format(round(as.numeric(c(
+              FinVisMA[1,1],FinVisMA[3,1],FinVisMA[4,1],FinVisMA[6,1],
+              FinVisMA[7,1],FinVisMA[9,1],"NA","NA",
+              FinVisMA[10,1],FinVisMA[12,1],
+              FinVisMA[13,1],FinVisMA[15,1])),3),nsmall=3))
+
+rvVISuA <- as.character(
+            format(round(as.numeric(c(
+              FinVisMA[1,2],FinVisMA[3,2],FinVisMA[4,2],FinVisMA[6,2],
+              FinVisMA[7,2],FinVisMA[9,2],"NA","NA",
+              FinVisMA[10,2],FinVisMA[12,2],
+              FinVisMA[13,2],FinVisMA[15,2])),3),nsmall=3))
+
+
+rvNIRlA <- as.character(
+            format(round(as.numeric(c(
+              FinNirMA[1,1],FinNirMA[3,1],FinNirMA[4,1],FinNirMA[6,1],
+              FinNirMA[7,1],FinNirMA[9,1],FinNirMA[10,1],FinNirMA[12,1],
+              FinNirMA[13,1],FinNirMA[15,1], FinNirMA[16,1],FinNirMA[18,1]
+              )),3),nsmall=3))
+
+rvNIRuA <- as.character(
+           format(round(as.numeric(c(
+              FinNirMA[1,2],FinNirMA[3,2],FinNirMA[4,2],FinNirMA[6,2],
+              FinNirMA[7,2],FinNirMA[9,2],FinNirMA[10,2],FinNirMA[12,2],
+              FinNirMA[13,2],FinNirMA[15,2], FinNirMA[16,2],FinNirMA[18,2]
+              )),3),nsmall=3))
+
+rvFRSlA <- as.character(
+            format(round(as.numeric(c(
+              FinFRSMA[1,1],FinFRSMA[3,1],FinFRSMA[4,1],FinFRSMA[6,1],
+              FinFRSMA[7,1],FinFRSMA[9,1],"NA","NA",
+              FinFRSMA[10,1],FinFRSMA[12,1],
+              FinFRSMA[13,1],FinFRSMA[15,1])),3),nsmall=3))
+
+rvFRSuA <- as.character(
+            format(round(as.numeric(c(
+              FinFRSMA[1,2],FinFRSMA[3,2],FinFRSMA[4,2],FinFRSMA[6,2],
+              FinFRSMA[7,2],FinFRSMA[9,2],"NA","NA",
+              FinFRSMA[10,2],FinFRSMA[12,2],
+              FinFRSMA[13,2],FinFRSMA[15,2])),3),nsmall=3))
+
+rvPRSlA <- as.character(
+            format(round(as.numeric(c(
+              FinPRSMA[1,1],FinPRSMA[3,1],FinPRSMA[4,1],FinPRSMA[6,1],
+              FinPRSMA[7,1],FinPRSMA[9,1],"NA","NA",
+              FinPRSMA[10,1],FinPRSMA[12,1],
+              FinPRSMA[13,1],FinPRSMA[15,1])),3),nsmall=3))
+
+rvPRSuA <- as.character(
+            format(round(as.numeric(c(
+              FinPRSMA[1,2],FinPRSMA[3,2],FinPRSMA[4,2],FinPRSMA[6,2],
+              FinPRSMA[7,2],FinPRSMA[9,2],"NA","NA",
+              FinPRSMA[10,2],FinPRSMA[12,2],
+              FinPRSMA[13,2],FinPRSMA[15,2])),3),nsmall=3))
+
+
+rvTOTiA<-paste(rvTOTlA,rvTOTuA, sep = " ; ")
+rvVISiA<-paste(rvVISlA,rvVISuA, sep = " ; ")
+rvNIRiA<-paste(rvNIRlA,rvNIRuA, sep = " ; ")
+rvFRSiA<-paste(rvFRSlA,rvFRSuA, sep = " ; ")
+rvPRSiA<-paste(rvPRSlA,rvPRSuA, sep = " ; ")
+
+#rvVISi[1] <- cell_spec(rvVISi[1],bold = TRUE, color="#367D91")
+#rvVISi[2] <- cell_spec(rvVISi[2],bold = TRUE, color="#B2B9BF")
+
+#rvVISi[5] <- cell_spec(rvVISi[5],bold = TRUE, color="#D40481")
+#rvVISi[6] <- cell_spec(rvVISi[6],bold = TRUE)
+
+#rvVISi[9] <- cell_spec(rvVISi[9],bold = TRUE, color="#367D91")
+#rvVISi[10] <- cell_spec(rvVISi[10],bold = TRUE,  color="#B2B9BF")
+
+#rvNIRi[3] <- cell_spec(rvNIRi[3],bold = TRUE, color="#D40481")
+#rvNIRi[4] <- cell_spec(rvNIRi[4],bold = TRUE)
+
+#rvNIRi[7] <- cell_spec(rvNIRi[7],bold = TRUE, color="#D40481")
+#rvNIRi[8] <- cell_spec(rvNIRi[8],bold = TRUE)
+
+#rvNIRi[11] <- cell_spec(rvNIRi[11],bold = TRUE, color="#D40481")
+#rvNIRi[12] <- cell_spec(rvNIRi[12],bold = TRUE)
+
+#rvFRSi[3] <- cell_spec(rvFRSi[3],bold = TRUE, color="#D40481")
+#rvFRSi[4] <- cell_spec(rvFRSi[4],bold = TRUE)
+
+#rvFRSi[11] <- cell_spec(rvFRSi[11],bold = TRUE, color="#D40481")
+#rvFRSi[12] <- cell_spec(rvFRSi[12],bold = TRUE)
+
+ResultspglsMultipleA <- data.frame("Predictor" = PredictorA,  
+                          "TOT" = rvTOTiA,
+                          "VIS" = rvVISiA,
+                          "NIR" = rvNIRiA,
+                          "FRS" = rvFRSiA,
+                          "PRS" = rvPRSiA) 
+
+ResultspglsMultipleA %>% 
+  kbl(align ="c", escape = FALSE) %>%
+  kable_classic() %>% 
+  add_indent(c(1, 3, 5, 7, 9)) 
+```
+
+# Plots
+
+## Plot PC1
+
+```{r}
+toplotAPC1A <- 
+  Cons1aggA %>% 
+  dplyr::select (2, 4:6, 8) %>% 
+  gather (key = spectralband, 
+          value = Absorptivity, -PC1, -size) %>%    # prepare for ggplot
+  mutate(PC1n = PC1 * -1)
+
+ggplot(toplotAPC1A, aes(x = PC1n, y = Absorptivity, colour = spectralband))+
+  geom_point(size=2,alpha=0.4)+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  theme_bw()+
+  facet_wrap(~ spectralband) +
+  scale_color_brewer(palette = "Accent")+
+  theme(legend.position = "none")
+```
+
+## Plot PC2
+
+```{r}
+toplotAPC2A <- 
+  Cons1aggA %>% 
+  dplyr::select (3:6, 8) %>% 
+  gather (key = spectralband, 
+          value = Absorptivity, -PC2, -size)  %>%  # prepare for ggplot
+  mutate(PC2n = PC2 * -1)
+
+ggplot(toplotAPC2A, aes(x = PC2n, y = Absorptivity, colour = spectralband))+
+  geom_point(size=2,alpha=0.4)+
+  geom_point(size=2, pch=21, colour="black", alpha=0.7)+
+  theme_bw()+
+  facet_wrap(~ spectralband) +
+  scale_color_brewer(palette = "Accent")+
+  theme(legend.position = "none")
+```
+
+# Pagel's lambda
+
+```{r}
+pagelTOTAbs <- Cons1aggA$TOT # Define which trait you want to test
+names(pagelTOTAbs) <- rownames(Cons1aggA) # Row names = tree tips
+phylosig(MCCtree, pagelTOTAbs, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomisations
+```
+
+```{r}
+pagelVISAbs <- Cons1aggA$VIS # Define which trait you want to test
+names(pagelVISAbs) <- rownames(Cons1aggA) # Row names = tree tips
+phylosig(MCCtree, pagelVISAbs, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomisations
+```
+
+```{r}
+pagelNIRAbs <- Cons1aggA$NIR # Define which trait you want to test
+names(pagelNIRAbs) <- rownames(Cons1aggA) # Row names = tree tips
+phylosig(MCCtree, pagelNIRAbs, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomisations
+```
+
+```{r}
+pagelFRSAbs <- Cons1aggA$FRS # Define which trait you want to test
+names(pagelFRSAbs) <- rownames(Cons1aggA) # Row names = tree tips
+phylosig(MCCtree, pagelFRSAbs, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomisations
+```
+
+```{r}
+pagelPRSAbs <- Cons1aggA$FRSP # Define which trait you want to test
+names(pagelPRSAbs) <- rownames(Cons1aggA) # Row names = tree tips
+phylosig(MCCtree, pagelPRSAbs, method = "lambda", test = TRUE, nsim = 999)
+# nsim = 999 means testing with 999 randomisations
+```
+
+# Conclusions
+<br>
+For Visible reflectivity the interaction between Size and PC1 was signifficant.
+Lower PC1 = higher humidity (vapour, rain and clouds) lower aridity. 
+Smaller beetles reflect more visible light in humid environments
+
+<br>
+For NIR reflectivity the interaction between Size and PC2 was signifficant. 
+Lower PC2 = higher solar radiation, higher max temp, more days above 35 and more aridity
+Smaller beetles reflect less NIR light in hot/arid environments.
