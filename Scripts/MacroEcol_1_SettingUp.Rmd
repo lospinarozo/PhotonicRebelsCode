@@ -22,7 +22,8 @@ knitr::opts_chunk$set(echo = TRUE)
 Find here the species names, ANIC museum codes (when available) and abbreviations for each specimen used in our experiment.
 
 ```{r  warning=FALSE, message=FALSE}
-Beetles <- read.csv("../Data/SupplementaryBeetleDataBase.csv")
+library(here)
+Beetles <- read.csv(here("Data/SupplementaryBeetleDataBase.csv"))
 library(DT)
 datatable(Beetles)
 ```
@@ -81,7 +82,7 @@ install.packages("DT")
 We used a .R file to contain and load all the libraries:
 
 ```{r, warning=FALSE, message=FALSE}
-source("./MacroEcol_1_Libraries.R")
+source(here("Scripts/MacroEcol_1_Libraries.R"))
 ```
 
 <br>
@@ -93,10 +94,10 @@ This is the way we curated the raw data frames to make sure we include only the 
 
 ```{r message=FALSE, warning=FALSE}
 # Import data
-refl1 <- read.csv("../Data/1_Reflectance_HRBatch.csv") # HR batch
-refl2 <- read.csv("../Data/2_Reflectance_FirstBatch.csv") # original
-TopTrans <- read.csv("../Data/3_Transmittance_HRBatch.csv") # transmittance
-theorySun <- read.csv("../Data/4_SunIrradiance.csv") # Sun irradiance
+refl1 <- read.csv(here("Data/1_Reflectance_HRBatch.csv")) # HR batch
+refl2 <- read.csv(here("Data/2_Reflectance_FirstBatch.csv")) # original
+TopTrans <- read.csv(here("Data/3_Transmittance_HRBatch.csv")) # transmittance
+theorySun <- read.csv(here("Data/4_SunIrradiance.csv")) # Sun irradiance
 
 
 # Fix the column names and convert to rspec object
@@ -207,8 +208,8 @@ Create files
 
 ```{r}
 
-write.csv(Reflectance, "../Data/FromCode/Reflectance_PData.csv")
-write.csv(Transmitance, "../Data/FromCode/Transmitance_PData.csv")
+write.csv(Reflectance, here("Data/FromCode/Reflectance_PData.csv"))
+write.csv(Transmitance, here("Data/FromCode/Transmitance_PData.csv"))
 ```
 
 

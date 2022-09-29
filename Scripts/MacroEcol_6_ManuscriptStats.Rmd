@@ -16,7 +16,7 @@ In this script we use a combination of phylogenetically controlled models to eva
 
 ```{r, warning=FALSE, message=FALSE}
 # We source the libraries from this file:
-source("./MacroEcol_1_Libraries.R")
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
 ```
 
 
@@ -29,14 +29,14 @@ Initially we import the reflectivity data obtained in the script "optical proper
 ```{r}
 
 # Consolidated by individual
-Cons1 <- read.csv("../Data/FromCode/ConsReflEcolInd.csv")[-1]
+Cons1 <- read.csv(here::here("Data/FromCode/ConsReflEcolInd.csv"))[-1]
 
 # Consolidated by species
-Cons1agg <- read.csv("../Data/FromCode/ConsolidatedReflectivitySpp.csv")[-1] %>% 
+Cons1agg <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivitySpp.csv"))[-1] %>% 
   dplyr::arrange(phylogeny_name)
 
 # PC Values
-PCValuesF <- read.csv("../Data/FromCode/PCsbySpp.csv")[-1] %>% 
+PCValuesF <- read.csv(here::here("Data/FromCode/PCsbySpp.csv"))[-1] %>% 
   dplyr::arrange(phylogeny_name)
 
 # Merge
@@ -59,10 +59,10 @@ trees_subset_max<-2000
 Import phylogeny (multiple trees)
 
 ```{r}
-trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
 
 MCCtree <- 
-  ape::read.nexus("../Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
 ```
 
 The MCC (Maximum clade credibility) tree used here is the BEAST MCC tree. We did not need to prun the tree. The equivalence between specie sin the tree and data frame was tested in previous steps (tab optical properties). 
@@ -163,7 +163,8 @@ Source function
 note that this function has to be adapted to the data frame and model on each case
 
 ```{r warning=FALSE, message=FALSE}
-source("8_multiple_pgls_function_C.R")# function C is for reflectance as response
+# function C is for reflectance as response
+source(here::here("Scripts/8_multiple_pgls_function_C.R"))
 ```
 
 Define model
@@ -181,7 +182,8 @@ PGLS in multiple trees for NIR contains 6 predictors + intercept. The extra pred
 
 
 ```{r warning=FALSE, message=FALSE}
-source("9_multiple_pgls_function_D.R")# function D: NIR explained by PCs and VIS
+# function D: NIR explained by PCs and VIS
+source(here::here("Scripts/9_multiple_pgls_function_D.R"))
 ```
 
 
@@ -206,7 +208,8 @@ Source function
 note that this function has to be adapted to the data frame and model on each case
 
 ```{r warning=FALSE, message=FALSE}
-source("10_multiple_pgls_function_E.R")# function E: simplified. One PC and size
+# function E: simplified. One PC and size
+source(here::here("Scripts/10_multiple_pgls_function_E.R"))
 ```
 
 Define model
@@ -227,7 +230,8 @@ Source function
 note that this function has to be adapted to the data frame and model on each case
 
 ```{r warning=FALSE, message=FALSE}
-source("11_multiple_pgls_function_F.R")# F: One PC, size and VIS as predictors
+# F: One PC, size and VIS as predictors
+source(here::here("Scripts/11_multiple_pgls_function_F.R"))
 ```
 
 Define model
@@ -270,7 +274,7 @@ runsTOT<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfTOT <- ldply (runsTOT, data.frame)
 
-write.csv(dfTOT,"../Data/FromCode/MuTPglsResultsTOT.csv")
+write.csv(dfTOT, here::here("Data/FromCode/MuTPglsResultsTOT.csv"))
 
 FinTotM <- HPDinterval(as.mcmc(dfTOT))
 
@@ -306,7 +310,7 @@ runsVIS<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfVIS <- ldply (runsVIS, data.frame)
 
-write.csv(dfVIS,"../Data/FromCode/MuTPglsResultsVIS.csv")
+write.csv(dfVIS, here::here("Data/FromCode/MuTPglsResultsVIS.csv"))
 
 FinVisM <- HPDinterval(as.mcmc(dfVIS))
 
@@ -389,7 +393,7 @@ runsNIR<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfNIR <- ldply (runsNIR, data.frame)
 
-write.csv(dfNIR,"../Data/FromCode/MuTPglsResultsNmo.csv")
+write.csv(dfNIR, here::here("Data/FromCode/MuTPglsResultsNmo.csv"))
 
 FinNirM <- HPDinterval(as.mcmc(dfNIR))
 
@@ -454,7 +458,7 @@ Residuals between NIR ~ VIS reflectance without phylogenetic correction
 
 ```{r message= FALSE}
 pglsmodRes <- pgls(Res ~ PC1 + PC2 + size + PC1*size + PC2*size,
-  data = comp_data, param.CI = 0.95, lambda = "ML"
+  data = comp_data, param.CI = 0.95, lambda = "ML", bounds = list(lambda=c(1e-5,1)) # modify bounds (defaults are c(1e-6,1))
 )
 
 FinMccResc <- as.numeric(round(summary(pglsmodRes)$coefficients[,1],3)) 
@@ -477,7 +481,7 @@ runsRes<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfRes <- ldply (runsRes, data.frame)
 
-write.csv(dfRes,"../Data/FromCode/MuTPglsResultsRes.csv")
+write.csv(dfRes, here::here("Data/FromCode/MuTPglsResultsRes.csv"))
 
 FinResM <- HPDinterval(as.mcmc(dfRes))
 
@@ -563,7 +567,7 @@ runsFRS<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfFRS <- ldply (runsFRS, data.frame)
 
-write.csv(dfFRS,"../Data/FromCode/MuTPglsResultsFRS.csv")
+write.csv(dfFRS, here::here("Data/FromCode/MuTPglsResultsFRS.csv"))
 
 FinFRSM <- HPDinterval(as.mcmc(dfFRS))
 
@@ -647,7 +651,7 @@ runsPRS<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfPRS <- ldply (runsPRS, data.frame)
 
-write.csv(dfPRS,"../Data/FromCode/MuTPglsResultsFRS.csv")
+write.csv(dfPRS, here::here("Data/FromCode/MuTPglsResultsFRS.csv"))
 
 FinPRSM <- HPDinterval(as.mcmc(dfPRS))
 
@@ -698,7 +702,9 @@ FinPRSS <-HPDinterval(as.mcmc(dfPRSsimple))
 
 ```
 
+## NIR no outliers
 
+## FRS no outliers
 
 # Final results
 
@@ -1178,6 +1184,9 @@ ToPlotInt <-
     sdSize = sd(size)
   )
 
+ToPlotInt <- as.data.frame(ToPlotInt)
+rownames(ToPlotInt) <- ToPlotInt[, 1]
+
 plotVisSmall <- 
   ToPlotInt %>% 
   dplyr::filter(meanSize<2.5) %>%  # Small beetles
@@ -1268,13 +1277,13 @@ plot((ResDataSet[ResDataSet$size>2.5,])$PC2,
 
 
 ```{r}
-dumModNb <- lm(ResDataSet$Reflectance ~ ResDataSet$PC2) # All together
+dumModNb <- lm(ResDataSet$Response ~ ResDataSet$PC2) # All together
 summary(dumModNb)
 
-dumModNs <- lm(ResSmall$Reflectance ~ ResSmall$PC) # size < 2.5
+dumModNs <- lm(ResSmall$Response ~ ResSmall$PC) # size < 2.5
 summary(dumModNs)
 
-dumModNl <- lm(ResLarge$Reflectance ~ ResLarge$PC) # size > 2.5
+dumModNl <- lm(ResLarge$Response ~ ResLarge$PC) # size > 2.5
 summary(dumModNl)
 ```
 
@@ -1407,6 +1416,11 @@ PC axis were inverted here so that they are easy to interpret
 
 ```{r message=FALSE, warning=FALSE}
 PVS <- ggplot(plotVisSmall, aes(x = -meanPC1, y = meanVIS)) +
+  geom_text(
+    label=rownames(plotVisSmall), 
+    nudge_x = 0.2, nudge_y = 0.8, 
+    col="gray", size=3
+  ) +
   geom_errorbar(aes(
     ymin = meanVIS - sdVIS,
     ymax = meanVIS + sdVIS
@@ -1433,6 +1447,11 @@ PVS <- ggplot(plotVisSmall, aes(x = -meanPC1, y = meanVIS)) +
 
 
 PVL <- ggplot(plotVisLarge, aes(x = -meanPC1, y = meanVIS)) +
+  geom_text(
+    label=rownames(plotVisLarge), 
+    nudge_x = 0.2, nudge_y = 0.8, 
+    col="gray", size=3
+  ) +
   geom_errorbar(aes(
     ymin = meanVIS - sdVIS,
     ymax = meanVIS + sdVIS
@@ -1458,6 +1477,11 @@ PVL <- ggplot(plotVisLarge, aes(x = -meanPC1, y = meanVIS)) +
   ylab ("VIS reflectivity (%)")
 
 PNS <- ggplot(plotNirSmall, aes(x = -meanPC2, y = meanRes)) +
+  geom_text(
+    label=rownames(plotNirSmall), 
+    nudge_x = 0.2, nudge_y = 0.8, 
+    col="gray", size=3
+  ) +
   geom_errorbar(aes(
     ymin = meanRes - sdRes,
     ymax = meanRes + sdRes
@@ -1483,6 +1507,11 @@ PNS <- ggplot(plotNirSmall, aes(x = -meanPC2, y = meanRes)) +
   ylab ("NIR (res) reflectivity (%)")
 
 PNL <- ggplot(plotNirLarge, aes(x = -meanPC2, y = meanRes)) +
+  geom_text(
+    label=rownames(plotNirLarge), 
+    nudge_x = 0.2, nudge_y = 0.8, 
+    col="gray", size=3
+  ) +
   geom_errorbar(aes(
     ymin = meanRes - sdRes,
     ymax = meanRes + sdRes

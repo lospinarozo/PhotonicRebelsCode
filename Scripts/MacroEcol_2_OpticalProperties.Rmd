@@ -12,22 +12,22 @@ Load Libraries and Data sets
 
 ```{r, warning=FALSE, message=FALSE}
 # Libraries
-source("./Scripts/MacroEcol_1_Libraries.R")
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
 ```
 
 ```{r, warning=FALSE, message=FALSE}
 
 # Data Sets
 
-Reflectance <- read.csv("./Data/FromCode/Reflectance_PData.csv") %>% 
+Reflectance <- read.csv(here::here("Data/FromCode/Reflectance_PData.csv")) %>% 
   select(-1) %>% 
   as.rspec()
 
-Transmitance <- read.csv("./Data/FromCode/Transmitance_PData.csv") %>% 
+Transmitance <- read.csv(here::here("Data/FromCode/Transmitance_PData.csv")) %>% 
   select(-1) %>% 
   as.rspec()
 
-theorySun <- read.csv("./Data/4_SunIrradiance.csv") %>% # Sun irradiance
+theorySun <- read.csv(here::here("Data/4_SunIrradiance.csv")) %>% # Sun irradiance
  as.rspec()
 
 ```
@@ -335,7 +335,7 @@ _With a simple lm model_
 ```{r message=FALSE}
 
 # Linear model
-NIRVISMod1 <- lm (Reflectivity$R_NIR ~ Reflectivity$R_VIS)
+NIRVISMod1 <- lm(Reflectivity$R_NIR ~ Reflectivity$R_VIS)
 
 export_summs(NIRVISMod1, error_format = "SE = {std.error}")
 
@@ -400,8 +400,6 @@ ggplot(data = ForResVISPlot, aes(x= R_VIS ,y = Res))+
   geom_hline(yintercept=0)+
   xlab("Reflectivity in VIS (%)") +
   ylab("Residuals from NIR-VIS correlation (%)")
-
-
 ```
 
 <br>
@@ -445,7 +443,6 @@ Reflectivity <-
 
 # Reflectivity residuals
 
-
 ## Additional variables
 
 We created data frames that contain the optical properties, size and phylogeny name for each beetle
@@ -455,7 +452,7 @@ We created data frames that contain the optical properties, size and phylogeny n
 We measured the length between the frontal edge of the head to the end of the abdomen from calibrated photographs of the specimens.
 
 ```{r}
-Size <- read.csv("./Data/8_Size.csv")
+Size <- read.csv(here::here("Data/8_Size.csv"))
 
 Size <-
   Size %>% 
@@ -477,7 +474,7 @@ Size <-
 
 ```{r}
 
-SppNames <- read.csv("./Data/9_CodesAndSpecies.csv")
+SppNames <- read.csv(here::here("Data/9_CodesAndSpecies.csv"))
 
 SppNames <-
   SppNames %>% 
@@ -491,7 +488,6 @@ SppNames <-
             ) %>% # These species were removed. No phylogenetic info
   dplyr::select (-spp) %>% 
   arrange(Ind)
-
 ```
 
 <br>
@@ -506,9 +502,6 @@ Consolidated file with reflectivity on each spectral band, size and phylogeny na
 Cons1oo <-
   data.frame(Reflectivity, Size, SppNames) %>% 
   dplyr::select(-ind.1,-Ind)
-
-write.csv(Cons1oo,"./Data/FromCode/ConsolidatedReflectivityInd.csv")
-head(Cons1oo)
 ```
 
 ## NIR/VIS Corrected (Reflectivity)
@@ -519,13 +512,14 @@ The residuals can also be calculated from a model that considers phylogeny.
 Reflectivity by Individual
 
 ```{r}
-Cons1 <- read.csv("./Data/FromCode/ConsReflEcolInd.csv")[-1]
+Cons1 <- Cons1oo
+head(Cons1)
 ```
 
 Phylogeny (multiple trees)
 
 ```{r}
-trees <- ape::read.tree("./Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
 ```
 
 ```{r}
@@ -539,13 +533,14 @@ Cons1agg <-
 
 # Modify to make it compatible with tree tips
 ConsAgg <- as.data.frame(Cons1agg) # convert to a data frame
+head(ConsAgg)
 rownames(ConsAgg) <- ConsAgg[, 1] # make species the row names 
 ConsAgg <- ConsAgg [,2:length(ConsAgg)] # eliminate spp name (redundant)
 
 # Separate the data frames 
 # Useful for plotting in the tree
-names(ConsAgg) <- c("TOT", "VIS", "NIR", "Res", "size" )
-
+names(ConsAgg) <- c("TOT", "VIS", "NIR", "Res", "size")
+head(ConsAgg)
 ```
 
 Make sure that the phylogeny names are consistent in the data frame and the phylogenetic trees
@@ -556,7 +551,7 @@ The MCC (Maximum clade credibility) tree used here is the BEAST MCC tree.
 
 # read the tree
 MCCtree.raw <- 
-  ape::read.nexus("./Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
 
 # Prune extra spp in the tree, not contain in the test sample
 species.MCC <- as.data.frame(unique(Cons1$phylogeny_name))
@@ -647,54 +642,7 @@ hist(FixedRes2)
 
 Cons1agg$FRS <- FixedRes
 
-Cons1agg$FRSP <- FixedRes2
-```
-
-## Final Data Frames
-
-<span style="color: #04C799"> **Reflectivity by individual** </span>  <br/>
-
-Consolidated file with reflectivity on each spectral band, size and phylogeny name for each beetle.
-
-```{r}
-
-Cons1oo <-
-  data.frame(Reflectivity, Size, SppNames) %>% 
-  dplyr::select(-ind.1,-Ind)
-
-write.csv(Cons1oo,"./Data/FromCode/ConsolidatedReflectivityInd.csv")
-
-```
-
-
-
-<span style="color: #04C799"> **Absorptivity by individual** </span>  <br/>
-
-
-Consolidated file with absorptivity on each spectral band, size and phylogeny name for each beetle.
-
-```{r}
-
-Cons2oo <- 
-  Cons1oo %>% 
-  filter(ind %in% (Optical$ind)) %>% # Subset the reflectivity set
-  arrange(ind) %>% 
-  dplyr::select(size, phylogeny_name) %>% # Keep only the size and phylogeny name
-  bind_cols(. , Optical) %>% # join with the 'Optical' Data frame
-  dplyr::select(ind, everything()) # rearrange the column order
-
-write.csv(Cons2oo,"./Data/FromCode/ConsolidatedAbsoptivityInd.csv")
-```
-
-
-<span style="color: #04C799"> **Reflectivity by species** </span>  <br/>
-
-Consolidated file with reflectivity on each spectral band including NIR residuals corrected by phylogeny, size and phylogeny name for each species.
-
-```{r}
-
-write.csv(Cons1agg,"./Data/FromCode/ConsolidatedReflectivitySpp.csv")
-
+Cons1agg$FRS2 <- FixedRes2
 ```
 
 ## NIR/VIS Corrected (Absorptivity)
@@ -705,13 +653,13 @@ The residuals can also be calculated from a model that considers phylogeny.
 Absorptivity by Individual
 
 ```{r}
-Cons1A <- read.csv("./Data/FromCode/ConsolidatedAbsoptivityInd.csv")[-1]
+Cons1A <- read.csv(here::here("Data/FromCode/ConsolidatedAbsoptivityInd.csv"))[-1]
 ```
 
 Phylogeny (multiple trees)
 
 ```{r}
-trees <- ape::read.tree("./Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
 ```
 
 ```{r}
@@ -741,7 +689,7 @@ The MCC (Maximum clade credibility) tree used here is the BEAST MCC tree.
 
 # read the tree
 MCCtree.raw <- 
-  ape::read.nexus(here("./Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
 
 # Prune extra spp in the tree, not contain in the test sample
 species.MCC.A <- as.data.frame(unique(Cons1A$phylogeny_name))
@@ -827,6 +775,50 @@ hist(FixedRes2A)
 Cons1aggA$FRS <- FixedResA
 
 Cons1aggA$FRSP <- FixedRes2A
+```
 
-write.csv(Cons1aggA,"./Data/FromCode/ConsolidatedAbsorptivitySpp.csv")
+## Final Data Frames
+
+<span style="color: #04C799"> **Reflectivity by individual** </span>  <br/>
+
+Consolidated file with reflectivity on each spectral band, size and phylogeny name for each beetle.
+
+```{r}
+write.csv(Cons1oo, here::here("Data/FromCode/ConsolidatedReflectivityInd.csv"))
+```
+
+<span style="color: #04C799"> **Absorptivity by individual** </span>  <br/>
+
+
+Consolidated file with absorptivity on each spectral band, size and phylogeny name for each beetle.
+
+```{r}
+
+Cons2oo <- 
+  Cons1oo %>% 
+  filter(ind %in% (Optical$ind)) %>% # Subset the reflectivity set
+  arrange(ind) %>% 
+  dplyr::select(size, phylogeny_name) %>% # Keep only the size and phylogeny name
+  bind_cols(. , Optical) %>% # join with the 'Optical' Data frame
+  dplyr::select(ind, everything()) # rearrange the column order
+
+write.csv(Cons2oo, here::here("Data/FromCode/ConsolidatedAbsoptivityInd.csv"))
+```
+
+
+<span style="color: #04C799"> **Reflectivity by species** </span>  <br/>
+
+Consolidated file with reflectivity on each spectral band including NIR residuals corrected by phylogeny, size and phylogeny name for each species.
+
+```{r}
+write.csv(Cons1agg, here::here("Data/FromCode/ConsolidatedReflectivitySpp.csv"))
+```
+
+<span style="color: #04C799"> **Absorptivity by species** </span>  <br/>
+
+Consolidated file with absorptivity on each spectral band including NIR residuals corrected by phylogeny, size and phylogeny name for each species.
+
+
+```{r}
+write.csv(Cons1aggA, here::here("Data/FromCode/ConsolidatedAbsorptivitySpp.csv"))
 ```

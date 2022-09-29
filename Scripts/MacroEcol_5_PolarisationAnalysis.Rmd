@@ -14,7 +14,7 @@ In this script we study the Polarisation trait corrected by phylogeny.
 Libraries sourced from an additional script.
 
 ```{r message = FALSE, warning=FALSE}
-source("./Scripts/MacroEcol_1_Libraries.R")
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
 ```
 
 ## Data sets
@@ -23,11 +23,11 @@ Import polarisation data.
 
 ```{r}
 # elytra
-PolBySpp <- read.csv("./Data/FromCode/PolarzElytraBySpp.csv")[-1]
-PolByInd <- read.csv("./Data/FromCode/PolarzElytraByInd.csv")[-1]
+PolBySpp <- read.csv(here::here("Data/FromCode/PolarzElytraBySpp.csv"))[-1]
+PolByInd <- read.csv(here::here("Data/FromCode/PolarzElytraByInd.csv"))[-1]
 
 # elytra and pronotum
-BeetlePol <- read.csv("./Data/FromCode/PolarzElytraPronot.csv")[-1]
+BeetlePol <- read.csv(here::here("Data/FromCode/PolarzElytraPronot.csv"))[-1]
 ```
 
 All statistical analysis were done at the species level (polarisation data by species). Plots are produced with the polarisation data by individual.
@@ -36,21 +36,21 @@ And we imported the phylogeny from a .nwk file which contains 2000 phylogenetic 
 
 ```{r}
 # Phylogeny
-trees <- ape::read.tree("./Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
 
 # Set subset limits
-trees_subset_min<-0
-trees_subset_max<-1000
+trees_subset_min<-1000
+trees_subset_max<-2000
 
 MCCtree <- 
-  ape::read.nexus("./Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
 ```
 
 To explore the correlations between ecological variables and polarisation
 
 ```{r}
 # PC Values
-PCValuesF <- read.csv("./Data/FromCode/PCsbySpp.csv")[-1] %>% 
+PCValuesF <- read.csv(here::here("Data/FromCode/PCsbySpp.csv"))[-1] %>% 
   dplyr::rename("PC1" = PC1_1, "PC2" = PC2_1)
 
 # merge with polarisation
@@ -66,7 +66,7 @@ To explore correlations with reflectivity
 
 ```{r}
 # Reflectivity data consolidated by species
-ReflBySpp <- read.csv("./Data/FromCode/ConsolidatedReflectivitySpp.csv")[-1] %>% 
+ReflBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivitySpp.csv"))[-1] %>% 
   dplyr::arrange(phylogeny_name)
 
 # Merge with polarisation
@@ -81,7 +81,7 @@ PolReflRows <- PolRefl2[, 2:length(PolRefl2)] # eliminate spp name (redundant)
 To explore correlations with absorptivity
 
 ```{r}
-AbsBySpp <- read.csv("./Data/FromCode/ConsolidatedAbsorptivitySpp.csv")[-1] %>%
+AbsBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivitySpp.csv"))[-1] %>%
   dplyr::arrange(phylogeny_name)
 
 # merge with polarisation
@@ -246,7 +246,7 @@ Function
 Note that the function has to be modified for the predictors and data frame that we are using
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/7_multiple_pgls_function_B.R") # script B is for Polarization as a response
+source(here::here("Scripts/7_multiple_pgls_function_B.R")) # script B is for Polarization as a response
 ```
 
 Model
@@ -358,7 +358,7 @@ Function
 Note that the function has to be modified for the predictors and data frame that we are using
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/6_multiple_pgls_function_A.R") # script A is for Polarization as a response
+source(here::here("Scripts/6_multiple_pgls_function_A.R")) # script A is for Polarization as a response
 ```
 
 Model
@@ -460,7 +460,7 @@ Function
 Note that the function has to be modified for the predictors and data frame that we are using
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/13_multiple_pgls_function_H.R") # script A is for Polarization as a response
+source(here::here("Scripts/13_multiple_pgls_function_H.R")) # script A is for Polarization as a response
 ```
 
 Model
@@ -1189,10 +1189,12 @@ cor.test(NoCCAbs$FRS, NoCCAbs$Pol) # by spp
 
 # Plots
 
-```{r}
-ReflByInd <- read.csv("./Data/FromCode/ConsolidatedReflectivityInd.csv")[-1]
+## Degree of polarisation
 
-AbsByInd0 <- read.csv("./Data/FromCode/ConsolidatedAbsorptivityInd.csv")[-1]
+```{r}
+ReflByInd <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivityInd.csv"))[-1]
+
+AbsByInd0 <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivityInd.csv"))[-1]
 AbsByInd0$A_Res <- residuals ( lm (AbsByInd0$A_NIR~AbsByInd0$A_VIS))
 
 # Mean and sd per species Absorptivity
@@ -1307,6 +1309,132 @@ trend1<-data.frame(PolDeg,RefDeg) # Pol values and expected reflectivity joint
 ```
 
 
+
+```{r}
+
+NudgeXVal = 0.04
+NudgeYVal = 0.9
+
+PVRPlot <- ggplot(data = ToPlotPolRefl, aes(x = meanPol, y = meanVIS),
+             size = 2.2, alpha = 0.6) +
+  geom_text(
+    label=rownames(ToPlotPolRefl), 
+    nudge_x = NudgeXVal, nudge_y = NudgeYVal, 
+    col="gray", size=3
+  ) +
+  # error bars
+  geom_errorbar(aes(
+                ymin = meanVIS - sdVIS,
+                ymax = meanVIS + sdVIS),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = meanPol - sdPol,
+    xmax = meanPol + sdPol
+  ),
+  col = "#cecec2"
+  ) +
+  geom_point(data = NoUnderlayRefl, size = 2.2, pch = 21, fill = "#648fff", color = "black", alpha = 0.7) +
+  geom_point(data = UnderlayRefl, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  xlab("Degree of Polarisation (L - R)/(L + R)")+
+  ylab("Visible reflectivity (%)") +
+  ylim(0, 50)
+
+PNRPlot <- ggplot(data = ToPlotPolRefl, aes(x = meanPol, y = meanRes),
+             size = 2.2, alpha = 0.6) +
+  geom_text(
+    label=rownames(ToPlotPolRefl), 
+    nudge_x = NudgeXVal, nudge_y = NudgeYVal, 
+    col="gray", size=3
+  ) +
+  # error bars
+  geom_errorbar(aes(
+                ymin = meanRes - sdRes,
+                ymax = meanRes + sdRes),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = meanPol - sdPol,
+    xmax = meanPol + sdPol
+  ),
+  col = "#cecec2"
+  ) +
+  geom_point(data = NoUnderlayRefl, size = 2.2, pch = 21, fill = "#648fff", color = "black", alpha = 0.7) +
+  geom_point(data = UnderlayRefl, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
+  geom_line(data=trend1, aes(x= PolDeg, y= RefDeg), color = "black") +
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  xlab("Degree of Polarisation (L - R)/(L + R)")+
+  ylab("NIR (Res) reflectivity (%)") 
+
+
+PVAPlot <- ggplot(data = ToPlotPolAbs, aes(x = meanPol, y = meanVISA),
+             size = 2.2, alpha = 0.6) +
+  geom_text(
+    label=rownames(ToPlotPolAbs), 
+    nudge_x = NudgeXVal, nudge_y = NudgeYVal, 
+    col="gray", size=3
+  ) +
+  # error bars
+  geom_errorbar(aes(
+                ymin = meanVISA - sdVISA,
+                ymax = meanVISA + sdVISA),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = meanPol - sdPol,
+    xmax = meanPol + sdPol
+  ),
+  col = "#cecec2"
+  ) +
+  geom_point(data = NoUnderlayAbs, size = 2.2, pch = 21, fill = "#648fff", color = "black", alpha = 0.7) +
+  geom_point(data = UnderlayAbs, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  xlab("Degree of Polarisation (L - R)/(L + R)")+
+  ylab("Visible absorptivity (%)") +
+  ylim(0, 100)
+
+PNAPlot <- ggplot(data = ToPlotPolAbs, aes(x = meanPol, y = meanResA),
+             size = 2.2, alpha = 0.6) +
+  geom_text(
+    label=rownames(ToPlotPolAbs), 
+    nudge_x = NudgeXVal, nudge_y = NudgeYVal, 
+    col="gray", size=3
+  ) +
+  # error bars
+  geom_errorbar(aes(
+                ymin = meanResA - sdResA,
+                ymax = meanResA + sdResA),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = meanPol - sdPol,
+    xmax = meanPol + sdPol
+  ),
+  col = "#cecec2"
+  ) +
+  geom_point(data = NoUnderlayAbs, size = 2.2, pch = 21, fill = "#648fff", color = "black", alpha = 0.7) +
+  geom_point(data = UnderlayAbs, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
+  geom_line(data=trend2, aes(x= PolDeg, y= AbsDeg), color = "black") +
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  xlab("Degree of Polarisation (L - R)/(L + R)")+
+  ylab("NIR (Res) absorptivity (%)") 
+  
+
+grid.arrange(PVRPlot, PNRPlot, PVAPlot, PNAPlot, nrow = 2)
+```
+
+## Right handed polarisation
+
+Setting up
+
+```{r}
+ #<- read.csv(here::here("Data/FromCode/PolarzElytra_LERGBValues.csv"))
+```
 
 ```{r}
 
