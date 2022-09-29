@@ -14,7 +14,7 @@ In this script we study the Polarisation trait corrected by phylogeny.
 Libraries sourced from an additional script.
 
 ```{r message = FALSE, warning=FALSE}
-source("./Scripts/MacroEcol_1_Libraries.R")
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
 ```
 
 ## Data sets
@@ -23,11 +23,11 @@ Import polarisation data.
 
 ```{r}
 # elytra
-PolBySpp <- read.csv("./Data/FromCode/PolarzElytraBySpp.csv")[-1]
-PolByInd <- read.csv("./Data/FromCode/PolarzElytraByInd.csv")[-1]
+PolBySpp <- read.csv(here::here("Data/FromCode/PolarzElytraBySpp.csv"))[-1]
+PolByInd <- read.csv(here::here("Data/FromCode/PolarzElytraByInd.csv"))[-1]
 
 # elytra and pronotum
-BeetlePol <- read.csv("./Data/FromCode/PolarzElytraPronot.csv")[-1]
+BeetlePol <- read.csv(here::here("Data/FromCode/PolarzElytraPronot.csv"))[-1]
 ```
 
 All statistical analysis were done at the species level (polarisation data by species). Plots are produced with the polarisation data by individual.
@@ -36,21 +36,21 @@ And we imported the phylogeny from a .nwk file which contains 2000 phylogenetic 
 
 ```{r}
 # Phylogeny
-trees <- ape::read.tree("./Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
 
 # Set subset limits
-trees_subset_min<-0
-trees_subset_max<-1000
+trees_subset_min<-1000
+trees_subset_max<-2000
 
 MCCtree <- 
-  ape::read.nexus("./Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
 ```
 
 To explore the correlations between ecological variables and polarisation
 
 ```{r}
 # PC Values
-PCValuesF <- read.csv("./Data/FromCode/PCsbySpp.csv")[-1] %>% 
+PCValuesF <- read.csv(here::here("Data/FromCode/PCsbySpp.csv"))[-1] %>% 
   dplyr::rename("PC1" = PC1_1, "PC2" = PC2_1)
 
 # merge with polarisation
@@ -66,7 +66,7 @@ To explore correlations with reflectivity
 
 ```{r}
 # Reflectivity data consolidated by species
-ReflBySpp <- read.csv("./Data/FromCode/ConsolidatedReflectivitySpp.csv")[-1] %>% 
+ReflBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivitySpp.csv"))[-1] %>% 
   dplyr::arrange(phylogeny_name)
 
 # Merge with polarisation
@@ -81,7 +81,7 @@ PolReflRows <- PolRefl2[, 2:length(PolRefl2)] # eliminate spp name (redundant)
 To explore correlations with absorptivity
 
 ```{r}
-AbsBySpp <- read.csv("./Data/FromCode/ConsolidatedAbsorptivitySpp.csv")[-1] %>%
+AbsBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivitySpp.csv"))[-1] %>%
   dplyr::arrange(phylogeny_name)
 
 # merge with polarisation
@@ -246,7 +246,7 @@ Function
 Note that the function has to be modified for the predictors and data frame that we are using
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/7_multiple_pgls_function_B.R") # script B is for Polarization as a response
+source(here::here("Scripts/7_multiple_pgls_function_B.R")) # script B is for Polarization as a response
 ```
 
 Model
@@ -358,7 +358,7 @@ Function
 Note that the function has to be modified for the predictors and data frame that we are using
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/6_multiple_pgls_function_A.R") # script A is for Polarization as a response
+source(here::here("Scripts/6_multiple_pgls_function_A.R")) # script A is for Polarization as a response
 ```
 
 Model
@@ -460,7 +460,7 @@ Function
 Note that the function has to be modified for the predictors and data frame that we are using
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/13_multiple_pgls_function_H.R") # script A is for Polarization as a response
+source(here::here("Scripts/13_multiple_pgls_function_H.R")) # script A is for Polarization as a response
 ```
 
 Model
@@ -1190,9 +1190,9 @@ cor.test(NoCCAbs$FRS, NoCCAbs$Pol) # by spp
 # Plots
 
 ```{r}
-ReflByInd <- read.csv("./Data/FromCode/ConsolidatedReflectivityInd.csv")[-1]
+ReflByInd <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivityInd.csv"))[-1]
 
-AbsByInd0 <- read.csv("./Data/FromCode/ConsolidatedAbsorptivityInd.csv")[-1]
+AbsByInd0 <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivityInd.csv"))[-1]
 AbsByInd0$A_Res <- residuals ( lm (AbsByInd0$A_NIR~AbsByInd0$A_VIS))
 
 # Mean and sd per species Absorptivity

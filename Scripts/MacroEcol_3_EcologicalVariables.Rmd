@@ -2,6 +2,8 @@
 title: "Summarising ecological variables into principal components"
 #author: "Laura Ospina-Rozo"
 #date: "25/04/2022"
+editor_options: 
+  chunk_output_type: console
 ---
 
 <br>
@@ -12,7 +14,7 @@ title: "Summarising ecological variables into principal components"
 Libraries sourced from an additional script
 
 ```{r, warning=FALSE, message=FALSE}
-source("./MacroEcol_1_Libraries.R")
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
 ```
 
 Ecological data was obtained from ALA and AWAP data bases through additional scripts (available in the scripts folder of this same project) 
@@ -21,17 +23,17 @@ Ecological data was obtained from ALA and AWAP data bases through additional scr
 # Data sourced from additional scripts:
 
 # ALA Data
-source("./1_ALA_variables.R")
+source(here::here("Scripts/1_ALA_variables.R"))
 # AWAP Data
-source("./4_AWAPDailyQueries_2022.R")
+source(here::here("Scripts/4_AWAPDailyQueries_2022.R"))
 ```
 
 We extracted the climate variables correspondent to the activity period of each species (see additional scripts for more details)
 
 ```{r message=FALSE}
 
-vegeta <- read_csv("../Data/6_VegetationVariables.csv")
-climat <- read_csv("../Data/7_ClimateVariables.csv")
+vegeta <- read_csv(here::here("Data/6_VegetationVariables.csv"))
+climat <- read_csv(here::here("Data/7_ClimateVariables.csv"))
 ```
 
 The climate data we extracted contained many additional variables, but we decided to use only the most informative ones
@@ -324,7 +326,7 @@ We need one PC value per species.
 ```{r}
 
 # Import species names
-SppNames <- read.csv("../Data/9_CodesAndSpecies.csv")
+SppNames <- read.csv(here::here("Data/9_CodesAndSpecies.csv"))
 
 SppNames <-
   SppNames %>%
@@ -353,7 +355,7 @@ FinalPCs <-
 
 # Print results
 
-write.csv(FinalPCs, "../Data/FromCode/PCsbySpp.csv")
+write.csv(FinalPCs, here::here("Data/FromCode/PCsbySpp.csv"))
 ```
 
 
@@ -362,12 +364,15 @@ write.csv(FinalPCs, "../Data/FromCode/PCsbySpp.csv")
 
 ```{r}
 
-Cons1oo <- read.csv("../Data/FromCode/ConsolidatedReflectivityInd.csv")[-1]
+Cons1oo <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivityInd.csv"))[-1]
 
-Cons1 <- data.frame(Cons1oo, PC_Values) %>%
-  dplyr::select(-Species)
+PC_Values2 <- PC_Values
+colnames(PC_Values2) <- c("ind", "PC1", "PC2", "phylogeny_name")
+Cons1 <- merge(Cons1oo, PC_Values2, by = "ind") %>% 
+  dplyr::rename("phylogeny_name" = phylogeny_name.x) %>% 
+  dplyr::select(-phylogeny_name.y)
 
-write.csv(Cons1, "../Data/FromCode/ConsReflEcolInd.csv")
+write.csv(Cons1, here::here("Data/FromCode/ConsReflEcolInd.csv"))
 
 names(Cons1)
 ```
@@ -377,16 +382,18 @@ names(Cons1)
 
 ```{r}
 
-Cons2oo <- read.csv("../Data/FromCode/ConsolidatedAbsoptivityInd.csv")[-1]
+Cons2oo <- read.csv(here::here("Data/FromCode/ConsolidatedAbsoptivityInd.csv"))[-1]
 
 Cons2 <-
   PC_Values %>%
   filter(Species %in% (Cons2oo$ind)) %>% # Subset the PCA values
   arrange(Species) %>%
   bind_cols(., Cons2oo) %>% # join with the 'Optical' Data frame
-  dplyr::select(ind, everything()) # rearrange the column order
+  dplyr::select(ind, everything(), -Species, -phylogeny_name...7) %>%  # rearrange the column order
+  dplyr::rename("phylogeny_name" = phylogeny_name...4)
+head(Cons2)
 
-write.csv(Cons2, "../Data/FromCode/ConsAbsEcolInd.csv")
+write.csv(Cons2, here::here("Data/FromCode/ConsAbsEcolInd.csv"))
 
 names(Cons2)
 ```
@@ -407,7 +414,7 @@ names(Cons2)
 
 ```{r warning=FALSE, message=FALSE}
 library(imager)
-im <- load.image("../Data/RmdImages/PCarrows.png")
+im <- load.image(here::here("Data/RmdImages/PCarrows.png"))
 plot(im, axes = FALSE)
 ```
 
