@@ -28,6 +28,8 @@ PolByInd <- read.csv(here::here("Data/FromCode/PolarzElytraByInd.csv"))[-1]
 
 # elytra and pronotum
 BeetlePol <- read.csv(here::here("Data/FromCode/PolarzElytraPronot.csv"))[-1]
+
+
 ```
 
 All statistical analysis were done at the species level (polarisation data by species). Plots are produced with the polarisation data by individual.
@@ -91,7 +93,65 @@ PolAbs <- merge(AbsBySpp, PolBySpp)
 PolAbs2 <- as.data.frame(PolAbs) # create new data frame
 rownames(PolAbs2) <- PolAbs2[, 1] # make species the row names
 PolAbsRows <- PolAbs2[, 2:length(PolAbs2)] # eliminate spp name (redundant)
+
+
 ```
+
+
+To explore correlations with reflectivity only in Right handed polarisation (as a proxy of the amount of melanin/pigments)
+
+```{r}
+
+# Import equalised values for right handed polarisation
+RHand0<-read.csv(here::here("Data/FromCode/PolarzElytra_LERGBValues.csv"))[-1]%>% 
+  dplyr::filter(Type == "RCP") %>% 
+  dplyr::select(-Type) %>% 
+  dplyr::mutate(spp= substr(ind,1,4)) %>% 
+  dplyr::group_by(spp) %>% 
+  dplyr::summarise(
+    meanRCP = mean(RGB_ave),
+    sdRCP = sd(RGB_ave),
+    )
+
+# Join them with the phylogeny names
+SppNames<-read.csv(here::here("Data/9_CodesAndSpecies.csv")) %>% 
+  dplyr::mutate("spp" = substr(Ind,1,4)) %>% 
+  dplyr::select(-Ind) %>% 
+  distinct()
+
+
+RHand <- merge(RHand0[,c(1,2)],SppNames)
+
+# Name the right hand RGB "pol" to use the accessory scripts for multiple trees:
+RHand <- 
+  RHand %>% 
+  dplyr::rename(Pol = meanRCP) %>% 
+  dplyr::group_by(phylogeny_name) %>% 
+  dplyr::summarise(Pol= mean(Pol))
+
+
+# Combine with reflectivity
+
+RHandRefl <- merge(ReflBySpp, RHand) 
+
+RHandRefl2 <- as.data.frame(RHandRefl) # create new data frame
+rownames(RHandRefl2) <- RHandRefl2[, 1] # make species the row names
+RHandReflRows <- RHandRefl2[, 2:length(RHandRefl2)] # eliminate spp name 
+
+
+
+# Combine with absorptivity
+
+RHandAbs <- merge(AbsBySpp, RHand) 
+
+RHandAbs2 <- as.data.frame(RHandAbs) # create new data frame
+rownames(RHandAbs2) <- RHandAbs2[, 1] # make species the row names
+RHandAbsRows <- RHandAbs2[, 2:length(RHandAbs2)] # eliminate spp name 
+
+
+```
+
+
 
 We prune the species in the tree that are not present in the dataset
 
@@ -285,9 +345,13 @@ HPDinterval(as.mcmc(dfPol2))
 
 # Optical properties
 
-## Reflectivity
+## Pol Degree
 
-### VIS
+This is an indication of "how much of the colour is circularly polarised to the left". As a simplification, we assume that this is equivalent to most of the reflections produced by a chiral mechanism
+
+### Reflectivity
+
+#### VIS
 
 <p style="color: #04C799">
 
@@ -400,7 +464,7 @@ HPDinterval(as.mcmc(dfPol3))
 
 <br> <br> <br>
 
-### NIR
+#### NIR
 
 <p style="color: #04C799">
 
@@ -496,7 +560,7 @@ Get results
 HPDinterval(as.mcmc(dfPol4))
 ```
 
-### FRS
+#### FRS
 
 <p style="color: #04C799">
 
@@ -578,9 +642,9 @@ Get results
 HPDinterval(as.mcmc(dfPol5))
 ```
 
-## Absorptivity
+### Absorptivity
 
-### VIS
+#### VIS
 
 <p style="color: #04C799">
 
@@ -679,7 +743,7 @@ HPDinterval(as.mcmc(dfPol6))
 
 <br> <br> <br>
 
-### NIR
+#### NIR
 
 <p style="color: #04C799">
 
@@ -761,7 +825,7 @@ Get results
 HPDinterval(as.mcmc(dfPol7))
 ```
 
-### FRS
+#### FRS
 
 <p style="color: #04C799">
 
@@ -842,6 +906,575 @@ Get results
 ```{r}
 HPDinterval(as.mcmc(dfPol8))
 ```
+
+
+
+
+## Right handed Pol
+
+
+
+### Reflectivity
+
+#### VIS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can the darkness in the underlaying pigment affect the visible reflectivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+```{r}
+cor.test(RHandRefl$VIS, RHandRefl$Pol) # by spp
+
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL1RH <- lm(RHandRefl$VIS ~ RHandRefl$Pol) # by spp
+summary(ModL1RH)
+
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+Create the data frame of comparative data
+
+```{r}
+
+comp_dataRH <- comparative.data(
+  phy = MCCtree,
+  data = RHandRefl, # aggregated data without the spp in the row names
+  names.col = "phylogeny_name", # contains the column phylogeny name
+  vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+```
+
+Establish the model
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDVISRH <- pgls(VIS ~ Pol,
+  data = comp_dataRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDVISRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Function
+
+Note that the function has to be modified for the predictors and data frame that we are using
+
+```{r warning=FALSE, message=FALSE}
+source(here::here("Scripts/6_multiple_pgls_function_A.R")) # script A is for Polarization as a response
+```
+
+Model
+
+```{r}
+MuPGLSPol3 <- Response ~ Pol
+```
+
+Dataset
+
+```{r message=FALSE}
+
+RHandRefl3 <-
+    RHandReflRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS) %>% 
+    dplyr::rename("Response" = VIS)
+
+RHandRefl3 <- as.data.frame(RHandRefl3)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol3 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = RHandRefl3)
+
+dfRHPol3 <- ldply(runsRHPol3, data.frame)
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol3))
+```
+
+[ **Conclusion** ]{style="color: #04C799"} <br/>
+
+**PENDING.**
+
+<br> <br> <br>
+
+#### NIR
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can the darkness in the underlaying pigment affect the NIR reflectivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(RHandRefl$NIR, RHandRefl$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL2RH <- lm(RHandRefl$NIR ~ RHandRefl$Pol + RHandRefl$VIS) # by spp
+summary(ModL2RH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDNIRRH <- pgls(NIR ~ Pol + VIS,
+  data = comp_dataRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDNIRRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Function
+
+Note that the function has to be modified for the predictors and data frame that we are using
+
+```{r warning=FALSE, message=FALSE}
+source(here::here("Scripts/13_multiple_pgls_function_H.R")) # script A is for Polarization as a response
+```
+
+Model
+
+```{r}
+MuPGLSPol4 <- Response ~ Pol + VIS
+```
+
+Dataset
+
+```{r message=FALSE}
+
+RHandRefl4 <-
+    RHandReflRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS, NIR) %>% 
+    dplyr::rename("Response" = NIR)
+
+RHandRefl4 <- as.data.frame(RHandRefl4)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol4 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runH, model = MuPGLSPol4, dataset = RHandRefl4)
+
+dfRHPol4 <- ldply(runsRHPol4, data.frame)
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol4))
+```
+
+#### FRS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can the darkness in the underlaying pigment affect the NIR reflectivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(RHandRefl$FRS, RHandRefl$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL3RH <- lm(RHandRefl$FRS ~ RHandRefl$Pol) # by spp
+summary(ModL3RH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDFRSRH <- pgls(FRS ~ Pol,
+  data = comp_dataRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDFRSRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+RHandRefl5 <-
+    RHandReflRows %>% # phylogeny names in rows
+    dplyr::select(Pol, FRS) %>% 
+    dplyr::rename("Response" = FRS)
+
+RHandRefl5 <- as.data.frame(RHandRefl5)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol5 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = RHandRefl5)
+
+dfRHPol5 <- ldply(runsRHPol5, data.frame)
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol5))
+```
+
+### Absorptivity
+
+#### VIS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can polarisation predict visible absorptivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+```{r}
+cor.test(RHandAbs$VIS, RHandAbs$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL1AbsRH <- lm(RHandAbs$VIS ~ RHandAbs$Pol) # by spp
+summary(ModL1AbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+Create the data frame of comparative data
+
+```{r}
+
+CompDataAbsRH <- comparative.data(
+  phy = MCCtreeAbs,
+  data = RHandAbs, # aggregated data without the spp in the row names
+  names.col = "phylogeny_name", # contains the column phylogeny name
+  vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+```
+
+Establish the model
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDVISAbsRH <- pgls(VIS ~ Pol,
+  data = CompDataAbsRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDVISAbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+RHandAbs3 <-
+    RHandAbsRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS) %>% 
+    dplyr::rename("Response" = VIS)
+
+RHandAbs3 <- as.data.frame(RHandAbs3)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol6 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = RHandAbs3)
+
+dfRHPol6 <- ldply(runsRHPol6, data.frame)
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol6))
+```
+
+[ **Conclusion** ]{style="color: #04C799"} <br/>
+
+**There's no correlation between visible absorptivity and polarisation at the species level.**
+
+<br> <br> <br>
+
+#### NIR
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Is polarisation correlated with NIR absorptivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(RHandAbs$NIR, RHandAbs$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL2AbsRH <- lm(RHandAbs$NIR ~ RHandAbs$Pol + RHandAbs$VIS) # by spp
+summary(ModL2AbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDNIRAbsRH <- pgls(NIR ~ Pol + VIS,
+  data = CompDataAbsRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDNIRAbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+RHandAbs4 <-
+    RHandAbsRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS, NIR) %>% 
+    dplyr::rename("Response" = NIR)
+
+RHandAbs4 <- as.data.frame(RHandAbs4)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol7 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runH, model = MuPGLSPol4, dataset = RHandAbs4)
+
+dfRHPol7 <- ldply(runsRHPol7, data.frame)
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol7))
+```
+
+#### FRS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Is polarisation correlated with the NIR residuals corrected by phylogeny?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(RHandAbs$FRS, RHandAbs$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL3AbsRH <- lm(RHandAbs$FRS ~ RHandAbs$Pol) # by spp
+summary(ModL3AbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDFRSAbsRH <- pgls(FRS ~ Pol,
+  data = CompDataAbsRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDFRSAbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+RHandAbs5 <-
+    RHandAbsRows %>% # phylogeny names in rows
+    dplyr::select(Pol, FRS) %>% 
+    dplyr::rename("Response" = FRS)
+
+RHandAbs5 <- as.data.frame(RHandAbs5)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol8 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = RHandAbs5)
+
+dfRHPol8 <- ldply(runsRHPol8, data.frame)
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol8))
+```
+
+
 
 # Mechanisms
 
@@ -1192,9 +1825,12 @@ cor.test(NoCCAbs$FRS, NoCCAbs$Pol) # by spp
 ## Degree of polarisation
 
 ```{r}
-ReflByInd <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivityInd.csv"))[-1]
+ReflByInd <- read.csv(here::here("Data/FromCode/
+                                 ConsolidatedReflectivityInd.csv"))[-1]
 
-AbsByInd0 <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivityInd.csv"))[-1]
+AbsByInd0 <- read.csv(here::here("Data/FromCode/
+                                 ConsolidatedAbsorptivityInd.csv"))[-1]
+
 AbsByInd0$A_Res <- residuals ( lm (AbsByInd0$A_NIR~AbsByInd0$A_VIS))
 
 # Mean and sd per species Absorptivity
@@ -1430,21 +2066,81 @@ grid.arrange(PVRPlot, PNRPlot, PVAPlot, PNAPlot, nrow = 2)
 
 ## Right handed polarisation
 
-Setting up
+Setting up data frames by individual for plots
 
 ```{r}
- #<- read.csv(here::here("Data/FromCode/PolarzElytra_LERGBValues.csv"))
+
+# Import equalised values for right handed polarisation
+RHand0I<-read.csv(here::here("Data/FromCode/PolarzElytra_LERGBValues.csv"))[-1]%>% 
+  dplyr::filter(Type == "RCP") %>% 
+  dplyr::select(-Type) %>% 
+  dplyr::mutate(spp= substr(ind,1,4)) 
+
+# Join them with the phylogeny names
+SppNamesI<-read.csv(here::here("Data/9_CodesAndSpecies.csv")) %>% 
+  dplyr::mutate("spp" = substr(Ind,1,4)) 
+
+RHandByInd <- merge(RHand0I,SppNamesI) %>% 
+  dplyr::rename("RHPol" = RGB_ave )
+
+# Combine with reflectivity
+
+ToplotRHandRefl <- merge(ReflBySpp, RHandbyInd)
+rownames(RHandRefl) <- RHandRefl$spp
+
+# Combine with absorptivity
+
+ToplotRHandAbs <- merge(AbsBySpp, RHandbyInd)
+rownames(RHandAbs) <- RHandAbs$spp
 ```
+
+And re order them to plot
+
+```{r}
+ToPlotRHPolRefl <-
+  merge(ReflByInd[,c(1:5)], RHandByInd, by = "ind") %>%
+  dplyr::select(-phylogeny_name, -Ind, -ind) %>%
+  dplyr::select(spp, everything()) %>% 
+  dplyr::group_by(spp) %>% 
+  dplyr::summarise(
+    meanTOT = mean(R_ALL),
+    meanVIS = mean(R_VIS),
+    meanNIR = mean(R_NIR),
+    meanRes = mean(Res),
+    meanRHPol = mean(RHPol),
+    sdTOT = sd(R_ALL),
+    sdVIS = sd(R_VIS),
+    sdNIR = sd(R_NIR),
+    sdRes = sd(Res),
+    sdRHPol = sd(RHPol)
+  )
+
+ToPlotRHPolRefl <- as.data.frame(ToPlotRHPolRefl)
+rownames(ToPlotRHPolRefl) <- ToPlotRHPolRefl$spp
+
+ToPlotRHPolAbs <- merge(
+  ToPlotRHPolRefl[,c("spp", "meanRHPol", "sdRHPol")], AbsByInd)
+rownames(ToPlotRHPolAbs) <- ToPlotRHPolAbs$spp
+
+
+
+```
+
+
+
+
+Plots
 
 ```{r}
 
 NudgeXVal = 0.04
 NudgeYVal = 0.9
 
-PVRPlot <- ggplot(data = ToPlotPolRefl, aes(x = meanPol, y = meanVIS),
+
+RCPVRPlot <- ggplot(data = ToPlotRHPolRefl, aes(x = meanRHPol, y = meanVIS),
              size = 2.2, alpha = 0.6) +
   geom_text(
-    label=rownames(ToPlotPolRefl), 
+    label=rownames(ToPlotRHPolRefl), 
     nudge_x = NudgeXVal, nudge_y = NudgeYVal, 
     col="gray", size=3
   ) +
@@ -1455,23 +2151,23 @@ PVRPlot <- ggplot(data = ToPlotPolRefl, aes(x = meanPol, y = meanVIS),
   col = "#cecec2"
   ) +
   geom_errorbarh(aes(
-    xmin = meanPol - sdPol,
-    xmax = meanPol + sdPol
+    xmin = meanRHPol - sdRHPol,
+    xmax = meanRHPol + sdRHPol
   ),
   col = "#cecec2"
   ) +
-  geom_point(data = NoUnderlayRefl, size = 2.2, pch = 21, fill = "#648fff", color = "black", alpha = 0.7) +
-  geom_point(data = UnderlayRefl, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
+  geom_point(data = ToPlotRHPolRefl, size = 2.2, pch = 21, 
+             fill = "#648fff", color = "black", alpha = 0.7) +
   theme_minimal() +
   theme(legend.position = "none") + 
-  xlab("Degree of Polarisation (L - R)/(L + R)")+
+  xlab("Right Handed Polarisation (RGB mean)")+
   ylab("Visible reflectivity (%)") +
   ylim(0, 50)
 
-PNRPlot <- ggplot(data = ToPlotPolRefl, aes(x = meanPol, y = meanRes),
+RCPNRPlot <- ggplot(data = ToPlotRHPolRefl, aes(x = meanRHPol, y = meanRes),
              size = 2.2, alpha = 0.6) +
   geom_text(
-    label=rownames(ToPlotPolRefl), 
+    label=rownames(ToPlotRHPolRefl), 
     nudge_x = NudgeXVal, nudge_y = NudgeYVal, 
     col="gray", size=3
   ) +
@@ -1482,24 +2178,24 @@ PNRPlot <- ggplot(data = ToPlotPolRefl, aes(x = meanPol, y = meanRes),
   col = "#cecec2"
   ) +
   geom_errorbarh(aes(
-    xmin = meanPol - sdPol,
-    xmax = meanPol + sdPol
+    xmin = meanRHPol - sdRHPol,
+    xmax = meanRHPol + sdRHPol
   ),
   col = "#cecec2"
   ) +
-  geom_point(data = NoUnderlayRefl, size = 2.2, pch = 21, fill = "#648fff", color = "black", alpha = 0.7) +
-  geom_point(data = UnderlayRefl, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
-  geom_line(data=trend1, aes(x= PolDeg, y= RefDeg), color = "black") +
+  geom_point(data = ToPlotRHPolRefl, size = 2.2, pch = 21, 
+             fill = "#648fff", color = "black", alpha = 0.7) +
+  #geom_line(data=trend1, aes(x= PolDeg, y= RefDeg), color = "black") +
   theme_minimal() +
   theme(legend.position = "none") + 
-  xlab("Degree of Polarisation (L - R)/(L + R)")+
+  xlab("Right Handed Polarisation (RGB mean)")+
   ylab("NIR (Res) reflectivity (%)") 
 
 
-PVAPlot <- ggplot(data = ToPlotPolAbs, aes(x = meanPol, y = meanVISA),
+RCPVAPlot <- ggplot(data = ToPlotRHPolAbs, aes(x = meanRHPol, y = meanVISA),
              size = 2.2, alpha = 0.6) +
   geom_text(
-    label=rownames(ToPlotPolAbs), 
+    label=rownames(ToPlotRHPolAbs), 
     nudge_x = NudgeXVal, nudge_y = NudgeYVal, 
     col="gray", size=3
   ) +
@@ -1510,23 +2206,25 @@ PVAPlot <- ggplot(data = ToPlotPolAbs, aes(x = meanPol, y = meanVISA),
   col = "#cecec2"
   ) +
   geom_errorbarh(aes(
-    xmin = meanPol - sdPol,
-    xmax = meanPol + sdPol
+    xmin = meanRHPol - sdRHPol,
+    xmax = meanRHPol + sdRHPol
   ),
   col = "#cecec2"
   ) +
-  geom_point(data = NoUnderlayAbs, size = 2.2, pch = 21, fill = "#648fff", color = "black", alpha = 0.7) +
-  geom_point(data = UnderlayAbs, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
+  geom_point(data = ToPlotRHPolAbs, size = 2.2, pch = 21, 
+             fill = "#648fff", color = "black", alpha = 0.7) +
+  #geom_point(data = UnderlayAbs, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
   theme_minimal() +
   theme(legend.position = "none") + 
-  xlab("Degree of Polarisation (L - R)/(L + R)")+
+  xlab("Right Handed Polarisation (RGB mean)")+
   ylab("Visible absorptivity (%)") +
   ylim(0, 100)
 
-PNAPlot <- ggplot(data = ToPlotPolAbs, aes(x = meanPol, y = meanResA),
+
+RCPNAPlot <- ggplot(data = ToPlotRHPolAbs, aes(x = meanRHPol, y = meanResA),
              size = 2.2, alpha = 0.6) +
   geom_text(
-    label=rownames(ToPlotPolAbs), 
+    label=rownames(ToPlotRHPolAbs), 
     nudge_x = NudgeXVal, nudge_y = NudgeYVal, 
     col="gray", size=3
   ) +
@@ -1537,19 +2235,20 @@ PNAPlot <- ggplot(data = ToPlotPolAbs, aes(x = meanPol, y = meanResA),
   col = "#cecec2"
   ) +
   geom_errorbarh(aes(
-    xmin = meanPol - sdPol,
-    xmax = meanPol + sdPol
+    xmin = meanRHPol - sdRHPol,
+    xmax = meanRHPol + sdRHPol
   ),
   col = "#cecec2"
   ) +
-  geom_point(data = NoUnderlayAbs, size = 2.2, pch = 21, fill = "#648fff", color = "black", alpha = 0.7) +
-  geom_point(data = UnderlayAbs, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
-  geom_line(data=trend2, aes(x= PolDeg, y= AbsDeg), color = "black") +
+  geom_point(data = ToPlotRHPolAbs, size = 2.2, pch = 21, 
+             fill = "#648fff", color = "black", alpha = 0.7) +
+  #geom_point(data = UnderlayAbs, size = 2.4, pch = 22, fill = "#F7E949", color = "black", alpha = 0.7) +
+  #geom_line(data=trend2, aes(x= PolDeg, y= AbsDeg), color = "black") +
   theme_minimal() +
   theme(legend.position = "none") + 
-  xlab("Degree of Polarisation (L - R)/(L + R)")+
+  xlab("Right Handed Polarisation (RGB mean)")+
   ylab("NIR (Res) absorptivity (%)") 
   
 
-grid.arrange(PVRPlot, PNRPlot, PVAPlot, PNAPlot, nrow = 2)
+grid.arrange(RCPVRPlot, RCPNRPlot, RCPVAPlot, RCPNAPlot, nrow = 2)
 ```
