@@ -13,7 +13,7 @@
 
 <title>Calculation of optical properties</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -43,6 +43,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -138,13 +139,20 @@ code span.wa { color: #bf0303; } /* Warning */
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -179,6 +187,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -236,11 +247,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -407,7 +422,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -422,23 +437,47 @@ div.tocify {
 <li>
   <a href="MacroEcol_1_SettingUp.html">Setting up</a>
 </li>
-<li>
-  <a href="MacroEcol_2_OpticalProperties.html">Optical properties</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Extracting variables
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="MacroEcol_2_OpticalProperties.html">Reflectivity &amp; Absorptivity</a>
+    </li>
+    <li>
+      <a href="MacroEcol_5_Polarization.html">Polarisation</a>
+    </li>
+    <li>
+      <a href="MacroEcol_3_EcologicalVariables.html">Ecology</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="MacroEcol_6_ManuscriptStats.html">Reflectivity</a>
+    </li>
+    <li>
+      <a href="MacroEcol_6b_ManuscriptStatsAbsorptivity.html">Absorptivity</a>
+    </li>
+    <li>
+      <a href="MacroEcol_5_PolarisationAnalysis.html">Polarisation</a>
+    </li>
+    <li>
+      <a href="MacroEcol_6c_QualityControl.html">Quality control</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="MacroEcol_3_EcologicalVariables.html">Ecological variables</a>
-</li>
-<li>
-  <a href="MacroEcol_5_Polarization.html">Polarisation</a>
-</li>
-<li>
-  <a href="MacroEcol_5_Polarization2.html">Polarisation PGLS</a>
-</li>
-<li>
-  <a href="MacroEcol_6_ManuscriptStats.html">Reflectivity PGLS</a>
-</li>
-<li>
-  <a href="MacroEcol_7_Summary.html">Summary</a>
+  <a href="MacroEcol_7_Summary.html">Introduction</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -451,7 +490,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -469,18 +508,18 @@ div.tocify {
 <h1>Setting up</h1>
 <p>Load Libraries and Data sets</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Libraries</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;./MacroEcol_1_Libraries.R&quot;</span>)</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Scripts/MacroEcol_1_Libraries.R&quot;</span>))</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data Sets</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>Reflectance <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/FromCode/Reflectance_PData.csv&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>Reflectance <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/FromCode/Reflectance_PData.csv&quot;</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.rspec</span>()</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Transmitance <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/FromCode/Transmitance_PData.csv&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Transmitance <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/FromCode/Transmitance_PData.csv&quot;</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.rspec</span>()</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>theorySun <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/4_SunIrradiance.csv&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># Sun irradiance</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>theorySun <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/4_SunIrradiance.csv&quot;</span>)) <span class="sc">%&gt;%</span> <span class="co"># Sun irradiance</span></span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a> <span class="fu">as.rspec</span>()</span></code></pre></div>
 </div>
 <div id="calculate-optical-properties" class="section level1">
@@ -698,20 +737,13 @@ to 1400nm)</p>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Optical)</span></code></pre></div>
-<pre><code>##      ind    R_ALL     R_VIS    R_NIR     T_ALL      T_VIS    T_NIR    A_ALL
-## 1 anom02 19.93132  7.888188 30.40910  9.512246  2.7395752 15.41344 70.55643
-## 2 anom03 14.52110  3.528614 24.07742 33.611240  8.8468523 55.18522 51.86766
-## 3 atki03 13.67959  6.224032 20.15399 20.263098  3.8712518 34.53250 66.05731
-## 4 atki04 17.16810  8.277483 24.89057  6.401844  0.4059584 11.61628 76.43006
-## 5 aurs03 48.16895 33.673214 60.82711 21.665178 10.2313243 31.62811 30.16588
-## 6 aurs04 46.31421 34.197305 56.89950 21.522242 10.0386596 31.52977 32.16355
-##      A_VIS     A_NIR
-## 1 89.37224 54.177463
-## 2 87.62453 20.737362
-## 3 89.90472 45.313505
-## 4 91.31656 63.493152
-## 5 56.09546  7.544777
-## 6 55.76404 11.570735</code></pre>
+<pre><code>##      ind    R_ALL     R_VIS    R_NIR     T_ALL      T_VIS    T_NIR    A_ALL    A_VIS     A_NIR
+## 1 anom02 19.93132  7.888188 30.40910  9.512246  2.7395752 15.41344 70.55643 89.37224 54.177463
+## 2 anom03 14.52110  3.528614 24.07742 33.611240  8.8468523 55.18522 51.86766 87.62453 20.737362
+## 3 atki03 13.67959  6.224032 20.15399 20.263098  3.8712518 34.53250 66.05731 89.90472 45.313505
+## 4 atki04 17.16810  8.277483 24.89057  6.401844  0.4059584 11.61628 76.43006 91.31656 63.493152
+## 5 aurs03 48.16895 33.673214 60.82711 21.665178 10.2313243 31.62811 30.16588 56.09546  7.544777
+## 6 aurs04 46.31421 34.197305 56.89950 21.522242 10.0386596 31.52977 32.16355 55.76404 11.570735</code></pre>
 <p><br> <br></p>
 </div>
 <div id="nirvis-residuals" class="section level2">
@@ -758,7 +790,7 @@ thermoregulation)</p>
 <p>Extract Residuals</p>
 <p><em>With a simple lm model</em></p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Linear model</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>NIRVISMod1 <span class="ot">&lt;-</span> <span class="fu">lm</span> (Reflectivity<span class="sc">$</span>R_NIR <span class="sc">~</span> Reflectivity<span class="sc">$</span>R_VIS)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>NIRVISMod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Reflectivity<span class="sc">$</span>R_NIR <span class="sc">~</span> Reflectivity<span class="sc">$</span>R_VIS)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">export_summs</span>(NIRVISMod1, <span class="at">error_format =</span> <span class="st">&quot;SE = {std.error}&quot;</span>)</span></code></pre></div>
 <table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:unnamed-chunk-15">
@@ -862,15 +894,17 @@ subset of 51 individuals form the previous sample (correspondent to the
 same set of individuals analyzed in the heating rates chapter).</p>
 <p><br> <br></p>
 </div>
-<div id="additional-variables" class="section level1">
-<h1>Additional variables</h1>
+<div id="reflectivity-residuals" class="section level1">
+<h1>Reflectivity residuals</h1>
+<div id="additional-variables" class="section level2">
+<h2>Additional variables</h2>
 <p>We created data frames that contain the optical properties, size and
 phylogeny name for each beetle</p>
 <p><span style="color: #04C799"> <strong>Size:</strong> </span>
 <br/></p>
 <p>We measured the length between the frontal edge of the head to the
 end of the abdomen from calibrated photographs of the specimens.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Size <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/8_Size.csv&quot;</span>)</span>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Size <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/8_Size.csv&quot;</span>))</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>Size <span class="ot">&lt;-</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  Size <span class="sc">%&gt;%</span> </span>
@@ -886,7 +920,7 @@ end of the abdomen from calibrated photographs of the specimens.</p>
 <p><br></p>
 <p><span style="color: #04C799"> <strong>Phylogeny name:</strong>
 </span> <br/></p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>SppNames <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/9_CodesAndSpecies.csv&quot;</span>)</span>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>SppNames <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/9_CodesAndSpecies.csv&quot;</span>))</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>SppNames <span class="ot">&lt;-</span></span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  SppNames <span class="sc">%&gt;%</span> </span>
@@ -906,18 +940,16 @@ individual</strong> </span> <br/></p>
 phylogeny name for each beetle.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Cons1oo <span class="ot">&lt;-</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(Reflectivity, Size, SppNames) <span class="sc">%&gt;%</span> </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>ind<span class="fl">.1</span>,<span class="sc">-</span>Ind)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons1oo,<span class="st">&quot;../Data/FromCode/ConsolidatedReflectivityInd.csv&quot;</span>)</span></code></pre></div>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>ind<span class="fl">.1</span>,<span class="sc">-</span>Ind)</span></code></pre></div>
 </div>
-<div id="nirvis-corrected" class="section level1">
-<h1>NIR/VIS Corrected</h1>
+<div id="nirvis-corrected-reflectivity" class="section level2">
+<h2>NIR/VIS Corrected (Reflectivity)</h2>
 <p>The residuals can also be calculated from a model that considers
 phylogeny.</p>
 <p>Reflectivity by Individual</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>Cons1 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/FromCode/ConsReflEcolInd.csv&quot;</span>)[<span class="sc">-</span><span class="dv">1</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>Cons1 <span class="ot">&lt;-</span> Cons1oo</span></code></pre></div>
 <p>Phylogeny (multiple trees)</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>trees <span class="ot">&lt;-</span> ape<span class="sc">::</span><span class="fu">read.tree</span>(<span class="st">&quot;../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>trees <span class="ot">&lt;-</span> ape<span class="sc">::</span><span class="fu">read.tree</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk&quot;</span>))</span></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>Cons1agg <span class="ot">&lt;-</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  Cons1 <span class="sc">%&gt;%</span> </span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (<span class="sc">-</span>ind) <span class="sc">%&gt;%</span><span class="co"># remove individual id</span></span>
@@ -927,20 +959,20 @@ phylogeny.</p>
 <span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Modify to make it compatible with tree tips</span></span>
 <span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>ConsAgg <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Cons1agg) <span class="co"># convert to a data frame</span></span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(ConsAgg) <span class="ot">&lt;-</span> ConsAgg[, <span class="dv">1</span>] <span class="co"># make species the row names </span></span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>ConsAgg <span class="ot">&lt;-</span> ConsAgg [,<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(ConsAgg)] <span class="co"># eliminate spp name (redundant)</span></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate the data frames </span></span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Useful for plotting in the tree</span></span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ConsAgg) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;TOT&quot;</span>, <span class="st">&quot;VIS&quot;</span>, <span class="st">&quot;NIR&quot;</span>, <span class="st">&quot;Res&quot;</span>,</span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;PC1&quot;</span>, <span class="st">&quot;PC2&quot;</span>, <span class="st">&quot;Size&quot;</span> )</span></code></pre></div>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(ConsAgg) <span class="ot">&lt;-</span> ConsAgg[, <span class="dv">1</span>] <span class="co"># make species the row names </span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>ConsAgg <span class="ot">&lt;-</span> ConsAgg [,<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(ConsAgg)] <span class="co"># eliminate spp name (redundant)</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate the data frames </span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Useful for plotting in the tree</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ConsAgg) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;TOT&quot;</span>, <span class="st">&quot;VIS&quot;</span>, <span class="st">&quot;NIR&quot;</span>, <span class="st">&quot;Res&quot;</span>, <span class="st">&quot;size&quot;</span>)</span></code></pre></div>
 <p>Make sure that the phylogeny names are consistent in the data frame
 and the phylogenetic trees</p>
 <p>The MCC (Maximum clade credibility) tree used here is the BEAST MCC
 tree.</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read the tree</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>MCCtree.raw <span class="ot">&lt;-</span> </span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  ape<span class="sc">::</span><span class="fu">read.nexus</span>(<span class="st">&quot;../Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre&quot;</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  ape<span class="sc">::</span><span class="fu">read.nexus</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre&quot;</span>))</span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Prune extra spp in the tree, not contain in the test sample</span></span>
 <span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>species.MCC <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">unique</span>(Cons1<span class="sc">$</span>phylogeny_name))</span>
@@ -962,7 +994,7 @@ tree.</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>Cons1agg <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Cons1agg)</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(Cons1agg) <span class="ot">&lt;-</span> Cons1agg [, <span class="dv">1</span>] </span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(Cons1agg) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;phylogeny_name&quot;</span>, <span class="st">&quot;TOT&quot;</span>, <span class="st">&quot;VIS&quot;</span>, <span class="st">&quot;NIR&quot;</span>,</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                     <span class="st">&quot;Res&quot;</span>,<span class="st">&quot;size&quot;</span>, <span class="st">&quot;PC1&quot;</span>, <span class="st">&quot;PC2&quot;</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                     <span class="st">&quot;Res&quot;</span>,<span class="st">&quot;size&quot;</span>)</span>
 <span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Test if the species are the same</span></span>
@@ -971,45 +1003,30 @@ tree.</p>
 <span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">length</span>(Cons1agg<span class="sc">$</span>phylogeny_name)</span>
 <span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<p>Create subsets</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>FRSDataSet <span class="ot">&lt;-</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  Cons1agg <span class="sc">%&gt;%</span> </span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (VIS, NIR) <span class="sc">%&gt;%</span> </span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span> (<span class="st">&quot;Reflectance&quot;</span> <span class="ot">=</span> NIR) </span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(FRSDataSet)</span></code></pre></div>
-<pre><code>##                                VIS Reflectance
-## Anomala_antigua            4.54861    28.27315
-## Anoplognathus_abnormis    16.53003    36.64233
-## Anoplognathus_aeneus      10.40414    32.27222
-## Anoplognathus_aureus      34.33124    54.20353
-## Anoplognathus_boisduvalii 17.30305    43.21203
-## Anoplognathus_brevicollis 12.86929    40.14934</code></pre>
 <p>PGLS in the MCC</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>comp_data <span class="ot">&lt;-</span> <span class="fu">comparative.data</span>(</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">phy =</span> MCCtree, <span class="at">data =</span> Cons1agg,</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">names.col =</span> <span class="st">&quot;phylogeny_name&quot;</span>, <span class="at">vcv =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.omit =</span> <span class="cn">FALSE</span>, <span class="at">warn.dropped =</span> <span class="cn">TRUE</span></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>comp_data <span class="ot">&lt;-</span> <span class="fu">comparative.data</span>(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">phy =</span> MCCtree, <span class="at">data =</span> Cons1agg,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">names.col =</span> <span class="st">&quot;phylogeny_name&quot;</span>, <span class="at">vcv =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.omit =</span> <span class="cn">FALSE</span>, <span class="at">warn.dropped =</span> <span class="cn">TRUE</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>Source function</p>
 <p>note that this function has to be adapted to the data frame and model
 on each case</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;12_multiple_pgls_function_G.R&quot;</span>)<span class="co"># function G is for NIR residuals</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># source(&quot;12_multiple_pgls_function_G.R&quot;)# function G is for NIR residuals</span></span></code></pre></div>
 <p>Define model</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>MuPGLSMod0 <span class="ot">&lt;-</span> Reflectance <span class="sc">~</span> VIS</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>MuPGLSMod0 <span class="ot">&lt;-</span> NIR <span class="sc">~</span> VIS</span></code></pre></div>
 <p>Run</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>pglsmodFRS <span class="ot">&lt;-</span> <span class="fu">pgls</span>(NIR <span class="sc">~</span> VIS,</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> comp_data, <span class="at">param.CI =</span> <span class="fl">0.95</span>, <span class="at">lambda =</span> <span class="st">&quot;ML&quot;</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pglsmodFRS) </span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>pglsmodFRS <span class="ot">&lt;-</span> <span class="fu">pgls</span>(MuPGLSMod0,</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> comp_data, <span class="at">param.CI =</span> <span class="fl">0.95</span>, <span class="at">lambda =</span> <span class="st">&quot;ML&quot;</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pglsmodFRS) </span></code></pre></div>
 <pre><code>## 
 ## Call:
-## pgls(formula = NIR ~ VIS, data = comp_data, lambda = &quot;ML&quot;, param.CI = 0.95)
+## pgls(formula = MuPGLSMod0, data = comp_data, lambda = &quot;ML&quot;, param.CI = 0.95)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -4.9877 -1.3389  0.3145  2.0676  9.8930 
+## -4.2281 -1.6004  0.1822  1.4793 10.2008 
 ## 
 ## Branch length transformations:
 ## 
@@ -1021,50 +1038,184 @@ on each case</p>
 ## delta  [Fix]  : 1.000
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value  Pr(&gt;|t|)    
-## (Intercept) 30.38390    7.03865  4.3167 8.586e-05 ***
-## VIS          1.05818    0.15959  6.6306 3.604e-08 ***
+##             Estimate Std. Error t value      Pr(&gt;|t|)    
+## (Intercept) 30.38390    7.03865  4.3167 0.00008586190 ***
+## VIS          1.05818    0.15959  6.6306 0.00000003604 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 2.806 on 45 degrees of freedom
 ## Multiple R-squared: 0.4942,  Adjusted R-squared: 0.4829 
-## F-statistic: 43.97 on 1 and 45 DF,  p-value: 3.604e-08</code></pre>
+## F-statistic: 43.97 on 1 and 45 DF,  p-value: 0.00000003604</code></pre>
 <p>Extract residuals</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>FixedRes <span class="ot">&lt;-</span> pglsmodFRS<span class="sc">$</span>residuals</span>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>FixedRes <span class="ot">&lt;-</span> pglsmodFRS<span class="sc">$</span>residuals</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(FixedRes)</span></code></pre></div>
+<p><img src="MacroEcol_2_OpticalProperties_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>FixedRes2 <span class="ot">&lt;-</span> pglsmodFRS<span class="sc">$</span>phyres</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(FixedRes2)</span></code></pre></div>
+<p><img src="MacroEcol_2_OpticalProperties_files/figure-html/unnamed-chunk-31-2.png" width="672" /></p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>Cons1agg<span class="sc">$</span>FRS <span class="ot">&lt;-</span> FixedRes</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>Cons1agg<span class="sc">$</span>FRS <span class="ot">&lt;-</span> FixedRes</span></code></pre></div>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>Cons1agg<span class="sc">$</span>FRS2 <span class="ot">&lt;-</span> FixedRes2</span></code></pre></div>
 </div>
-<div id="final-data-frames" class="section level1">
-<h1>Final Data Frames</h1>
+<div id="nirvis-corrected-absorptivity" class="section level2">
+<h2>NIR/VIS Corrected (Absorptivity)</h2>
+<p>The residuals can also be calculated from a model that considers
+phylogeny.</p>
+<p>Absorptivity by Individual</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>Cons1A <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/FromCode/ConsolidatedAbsoptivityInd.csv&quot;</span>))[<span class="sc">-</span><span class="dv">1</span>]</span></code></pre></div>
+<p>Phylogeny (multiple trees)</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>trees <span class="ot">&lt;-</span> ape<span class="sc">::</span><span class="fu">read.tree</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>Cons1aggA <span class="ot">&lt;-</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  Cons1A <span class="sc">%&gt;%</span> </span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (<span class="sc">-</span>ind, <span class="sc">-</span><span class="fu">contains</span>(<span class="st">&quot;R_&quot;</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">&quot;T_&quot;</span>)) <span class="sc">%&gt;%</span><span class="co"># remove individual id</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span> (phylogeny_name, <span class="fu">everything</span>()) <span class="sc">%&gt;%</span> <span class="co"># order columns</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span> (phylogeny_name) <span class="sc">%&gt;%</span>  <span class="co"># group</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span> (<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="fu">list</span>(mean))) <span class="co"># mean</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Modify to make it compatible with tree tips</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>ConsAggA <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Cons1aggA) <span class="co"># convert to a data frame</span></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(ConsAggA) <span class="ot">&lt;-</span> ConsAggA[, <span class="dv">1</span>] <span class="co"># make species the row names </span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>ConsAggA <span class="ot">&lt;-</span> ConsAggA [,<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(ConsAggA)] <span class="co"># eliminate spp name (redundant)</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate the data frames </span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Useful for plotting in the tree</span></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ConsAggA) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;size&quot;</span>, <span class="st">&quot;ALL&quot;</span>, <span class="st">&quot;VIS&quot;</span>, <span class="st">&quot;NIR&quot;</span>)</span></code></pre></div>
+<p>Make sure that the phylogeny names are consistent in the data frame
+and the phylogenetic trees</p>
+<p>The MCC (Maximum clade credibility) tree used here is the BEAST MCC
+tree.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read the tree</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>MCCtree.raw <span class="ot">&lt;-</span> </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  ape<span class="sc">::</span><span class="fu">read.nexus</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre&quot;</span>))</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Prune extra spp in the tree, not contain in the test sample</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>species.MCC.A <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">unique</span>(Cons1A<span class="sc">$</span>phylogeny_name))</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to &quot;row names&quot; (required for following steps)</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(species.MCC.A) <span class="ot">&lt;-</span> species.MCC.A[, <span class="dv">1</span>] </span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Make sure the names in data set and tree match</span></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>temp.MCC.A <span class="ot">&lt;-</span> <span class="fu">name.check</span>(MCCtree.raw, species.MCC.A) </span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>temp.MCC.A</span></code></pre></div>
+<pre><code>## $tree_not_data
+##  [1] &quot;Anoplognathus_abnormis&quot;      &quot;Anoplognathus_aeneus&quot;        &quot;Anoplognathus_boisduvalii&quot;   &quot;Anoplognathus_brevicollis&quot;  
+##  [5] &quot;Anoplognathus_daemeli&quot;       &quot;Anoplognathus_flavipennis&quot;   &quot;Anoplognathus_mcalpinei&quot;     &quot;Anoplognathus_montanus&quot;     
+##  [9] &quot;Anoplognathus_multiseriatus&quot; &quot;Anoplognathus_nebulosus&quot;     &quot;Anoplognathus_olivieri&quot;      &quot;Anoplognathus_pindarus&quot;     
+## [13] &quot;Anoplognathus_punctulatus&quot;   &quot;Anoplognathus_rhinastus&quot;     &quot;Anoplognathus_rothschildti&quot;  &quot;Anoplognathus_rugosus&quot;      
+## [17] &quot;Anoplognathus_suturalis&quot;     &quot;Anoplognathus_velutinus&quot;     &quot;Anoplognathus_viridiaeneus&quot;  &quot;Anoplostethus_roseus&quot;       
+## [21] &quot;Mimadoretus_niveosquamosus&quot; 
+## 
+## $data_not_tree
+## character(0)</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This step is necessary because the tips are different.</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>MCCtreeA <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(MCCtree.raw, temp.MCC.A<span class="sc">$</span>tree_not_data)</span></code></pre></div>
+<p>Make sure names between data and tree tips match</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>Cons1aggA <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Cons1aggA)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(Cons1aggA) <span class="ot">&lt;-</span> Cons1aggA [, <span class="dv">1</span>] </span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(Cons1aggA) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;phylogeny_name&quot;</span>, <span class="st">&quot;size&quot;</span>, <span class="st">&quot;TOT&quot;</span>, <span class="st">&quot;VIS&quot;</span>, <span class="st">&quot;NIR&quot;</span>)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Test if the species are the same</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">length</span>(<span class="fu">name.check</span>(MCCtreeA, Cons1aggA<span class="sc">$</span>phylogeny_name)<span class="sc">$</span>tree_not_data),</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">length</span>(Cons1aggA<span class="sc">$</span>phylogeny_name)</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>PGLS in the MCC</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>comp_dataA <span class="ot">&lt;-</span> <span class="fu">comparative.data</span>(</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">phy =</span> MCCtreeA, <span class="at">data =</span> Cons1aggA,</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">names.col =</span> <span class="st">&quot;phylogeny_name&quot;</span>, <span class="at">vcv =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.omit =</span> <span class="cn">FALSE</span>, <span class="at">warn.dropped =</span> <span class="cn">TRUE</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Source function</p>
+<p>note that this function has to be adapted to the data frame and model
+on each case</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># source(&quot;12_multiple_pgls_function_G.R&quot;)# function G is for NIR residuals</span></span></code></pre></div>
+<p>Define model</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>MuPGLSMod0A <span class="ot">&lt;-</span> NIR <span class="sc">~</span> VIS</span></code></pre></div>
+<p>Run</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>pglsmodFRSA <span class="ot">&lt;-</span> <span class="fu">pgls</span>(MuPGLSMod0A,</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> comp_dataA, <span class="at">param.CI =</span> <span class="fl">0.95</span>, <span class="at">lambda =</span> <span class="st">&quot;ML&quot;</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pglsmodFRSA) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## pgls(formula = MuPGLSMod0A, data = comp_dataA, lambda = &quot;ML&quot;, 
+##     param.CI = 0.95)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.8626 -2.4695 -1.3236 -0.4063  3.8318 
+## 
+## Branch length transformations:
+## 
+## kappa  [Fix]  : 1.000
+## lambda [ ML]  : 0.843
+##    lower bound : 0.000, p = 0.020639
+##    upper bound : 1.000, p = 0.2733
+##    95.0% CI   : (0.218, NA)
+## delta  [Fix]  : 1.000
+## 
+## Coefficients:
+##              Estimate Std. Error t value       Pr(&gt;|t|)    
+## (Intercept) -78.29460   12.58755 -6.2200 0.000001988637 ***
+## VIS           1.34734    0.14079  9.5698 0.000000001152 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.213 on 24 degrees of freedom
+## Multiple R-squared: 0.7924,  Adjusted R-squared: 0.7837 
+## F-statistic: 91.58 on 1 and 24 DF,  p-value: 0.000000001152</code></pre>
+<p>Extract residuals</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>FixedResA <span class="ot">&lt;-</span> pglsmodFRSA<span class="sc">$</span>residuals</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(FixedResA)</span></code></pre></div>
+<p><img src="MacroEcol_2_OpticalProperties_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>FixedRes2A <span class="ot">&lt;-</span> pglsmodFRSA<span class="sc">$</span>phyres</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(FixedRes2A)</span></code></pre></div>
+<p><img src="MacroEcol_2_OpticalProperties_files/figure-html/unnamed-chunk-41-2.png" width="672" /></p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>Cons1aggA<span class="sc">$</span>FRS <span class="ot">&lt;-</span> FixedResA</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>Cons1aggA<span class="sc">$</span>FRSP <span class="ot">&lt;-</span> FixedRes2A</span></code></pre></div>
+</div>
+<div id="final-data-frames" class="section level2">
+<h2>Final Data Frames</h2>
 <p><span style="color: #04C799"> <strong>Reflectivity by
 individual</strong> </span> <br/></p>
 <p>Consolidated file with reflectivity on each spectral band, size and
 phylogeny name for each beetle.</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>Cons1oo <span class="ot">&lt;-</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(Reflectivity, Size, SppNames) <span class="sc">%&gt;%</span> </span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>ind<span class="fl">.1</span>,<span class="sc">-</span>Ind)</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons1oo,<span class="st">&quot;../Data/FromCode/ConsolidatedReflectivityInd.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons1oo, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/FromCode/ConsolidatedReflectivityInd.csv&quot;</span>))</span></code></pre></div>
 <p><span style="color: #04C799"> <strong>Absorptivity by
 individual</strong> </span> <br/></p>
 <p>Consolidated file with absorptivity on each spectral band, size and
 phylogeny name for each beetle.</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>Cons2oo <span class="ot">&lt;-</span> </span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  Cons1oo <span class="sc">%&gt;%</span> </span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ind <span class="sc">%in%</span> (Optical<span class="sc">$</span>ind)) <span class="sc">%&gt;%</span> <span class="co"># Subset the reflectivity set</span></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(ind) <span class="sc">%&gt;%</span> </span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(size) <span class="sc">%&gt;%</span> <span class="co"># Keep only the size</span></span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(. , Optical) <span class="sc">%&gt;%</span> <span class="co"># join with the &#39;Optical&#39; Data frame</span></span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ind, <span class="fu">everything</span>()) <span class="co"># rearrange the column order</span></span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons2oo,<span class="st">&quot;../Data/FromCode/ConsolidatedAbsoptivityInd.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>Cons2oo <span class="ot">&lt;-</span> </span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  Cons1oo <span class="sc">%&gt;%</span> </span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ind <span class="sc">%in%</span> (Optical<span class="sc">$</span>ind)) <span class="sc">%&gt;%</span> <span class="co"># Subset the reflectivity set</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(ind) <span class="sc">%&gt;%</span> </span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(size, phylogeny_name) <span class="sc">%&gt;%</span> <span class="co"># Keep only the size and phylogeny name</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(. , Optical) <span class="sc">%&gt;%</span> <span class="co"># join with the &#39;Optical&#39; Data frame</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ind, <span class="fu">everything</span>()) <span class="co"># rearrange the column order</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons2oo, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/FromCode/ConsolidatedAbsoptivityInd.csv&quot;</span>))</span></code></pre></div>
 <p><span style="color: #04C799"> <strong>Reflectivity by
 species</strong> </span> <br/></p>
 <p>Consolidated file with reflectivity on each spectral band including
 NIR residuals corrected by phylogeny, size and phylogeny name for each
 species.</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons1agg,<span class="st">&quot;../Data/FromCode/ConsolidatedReflectivitySpp.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons1agg, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/FromCode/ConsolidatedReflectivitySpp.csv&quot;</span>))</span></code></pre></div>
+<p><span style="color: #04C799"> <strong>Absorptivity by
+species</strong> </span> <br/></p>
+<p>Consolidated file with absorptivity on each spectral band including
+NIR residuals corrected by phylogeny, size and phylogeny name for each
+species.</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Cons1aggA, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/FromCode/ConsolidatedAbsorptivitySpp.csv&quot;</span>))</span></code></pre></div>
+</div>
 </div>
 
 
