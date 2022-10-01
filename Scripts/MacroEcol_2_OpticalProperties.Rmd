@@ -513,7 +513,6 @@ Reflectivity by Individual
 
 ```{r}
 Cons1 <- Cons1oo
-head(Cons1)
 ```
 
 Phylogeny (multiple trees)
@@ -533,14 +532,14 @@ Cons1agg <-
 
 # Modify to make it compatible with tree tips
 ConsAgg <- as.data.frame(Cons1agg) # convert to a data frame
-head(ConsAgg)
+
 rownames(ConsAgg) <- ConsAgg[, 1] # make species the row names 
 ConsAgg <- ConsAgg [,2:length(ConsAgg)] # eliminate spp name (redundant)
 
 # Separate the data frames 
 # Useful for plotting in the tree
 names(ConsAgg) <- c("TOT", "VIS", "NIR", "Res", "size")
-head(ConsAgg)
+
 ```
 
 Make sure that the phylogeny names are consistent in the data frame and the phylogenetic trees

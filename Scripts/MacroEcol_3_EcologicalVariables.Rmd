@@ -373,8 +373,6 @@ Cons1 <- merge(Cons1oo, PC_Values2, by = "ind") %>%
   dplyr::select(-phylogeny_name.y)
 
 write.csv(Cons1, here::here("Data/FromCode/ConsReflEcolInd.csv"))
-
-names(Cons1)
 ```
 
 
@@ -391,11 +389,8 @@ Cons2 <-
   bind_cols(., Cons2oo) %>% # join with the 'Optical' Data frame
   dplyr::select(ind, everything(), -Species, -phylogeny_name...7) %>%  # rearrange the column order
   dplyr::rename("phylogeny_name" = phylogeny_name...4)
-head(Cons2)
 
 write.csv(Cons2, here::here("Data/FromCode/ConsAbsEcolInd.csv"))
-
-names(Cons2)
 ```
 
 <br>
@@ -451,9 +446,7 @@ cor.test(PCSZ$meanSize, PCSZ$meanPC2)
 
 Plot
 
-```{r}
-
-
+```{r warning=FALSE, message=FALSE}
 szp1 <- ggplot(PCSZ, aes(x = -meanPC1, y = meanSize)) +
   geom_errorbar(aes(
     ymin = meanSize - sdSize,
