@@ -26,7 +26,7 @@ pgls_runE=function(x, model, dataset)
   {
     tree=check_and_fix_ultrametric(x) #Check if tree is ultrametric 
     dataset$TipLabel=rownames(dataset) #converts the row names into a column
-    dataset_ord=match.phylo.data(tree, dataset) ### create dataset that matches order of tree tips for each tree
+    capture.output(dataset_ord <- match.phylo.data(tree, dataset), file = NULL) ### create dataset that matches order of tree tips for each tree
     treeord=dataset_ord$phy ### rename phylogeny vector as treeord
     dataord=as.data.frame(dataset_ord$dat) ### rename ordered dataset
     
@@ -48,7 +48,7 @@ pgls_runE=function(x, model, dataset)
                                  warn.dropped = FALSE)
     
     #Model used
-    modA <- pgls(model, data=compdata, param.CI = 0.95,lambda = "ML") 
+    modA <- pgls(model, data=compdata, param.CI = 0.95,lambda = "ML")
     # We are using max likelihood to estimate the lambda (phylogenetic signal) of the link, and with that info it runs de model 
     model.results<-summary(modA)
    

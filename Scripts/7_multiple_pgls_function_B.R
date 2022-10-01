@@ -33,7 +33,7 @@ pgls_runB=function(x, model, dataset) # Change names if multiple analysis are ne
     #Keep as it is:
     tree=check_and_fix_ultrametric(x) #Check if tree is ultrametric 
     dataset$TipLabel=rownames(dataset) #converts the row names into a column
-    dataset_ord=match.phylo.data(tree, dataset) ### create dataset that matches order of tree tips for each tree
+    capture.output(dataset_ord <- match.phylo.data(tree, dataset), file = NULL) ### create dataset that matches order of tree tips for each tree
     treeord=dataset_ord$phy ### rename phylogeny vector as treeord
     dataord=as.data.frame(dataset_ord$dat) ### rename ordered dataset
     
