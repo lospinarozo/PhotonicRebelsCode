@@ -702,10 +702,6 @@ FinPRSS <-HPDinterval(as.mcmc(dfPRSsimple))
 
 ```
 
-## NIR no outliers
-
-## FRS no outliers
-
 # Final results
 
 ## Full models

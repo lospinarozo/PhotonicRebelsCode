@@ -9,7 +9,7 @@ editor_options:
 
 
 
-```{r, warning=FALSE, message=FALSE, r echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
 source(here::here("Scripts/MacroEcol_1_Libraries.R"))
 
 library(matrixStats)

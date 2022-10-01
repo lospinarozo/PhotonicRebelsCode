@@ -22,7 +22,7 @@ source(here::here("Scripts/MacroEcol_1_Libraries.R")) # we source the libraries 
 
 Initially we import the absorptivity data obtained in the script "optical properties" and join it with the environmental data obtained in "Ecological variables"
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 Cons1aggA <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivitySpp.csv"))[-1] %>%
   dplyr::arrange(phylogeny_name)
 # PC Values
@@ -44,8 +44,8 @@ In our analyses we use a subset of the 1300 posterior sample trees to represent 
 
 ```{r}
 # set subset limits
-trees_subset_min<-0
-trees_subset_max<-1000
+trees_subset_min<-1000
+trees_subset_max<-2000
 ```
 
 Phylogeny (multiple trees)
