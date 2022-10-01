@@ -7,8 +7,6 @@ navbar:
   left:
    - text: Home
      href: index.html
-   - text: Introduction
-     href: MacroEcol_7_Summary.html
    - text: Setting up
      href: MacroEcol_1_SettingUp.html
    - text: Extracting variables
@@ -27,6 +25,10 @@ navbar:
          href: MacroEcol_6b_ManuscriptStatsAbsorptivity.html
        - text: Polarisation
          href: MacroEcol_5_PolarisationAnalysis.html
+       - text: Quality control
+         href: MacroEcol_6c_QualityControl.html
+   - text: Introduction
+     href: MacroEcol_7_Summary.html
 output:
   html_document:
    highlight: kate
