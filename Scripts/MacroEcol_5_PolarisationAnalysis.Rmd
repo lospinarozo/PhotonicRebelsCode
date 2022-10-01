@@ -1825,11 +1825,9 @@ cor.test(NoCCAbs$FRS, NoCCAbs$Pol) # by spp
 ## Degree of polarisation
 
 ```{r}
-ReflByInd <- read.csv(here::here("Data/FromCode/
-                                 ConsolidatedReflectivityInd.csv"))[-1]
+ReflByInd <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivityInd.csv"))[-1]
 
-AbsByInd0 <- read.csv(here::here("Data/FromCode/
-                                 ConsolidatedAbsorptivityInd.csv"))[-1]
+AbsByInd0 <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivityInd.csv"))[-1]
 
 AbsByInd0$A_Res <- residuals ( lm (AbsByInd0$A_NIR~AbsByInd0$A_VIS))
 
@@ -2085,12 +2083,12 @@ RHandByInd <- merge(RHand0I,SppNamesI) %>%
 
 # Combine with reflectivity
 
-ToplotRHandRefl <- merge(ReflBySpp, RHandbyInd)
+ToplotRHandRefl <- merge(ReflBySpp, RHandByInd)
 rownames(RHandRefl) <- RHandRefl$spp
 
 # Combine with absorptivity
 
-ToplotRHandAbs <- merge(AbsBySpp, RHandbyInd)
+ToplotRHandAbs <- merge(AbsBySpp, RHandByInd)
 rownames(RHandAbs) <- RHandAbs$spp
 ```
 

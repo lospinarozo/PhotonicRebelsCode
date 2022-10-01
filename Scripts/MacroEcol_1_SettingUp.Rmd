@@ -23,7 +23,7 @@ Find here the species names, ANIC museum codes (when available) and abbreviation
 
 ```{r  warning=FALSE, message=FALSE}
 library(here)
-Beetles <- read.csv(here("Data/SupplementaryBeetleDataBase.csv"))
+Beetles <- read.csv(here::here("Data/SupplementaryBeetleDataBase.csv"))
 library(DT)
 datatable(Beetles)
 ```
@@ -82,7 +82,7 @@ install.packages("DT")
 We used a .R file to contain and load all the libraries:
 
 ```{r, warning=FALSE, message=FALSE}
-source(here("Scripts/MacroEcol_1_Libraries.R"))
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
 ```
 
 <br>
@@ -94,10 +94,10 @@ This is the way we curated the raw data frames to make sure we include only the 
 
 ```{r message=FALSE, warning=FALSE}
 # Import data
-refl1 <- read.csv(here("Data/1_Reflectance_HRBatch.csv")) # HR batch
-refl2 <- read.csv(here("Data/2_Reflectance_FirstBatch.csv")) # original
-TopTrans <- read.csv(here("Data/3_Transmittance_HRBatch.csv")) # transmittance
-theorySun <- read.csv(here("Data/4_SunIrradiance.csv")) # Sun irradiance
+refl1 <- read.csv(here::here("Data/1_Reflectance_HRBatch.csv")) # HR batch
+refl2 <- read.csv(here::here("Data/2_Reflectance_FirstBatch.csv")) # original
+TopTrans <- read.csv(here::here("Data/3_Transmittance_HRBatch.csv")) # transmittance
+theorySun <- read.csv(here::here("Data/4_SunIrradiance.csv")) # Sun irradiance
 
 
 # Fix the column names and convert to rspec object
@@ -208,8 +208,8 @@ Create files
 
 ```{r}
 
-write.csv(Reflectance, here("Data/FromCode/Reflectance_PData.csv"))
-write.csv(Transmitance, here("Data/FromCode/Transmitance_PData.csv"))
+write.csv(Reflectance, here::here("Data/FromCode/Reflectance_PData.csv"))
+write.csv(Transmitance, here::here("Data/FromCode/Transmitance_PData.csv"))
 ```
 
 

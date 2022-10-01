@@ -10,7 +10,7 @@ editor_options:
 
 
 ```{r, warning=FALSE, message=FALSE, r echo=FALSE}
-source("./MacroEcol_1_Libraries.R")
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
 
 library(matrixStats)
 ```
@@ -26,9 +26,9 @@ library(matrixStats)
 
 # Prepare data sets ###################
 
-Reflectance <- read.csv("../Data/FromCode/Reflectance_PData.csv")[-1]
+Reflectance <- read.csv(here::here("Data/FromCode/Reflectance_PData.csv"))[-1]
 
-RPDataAgg <- read.csv("../Data/FromCode/PolarzElytraRefl.csv")[-1]
+RPDataAgg <- read.csv(here::here("Data/FromCode/PolarzElytraRefl.csv"))[-1]
 
 RPDAgg1 <-
   RPDataAgg %>%
@@ -39,7 +39,7 @@ RPDAgg1 <-
   select(1,9) %>% 
   arrange(phylogeny_name)
 
-Cons1agg <- read.csv("../Data/FromCode/ConsolidatedReflectivitySpp.csv")[-1] %>% 
+Cons1agg <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivitySpp.csv"))[-1] %>% 
   arrange(phylogeny_name) %>% 
   mutate (Pol = RPDAgg1$ElytrPol_1)
 
@@ -62,11 +62,11 @@ Poldf <- ConsAgg %>% dplyr::select(Pol)
 
 # Combine with phylogeny ###################
 # Phylogeny
-trees <- ape::read.tree("../Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
 
 # read the tree
 MCCtree.raw <-
-  ape::read.nexus("../Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
 
 # Prune extra spp in the tree, not contain in the test sample
 species.MCC <- as.data.frame(unique(Cons1agg$phylogeny_name))

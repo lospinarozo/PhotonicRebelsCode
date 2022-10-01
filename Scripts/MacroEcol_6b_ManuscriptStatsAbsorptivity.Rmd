@@ -13,7 +13,7 @@ In this script we use a combination of phylogenetically controlled models to eva
 ## Libraries
 
 ```{r, warning=FALSE, message=FALSE}
-source("./Scripts/MacroEcol_1_Libraries.R") # we source the libraries from this file
+source(here::here("Scripts/MacroEcol_1_Libraries.R")) # we source the libraries from this file
 ```
 
 ## Data Sets
@@ -23,10 +23,10 @@ source("./Scripts/MacroEcol_1_Libraries.R") # we source the libraries from this 
 Initially we import the absorptivity data obtained in the script "optical properties" and join it with the environmental data obtained in "Ecological variables"
 
 ```{r}
-Cons1aggA <- read.csv("./Data/FromCode/ConsolidatedAbsorptivitySpp.csv")[-1] %>%
+Cons1aggA <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivitySpp.csv"))[-1] %>%
   dplyr::arrange(phylogeny_name)
 # PC Values
-PCValuesF <- read.csv("./Data/FromCode/PCsbySpp.csv")[-1] %>%
+PCValuesF <- read.csv(here::here("Data/FromCode/PCsbySpp.csv"))[-1] %>%
   dplyr::arrange(phylogeny_name)
 
 Cons1aggA <-
@@ -51,10 +51,10 @@ trees_subset_max<-1000
 Phylogeny (multiple trees)
 
 ```{r}
-trees <- ape::read.tree("./Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk")
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
 
 MCCtree.raw <- 
-  ape::read.nexus("./Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre")
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
 ```
 
 The MCC (Maximum clade credibility) tree used here is the BEAST MCC tree. We did not need to prun the tree. The equivalence between specie sin the tree and data frame was tested in previous steps (tab optical properties). 
@@ -157,7 +157,7 @@ Source function
 note that this function has to be adapted to the data frame and model on each case
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/8_multiple_pgls_function_C.R") # function C is for absorptivity as response
+source(here::here("Scripts/8_multiple_pgls_function_C.R")) # function C is for absorptivity as response
 ```
 
 Define model
@@ -172,7 +172,7 @@ PGLS in multiple trees for NIR contains 6 predictors + intercept. The extra pred
 
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/9_multiple_pgls_function_D.R") # function D: NIR explained by PCs and VIS
+source(here::here("Scripts/9_multiple_pgls_function_D.R")) # function D: NIR explained by PCs and VIS
 ```
 
 
@@ -194,7 +194,7 @@ Source function
 note that this function has to be adapted to the data frame and model on each case
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/10_multiple_pgls_function_E.R") # function E: simplified. One PC and size
+source(here::here("Scripts/10_multiple_pgls_function_E.R")) # function E: simplified. One PC and size
 ```
 
 Define model
@@ -215,7 +215,7 @@ Source function
 note that this function has to be adapted to the data frame and model on each case
 
 ```{r warning=FALSE, message=FALSE}
-source("./Scripts/11_multiple_pgls_function_F.R") # F: One PC, size and VIS as predictors
+source(here::here("Scripts/11_multiple_pgls_function_F.R")) # F: One PC, size and VIS as predictors
 ```
 
 Define model
@@ -256,7 +256,7 @@ runsTOTA<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfTOTA <- ldply(runsTOTA, data.frame)
 
-write.csv(dfTOTA,"./Data/FromCode/MuTPglsResultsTOTAbsorptivity.csv")
+write.csv(dfTOTA, here::here("Data/FromCode/MuTPglsResultsTOTAbsorptivity.csv"))
 
 FinTotMA <- HPDinterval(as.mcmc(dfTOTA))
 ```
@@ -286,7 +286,7 @@ runsVISA<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfVISA <- ldply (runsVISA, data.frame)
 
-write.csv(dfVISA,"./Data/FromCode/MuTPglsResultsVISAbsorptivity.csv")
+write.csv(dfVISA, here::here("Data/FromCode/MuTPglsResultsVISAbsorptivity.csv"))
 
 FinVisMA <- HPDinterval(as.mcmc(dfVISA))
 ```
@@ -361,7 +361,7 @@ runsNIRA<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfNIRA <- ldply(runsNIRA, data.frame)
 
-write.csv(dfNIRA,"./Data/FromCode/MuTPglsResultsNmoAbsorptivity.csv")
+write.csv(dfNIRA, here::here("Data/FromCode/MuTPglsResultsNmoAbsorptivity.csv"))
 
 FinNirMA <- HPDinterval(as.mcmc(dfNIRA))
 ```
@@ -435,7 +435,7 @@ runsFRSA<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfFRSA <- ldply(runsFRSA, data.frame)
 
-write.csv(dfFRSA,"./Data/FromCode/MuTPglsFRSultsFRSAbsorptivity.csv")
+write.csv(dfFRSA, here::here("Data/FromCode/MuTPglsFRSultsFRSAbsorptivity.csv"))
 
 FinFRSMA <- HPDinterval(as.mcmc(dfFRSA))
 ```
@@ -508,7 +508,7 @@ runsPRSA<-lapply(trees[trees_subset_min:trees_subset_max],
 
 dfPRSA <- ldply(runsPRSA, data.frame)
 
-write.csv(dfPRSA,"./Data/FromCode/MuTPglsFRSultsPRSAbsorptivity.csv")
+write.csv(dfPRSA, here::here("Data/FromCode/MuTPglsFRSultsPRSAbsorptivity.csv"))
 
 FinPRSMA <- HPDinterval(as.mcmc(dfPRSA))
 ```

@@ -11,7 +11,7 @@ output:
 
 ```{r warning=FALSE, message=FALSE}
 library(imager)
-im<-load.image("../Data/RmdImages/TemporaryphylogenyNoStruct.png")
+im<-load.image(here::here("Data/RmdImages/TemporaryphylogenyNoStruct.png"))
 plot(im, axes = FALSE)
 
 ```

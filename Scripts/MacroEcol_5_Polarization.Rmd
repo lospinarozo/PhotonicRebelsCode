@@ -237,9 +237,9 @@ lin_equ_RGB <- function(DataFrame, ParameterData) {
 
       # For each line in the DataFrame to linearise, we need to find
       # the correspondent set of parameters:
-      dplyr::filter("type" == DataFrame$type[i] & # VIS, LCP, or RCP
-        "Channel" == DataFrame$Channel[i] & # R, G or B
-        "camera_cat" == DataFrame$camera_cat[i]) %>% # Camera conditions
+      dplyr::filter(type == DataFrame$type[i], # VIS, LCP, or RCP
+        Channel == DataFrame$Channel[i], # R, G or B
+        camera_cat == DataFrame$camera_cat[i]) %>% # Camera conditions
       dplyr::arrange(., parameter) # arranged alphabetically
 
     # Apply the formula
@@ -402,7 +402,7 @@ where $l$ represents the mean reflectance under the filter for left handed circu
 First export data frame with the Raw polarisation values in case it is needed
 ```{r}
 
-write.csv(RGB_ave, "../Data/FromCode/PolarzElytra_LERGBValues.csv")
+write.csv(RGB_ave, here::here("Data/FromCode/PolarzElytra_LERGBValues.csv"))
 
 ```
 
@@ -442,11 +442,11 @@ SppNames <-
           spp != "sqzm"  # Schizognathus mesosternalis
             ) %>% # These species were removed. No phylogenetic info
   dplyr::select (-spp) %>% 
-  arrange(Ind) %>% 
-  rename(ind = Ind)
+  dplyr::arrange(Ind) %>% 
+  dplyr::rename("ind" = Ind)
 
 # Combine the two data frames
-ElyPolbyindN <- merge (ElyPolbb, SppNames, by="ind") # merge as "inner join"
+ElyPolbyindN <- merge(ElyPolbb, SppNames, by="ind") # merge as "inner join"
 
 # mean by species
 EPolbs <-
