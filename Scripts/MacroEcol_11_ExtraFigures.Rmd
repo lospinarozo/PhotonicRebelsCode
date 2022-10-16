@@ -1,0 +1,233 @@
+---
+title: "Extra figures"
+#author: "Laura Ospina-Rozo"
+#date: '2022-07-05'
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
+
+library(matrixStats)
+```
+
+# Main manuscript
+
+## Figures
+
+### Figure 1 - Phylogenetic tree with traits
+
+
+```{r warning=FALSE, message=FALSE}
+
+# Prepare data sets ###################
+
+Reflectance <- read.csv(here::here("Data/FromCode/Reflectance_PData.csv"))[-1]
+
+RPDataAgg <- read.csv(here::here("Data/FromCode/PolarzElytraRefl.csv"))[-1]
+
+RPDAgg1 <-
+  RPDataAgg %>%
+  dplyr::select(-ind, -spp) %>%
+  dplyr::select(phylogeny_name, everything()) %>%
+  dplyr::group_by(phylogeny_name) %>% # group
+  dplyr::summarise(across(everything(), list(mean))) %>% 
+  select(1,9) %>% 
+  arrange(phylogeny_name)
+
+Cons1agg <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivitySpp.csv"))[-1] %>% 
+  arrange(phylogeny_name) %>% 
+  mutate (Pol = RPDAgg1$ElytrPol_1)
+
+# Convert to a data frame for the comparative.data function
+Cons1agg <- as.data.frame(Cons1agg)
+head(Cons1agg)
+
+# Modify to make it compatible with tree tips
+ConsAgg<- as.data.frame(Cons1agg) # create new data frame
+rownames(ConsAgg) <- ConsAgg[, 1] # make species the row names
+ConsAgg <- ConsAgg[, 2:length(ConsAgg)] # eliminate spp name (redundant)
+
+# Separate data frames
+
+TOTdf <- ConsAgg %>% dplyr::select(TOT)
+VISdf <- ConsAgg %>% dplyr::select(VIS)
+Resdf <- ConsAgg %>% dplyr::select(Res)
+Poldf <- ConsAgg %>% dplyr::select(Pol)
+
+
+# Combine with phylogeny ###################
+# Phylogeny
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
+
+# read the tree
+MCCtree.raw <-
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
+
+# Prune extra spp in the tree, not contain in the test sample
+species.MCC <- as.data.frame(unique(Cons1agg$phylogeny_name))
+
+# Convert to "row names" (required for following steps)
+row.names(species.MCC) <- species.MCC[, 1]
+
+# Make sure the names in data set and tree match
+temp.MCC <- name.check(MCCtree.raw, species.MCC)
+
+# This step would be neccesary if the tips had been different.
+# MCCtree <- drop.tip(MCCtree.raw, temp.MCC$tree_not_data)
+# Not used in our case.
+
+# Instead, changed the name
+MCCtree <- MCCtree.raw
+
+# Add traits to the tree ######################
+
+
+# create a MCC tree without tip names for the plot
+tree_only <- ggtree(MCCtree, layout = "rectangular")
+
+# create heat map columns
+# Note: log transforms increase contrast for visualization purposes
+
+# Add TOTAL reflectivity
+p0 <- gheatmap(tree_only, (TOTdf),
+  width = 0.05, low = "gray90", high = "#ffc100",
+  font.size = 2,
+  colnames_position = "bottom", colnames_angle = 0,
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = "TOT"
+)
+
+p1.scale <- p0 + new_scale_fill() # add new scale for second variable
+
+# Add VIS
+p1 <- gheatmap(p1.scale, (VISdf),
+  offset = 1.5, # to avoid overlapping with p1
+  width = 0.05, low = "gray90", high = "#fe6100",
+  font.size = 2,
+  colnames_position = "bottom", colnames_angle = 0,
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = "VIS"
+)
+
+p2.scale <- p1 + new_scale_fill() # add new scale for third variable
+
+# Add NIR
+p2 <- gheatmap(p2.scale, (Resdf),
+  offset = 3, # to avoid overlapping with p1
+  width = 0.05, low = "gray90", high = "#ff2c85",
+  font.size = 2,
+  colnames_position = "bottom", colnames_angle = 0,
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = "Res"
+)
+
+
+# Add polarisation
+
+p3.scale <- p2 + new_scale_fill() # add new scale for third variable
+
+# Add NIR
+p3 <- gheatmap(p3.scale, (Poldf),
+  offset = 4.5, # to avoid overlapping with p1
+  width = 0.05, low = "gray90", high = "#648fff",
+  font.size = 2,
+  colnames_position = "bottom", colnames_angle = 0,
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = "Pol"
+)
+
+p3 +
+  theme(legend.position = 'left',
+    legend.background = element_rect(),
+    legend.key = element_blank(), # removes the border
+    legend.key.size = unit(0.4, 'cm'), # sets overall area/size of the legend
+    legend.text = element_text(size = 8), # text size
+    title = element_text(size = 8))
+
+
+```
+
+
+
+### Figure 2 -  Interactions Climate and Size
+
+### Figure 3 -  Size
+
+### Figure 4 - Polarisation correlations
+
+
+##  Tables 
+
+### Table 1
+
+### Table 2
+
+### Table 3
+
+<br>
+<br>
+
+# Supplementary
+
+## Phylogenetic tree
+
+```{r}
+# create phylogeny object for ggtree()
+phylo.MCC <- ggtree(MCCtree, layout = "rectangular") 
+
+# set xlim
+phylo.MCC + xlim(0, 33) +
+  geom_nodepoint(col = "blue", alpha = 0.4)+
+  geom_tiplab(size=2.3)
+```
+
+<br>
+
+## Hemispherical Reflectance
+
+
+Examples are _A. prasinus_ , _A. rayneri_ , _A. laetus_
+
+```{r}
+
+Step1Example <-
+  Reflectance %>%
+  select(
+    wl,
+    contains("prsi01") |
+    contains("rayn01") |
+    contains("lats03") |
+    contains("aurs01")
+  ) 
+
+
+ggplot(Step1Example, aes(x = wl)) +
+  geom_line(aes(x = wl, y = prsi01),
+    size = 1, colour = "#ff2c85"
+  ) +
+  geom_line(aes(x = wl, y = rayn01),
+    size = 1, colour = "#fe6100"
+  ) +
+  geom_line(aes(x = wl, y = lats03),
+    size = 1, colour = "#648fff"
+  ) +
+  geom_line(aes(x = wl, y = aurs01),
+    size = 1, colour = "#ffb000"
+  ) +
+  scale_fill_manual(values = c( "#648fff", "#dc267f","#ff7200"), 
+                    name = "fill") +
+  scale_color_manual(values = c( "#648fff", "#dc267f","#ff7200"),
+                    name = "fill") +
+  xlab("Wavelength (nm)") +
+  ylab("Reflectance (%)") +
+  theme_minimal() +
+  ylim(0, 90) +
+  theme(legend.position = "none")
+
+```
+

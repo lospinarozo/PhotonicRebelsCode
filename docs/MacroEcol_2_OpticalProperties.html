@@ -13,7 +13,7 @@
 
 <title>Calculation of optical properties</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -284,8 +284,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -293,16 +293,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -427,12 +420,12 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Shady Xmas Beetles</a>
+      <a class="navbar-brand" href="index.html">Photonic Rebels</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
+  <a href="index.html">Main</a>
 </li>
 <li>
   <a href="MacroEcol_1_SettingUp.html">Setting up</a>
@@ -448,10 +441,10 @@ div.tocify {
       <a href="MacroEcol_2_OpticalProperties.html">Reflectivity &amp; Absorptivity</a>
     </li>
     <li>
-      <a href="MacroEcol_5_Polarization.html">Polarisation</a>
+      <a href="MacroEcol_3_Polarisation.html">Polarisation</a>
     </li>
     <li>
-      <a href="MacroEcol_3_EcologicalVariables.html">Ecology</a>
+      <a href="MacroEcol_4_EcologicalVariables.html">Ecology</a>
     </li>
   </ul>
 </li>
@@ -463,21 +456,27 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="MacroEcol_6_ManuscriptStats.html">Reflectivity</a>
+      <a href="MacroEcol_5_ReflectivityStats.html">Reflectivity</a>
     </li>
     <li>
-      <a href="MacroEcol_6b_ManuscriptStatsAbsorptivity.html">Absorptivity</a>
+      <a href="MacroEcol_6_AbsorptivityStats.html">Absorptivity</a>
     </li>
     <li>
-      <a href="MacroEcol_5_PolarisationAnalysis.html">Polarisation</a>
+      <a href="MacroEcol_7_PolarisationStats.html">Polarisation</a>
     </li>
     <li>
-      <a href="MacroEcol_6c_QualityControl.html">Quality control</a>
+      <a href="MacroEcol_8_SizeStats.html">Size</a>
+    </li>
+    <li>
+      <a href="MacroEcol_9_ReflectivityQC.html">Quality control (reflectivity)</a>
+    </li>
+    <li>
+      <a href="MacroEcol_10_AbsorptivityQC.html">Quality control (absorptivity)</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="MacroEcol_7_Summary.html">Introduction</a>
+  <a href="MacroEcol_11_ExtraFigures.html">Extra figures</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -1101,11 +1100,10 @@ tree.</p>
 <span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>temp.MCC.A <span class="ot">&lt;-</span> <span class="fu">name.check</span>(MCCtree.raw, species.MCC.A) </span>
 <span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>temp.MCC.A</span></code></pre></div>
 <pre><code>## $tree_not_data
-##  [1] &quot;Anoplognathus_abnormis&quot;      &quot;Anoplognathus_aeneus&quot;        &quot;Anoplognathus_boisduvalii&quot;   &quot;Anoplognathus_brevicollis&quot;  
-##  [5] &quot;Anoplognathus_daemeli&quot;       &quot;Anoplognathus_flavipennis&quot;   &quot;Anoplognathus_mcalpinei&quot;     &quot;Anoplognathus_montanus&quot;     
-##  [9] &quot;Anoplognathus_multiseriatus&quot; &quot;Anoplognathus_nebulosus&quot;     &quot;Anoplognathus_olivieri&quot;      &quot;Anoplognathus_pindarus&quot;     
-## [13] &quot;Anoplognathus_punctulatus&quot;   &quot;Anoplognathus_rhinastus&quot;     &quot;Anoplognathus_rothschildti&quot;  &quot;Anoplognathus_rugosus&quot;      
-## [17] &quot;Anoplognathus_suturalis&quot;     &quot;Anoplognathus_velutinus&quot;     &quot;Anoplognathus_viridiaeneus&quot;  &quot;Anoplostethus_roseus&quot;       
+##  [1] &quot;Anoplognathus_abnormis&quot;      &quot;Anoplognathus_aeneus&quot;        &quot;Anoplognathus_boisduvalii&quot;   &quot;Anoplognathus_brevicollis&quot;   &quot;Anoplognathus_daemeli&quot;      
+##  [6] &quot;Anoplognathus_flavipennis&quot;   &quot;Anoplognathus_mcalpinei&quot;     &quot;Anoplognathus_montanus&quot;      &quot;Anoplognathus_multiseriatus&quot; &quot;Anoplognathus_nebulosus&quot;    
+## [11] &quot;Anoplognathus_olivieri&quot;      &quot;Anoplognathus_pindarus&quot;      &quot;Anoplognathus_punctulatus&quot;   &quot;Anoplognathus_rhinastus&quot;     &quot;Anoplognathus_rothschildti&quot; 
+## [16] &quot;Anoplognathus_rugosus&quot;       &quot;Anoplognathus_suturalis&quot;     &quot;Anoplognathus_velutinus&quot;     &quot;Anoplognathus_viridiaeneus&quot;  &quot;Anoplostethus_roseus&quot;       
 ## [21] &quot;Mimadoretus_niveosquamosus&quot; 
 ## 
 ## $data_not_tree

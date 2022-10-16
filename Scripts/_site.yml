@@ -1,11 +1,11 @@
-name: Shady Christmas Beetles
+name: Photonic Rebels
 output_dir: "../docs" 
 exclude:
   - "Scripts/*.R"
 navbar:
-  title: Shady Xmas Beetles
+  title: Photonic Rebels
   left:
-   - text: Home
+   - text: Main
      href: index.html
    - text: Setting up
      href: MacroEcol_1_SettingUp.html
@@ -14,21 +14,25 @@ navbar:
        - text: Reflectivity & Absorptivity
          href: MacroEcol_2_OpticalProperties.html
        - text: Polarisation
-         href: MacroEcol_5_Polarization.html
+         href: MacroEcol_3_Polarisation.html
        - text: Ecology
-         href: MacroEcol_3_EcologicalVariables.html
+         href: MacroEcol_4_EcologicalVariables.html
    - text: Analysis
      menu:
        - text: Reflectivity
-         href: MacroEcol_6_ManuscriptStats.html
+         href: MacroEcol_5_ReflectivityStats.html
        - text: Absorptivity
-         href: MacroEcol_6b_ManuscriptStatsAbsorptivity.html
+         href: MacroEcol_6_AbsorptivityStats.html
        - text: Polarisation
-         href: MacroEcol_5_PolarisationAnalysis.html
-       - text: Quality control
-         href: MacroEcol_6c_QualityControl.html
-   - text: Introduction
-     href: MacroEcol_7_Summary.html
+         href: MacroEcol_7_PolarisationStats.html
+       - text: Size
+         href: MacroEcol_8_SizeStats.html
+       - text: Quality control (reflectivity)
+         href: MacroEcol_9_ReflectivityQC.html
+       - text: Quality control (absorptivity)
+         href: MacroEcol_10_AbsorptivityQC.html
+   - text: Extra figures
+     href: MacroEcol_11_ExtraFigures.html
 output:
   html_document:
    highlight: kate

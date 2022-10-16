@@ -1,0 +1,249 @@
+---
+title: Size PGLS
+editor_options: 
+  chunk_output_type: console
+---
+
+# Setting up data
+
+## Libraries
+
+```{r, warning=FALSE, message=FALSE}
+# We source the libraries from this file:
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
+```
+
+## Data sets
+
+```{r}
+# Consolidated by individual
+Cons1 <- read.csv(here::here("Data/FromCode/ConsReflEcolInd.csv"))[-1]
+
+# Group by species
+PCSZ1Agg <-
+  as.data.frame(
+    Cons1 %>%
+    dplyr::select(size, phylogeny_name, PC1, PC2) %>%
+    dplyr::group_by(phylogeny_name) %>% # group
+    dplyr::summarise(
+      meanPC1 = mean(PC1),
+      meanPC2 = mean(PC2),
+      meanSize = mean(size),
+      sdSize = sd(size),
+      sdPC1 = sd(PC1),
+      sdPC2 = sd(PC2)
+    )
+  )
+```
+
+<span style="color: #04C799"> **Phylogenetic data** </span>  <br/>
+
+In our analyses we use a subset of the 1300 posterior sample trees to represent the phylogenetic information accounting for uncertainty in node ages and topology:
+
+```{r, warning=FALSE, message=FALSE}
+# Set subset limits
+trees_subset_min<-1000
+trees_subset_max<-2000
+```
+
+Import phylogeny (multiple trees)
+
+```{r}
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
+
+MCCtree <- 
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
+```
+
+The MCC (Maximum clade credibility) tree used here is the BEAST MCC tree. We did not need to prun the tree. The equivalence between specie sin the tree and data frame was tested in previous steps (tab optical properties). 
+
+<span style="color: #04C799"> **Merge** </span>  <br/>
+
+```{r}
+# Modify to make it compatible with tree tips
+rownames(PCSZ1Agg) <- PCSZ1Agg[, 1] # make species the row names
+PCSZAgg <- PCSZ1Agg[,2:length(PCSZ1Agg)] # eliminate spp name (redundant)
+```
+
+The names between data and tree tips should match. 
+
+```{r}
+# Test if the species are the same
+identical(
+  length(name.check(MCCtree, PCSZ1Agg$phylogeny_name)$tree_not_data),
+  length(PCSZ1Agg$phylogeny_name)
+)
+```
+
+# Setting up models
+
+The PGLS function has to be adapted to the data frame and model on each case
+
+## Model 1
+
+PGLS in the MCC
+
+```{r}
+comp_data <- comparative.data(
+  phy = MCCtree, data = PCSZ1Agg,
+  names.col = "phylogeny_name", vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+```
+
+## Model 2
+
+PGLS Multiple Trees with 2 predictors + intercept
+
+Source function
+
+note that this function has to be adapted to the data frame and model on each case
+
+```{r warning=FALSE, message=FALSE}
+# function I is for size as response
+source(here::here("Scripts/14_multiple_pgls_function_I.R"))
+```
+
+Define model
+
+```{r }
+MuPGLSMod2 <- Response ~ PC1 + PC2
+```
+
+# Results
+
+## MCC Tree
+
+```{r message= FALSE, warnings=FALSE}
+pglsmodSize <- pgls(meanSize ~ meanPC1 + meanPC2,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+FinMccSizec <- as.numeric(round(summary(pglsmodSize)$coefficients[,1],3))
+FinMccSizep <- as.numeric(round(summary(pglsmodSize)$coefficients[,4],3)) 
+```
+
+## Multiple trees
+
+```{r message=FALSE, warning=FALSE}
+MulSizeDf <-
+  PCSZAgg %>%
+  dplyr::select(-sdSize,
+              -sdPC1,
+              -sdPC2) %>% 
+  dplyr::rename("Response" = meanSize,
+                "PC1" = meanPC1,
+                "PC2" = meanPC2)
+
+runsSize<-lapply(trees[trees_subset_min:trees_subset_max],
+                pgls_runI,
+                model=MuPGLSMod2,
+                dataset=MulSizeDf) 
+
+dfSize <- ldply(runsSize, data.frame)
+
+length(dfSize[,1])
+
+write.csv(dfSize, here::here("Data/FromCode/MuTPglsResultsSize.csv"))
+
+FinSizeM <- HPDinterval(as.mcmc(dfSize))
+```
+
+# Plot
+
+Predictions:
+
+```{r}
+SzVPC1 <- seq(range(PCSZAgg$meanPC1)[1],
+             range(PCSZAgg$meanPC1)[2],0.01) # A range of PC1
+
+SzVPC2 <- rep(mean(PCSZAgg$meanPC2),length(SzVPC1)) # mean PC2 all beetles 
+
+new1z<-data.frame("meanPC1" = SzVPC1, "meanPC2" = SzVPC2) # data frame
+
+size1z<-predict(pglsmodSize, newdata = new1z, 
+              type = "response") # Expected size
+trend1z<-data.frame(size1z,SzVPC1) # join Size and expected NIR reflectance
+```
+
+Prepare data:
+
+```{r}
+ToPlot <-
+  as.data.frame(
+    Cons1 %>%
+    dplyr::mutate(spp = substr(ind, 1, 4)) %>% 
+    dplyr::select(size, spp, PC1, PC2) %>%
+    dplyr::group_by(spp) %>% # group
+    dplyr::summarise(
+      meanPC1 = mean(PC1),
+      meanPC2 = mean(PC2),
+      meanSize = mean(size),
+      sdSize = sd(size),
+      sdPC1 = sd(PC1),
+      sdPC2 = sd(PC2)
+    )
+  )
+rownames(ToPlot) <- ToPlot[, 1]
+```
+
+```{r warning=FALSE, message=FALSE}
+szp1 <- ggplot(ToPlot, aes(x = -meanPC1, y = meanSize)) +
+  geom_text(
+    label=rownames(ToPlot), 
+    nudge_x = 0.4, nudge_y = 0.05,
+    col="gray", size=3
+  ) +
+  geom_errorbar(aes(
+    ymin = meanSize - sdSize,
+    ymax = meanSize + sdSize
+  ),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = -meanPC1 - sdPC1,
+    xmax = -meanPC1 + sdPC1
+  ),
+  col = "#cecec2"
+  ) +
+  geom_point(
+    size = 2, pch = 21, fill = "#648fff",
+    colour = "black", alpha = 0.9
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_line(aes(x = -SzVPC1, y = size1z), data=trend1z) +
+  xlab("Humidity (-PC1)") +
+  ylab("Size (cm)")
+
+
+szp2 <- ggplot(ToPlot, aes(x = -meanPC2, y = meanSize)) +
+  geom_text(
+    label=rownames(ToPlot), 
+    nudge_x = 0.5, nudge_y = 0.05,
+    col="gray", size=3
+  ) +
+  geom_errorbar(aes(
+    ymin = meanSize - sdSize,
+    ymax = meanSize + sdSize
+  ),
+  col = "#cecec2"
+  ) +
+  geom_errorbarh(aes(
+    xmin = -meanPC2 - sdPC2,
+    xmax = -meanPC2 + sdPC2
+  ),
+  col = "#cecec2"
+  ) +
+  geom_point(
+    size = 2, pch = 21, fill = "#ffb000",
+    colour = "black", alpha = 0.9
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  xlab("Temperature (-PC2)") +
+  ylab("Size (cm)")
+
+
+grid.arrange(szp1, szp2, nrow = 1)
+```
