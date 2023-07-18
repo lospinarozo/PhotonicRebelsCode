@@ -13,6 +13,9 @@ editor_options:
 source(here::here("Scripts/MacroEcol_1_Libraries.R"))
 
 library(matrixStats)
+library(dplyr)
+library(phytools)
+library(geiger)
 ```
 
 # Main manuscript
@@ -84,10 +87,17 @@ temp.MCC <- name.check(MCCtree.raw, species.MCC)
 # Instead, changed the name
 MCCtree <- MCCtree.raw
 
+# This is to control the length of the tips:
+MCCtree$edge.length <- MCCtree$edge.length * 0.1 # Run only once!
+
+```
+
+
+
+```{r warning=FALSE, message=FALSE}
 # Add traits to the tree ######################
-
-
 # create a MCC tree without tip names for the plot
+
 tree_only <- ggtree(MCCtree, layout = "rectangular")
 
 # create heat map columns
@@ -95,9 +105,9 @@ tree_only <- ggtree(MCCtree, layout = "rectangular")
 
 # Add TOTAL reflectivity
 p0 <- gheatmap(tree_only, (TOTdf),
-  width = 0.05, low = "gray90", high = "#ffc100",
-  font.size = 2,
-  colnames_position = "bottom", colnames_angle = 0,
+  width = 0.04, low = "gray90", high = "#ffc100",
+  font.size = 2.2,
+  colnames_position = "bottom", colnames_angle = 90,
   colnames_offset_x = 0, colnames_offset_y = -0.5,
   legend_title = "TOT"
 )
@@ -106,10 +116,10 @@ p1.scale <- p0 + new_scale_fill() # add new scale for second variable
 
 # Add VIS
 p1 <- gheatmap(p1.scale, (VISdf),
-  offset = 1.5, # to avoid overlapping with p1
-  width = 0.05, low = "gray90", high = "#fe6100",
-  font.size = 2,
-  colnames_position = "bottom", colnames_angle = 0,
+  offset = 0.12, # to avoid overlapping with p1
+  width = 0.04, low = "gray90", high = "#fe6100",
+  font.size = 2.2,
+  colnames_position = "bottom", colnames_angle = 90,
   colnames_offset_x = 0, colnames_offset_y = -0.5,
   legend_title = "VIS"
 )
@@ -118,56 +128,66 @@ p2.scale <- p1 + new_scale_fill() # add new scale for third variable
 
 # Add NIR
 p2 <- gheatmap(p2.scale, (Resdf),
-  offset = 3, # to avoid overlapping with p1
-  width = 0.05, low = "gray90", high = "#ff2c85",
-  font.size = 2,
-  colnames_position = "bottom", colnames_angle = 0,
+  offset = 0.24, # to avoid overlapping with p1
+  width = 0.04, low = "gray90", high = "#ff2c85",
+  font.size = 2.2,
+  colnames_position = "bottom", colnames_angle = 90,
   colnames_offset_x = 0, colnames_offset_y = -0.5,
-  legend_title = "Res"
+  legend_title = "RES"
 )
-
 
 # Add polarisation
 
 p3.scale <- p2 + new_scale_fill() # add new scale for third variable
 
-# Add NIR
+# Add pol
 p3 <- gheatmap(p3.scale, (Poldf),
-  offset = 4.5, # to avoid overlapping with p1
-  width = 0.05, low = "gray90", high = "#648fff",
-  font.size = 2,
-  colnames_position = "bottom", colnames_angle = 0,
+  offset = 0.36, # to avoid overlapping with p1
+  width = 0.04, low = "gray90", high = "#648fff",
+  font.size = 2.2,
+  colnames_position = "bottom", colnames_angle = 90,
   colnames_offset_x = 0, colnames_offset_y = -0.5,
-  legend_title = "Pol"
+  legend_title = "POL"
 )
 
-p3 +
+
+# Add a white column
+
+p4.scale <- p3 + new_scale_fill() # add new scale 
+
+# Add a blank column. This is a trick to keep the branches short:
+p4 <- gheatmap(p4.scale, (Poldf),
+  offset = 2, # to avoid overlapping with p1
+  width = 0.04, low = "white", high = "white",
+  font.size = 0.01,
+  colnames_position = "bottom", colnames_angle = 0,
+  colnames_offset_x = 0, colnames_offset_y = -0.5,
+  legend_title = " ", 
+)
+
+```
+
+Print:
+
+```{r}
+p4 +
   theme(legend.position = 'left',
     legend.background = element_rect(),
     legend.key = element_blank(), # removes the border
     legend.key.size = unit(0.4, 'cm'), # sets overall area/size of the legend
     legend.text = element_text(size = 8), # text size
-    title = element_text(size = 8))
-
-
+    title = element_text(size = 8))+
+  geom_tiplab(size=2.76, # add names
+              offset = 0.57, # this adjusts the position of the species names
+              aes(label= paste0('italic(', label, ')')), # sppnames in italics
+              parse=TRUE) # allows us to alter the tips label  
+  
+ 
 ```
 
 
 
-### Figure 2 -  Interactions Climate and Size
 
-### Figure 3 -  Size
-
-### Figure 4 - Polarisation correlations
-
-
-##  Tables 
-
-### Table 1
-
-### Table 2
-
-### Table 3
 
 <br>
 <br>

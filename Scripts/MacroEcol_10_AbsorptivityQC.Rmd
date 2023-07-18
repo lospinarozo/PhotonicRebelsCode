@@ -1,12 +1,12 @@
 ---
-title: "Absorptivity PGLS"
+title: Absorptivity  without outliers
 # author: "Laura Ospina-Rozo"
 # date: "25/04/2022"
 editor_options: 
   chunk_output_type: console
 ---
 
-In this script we use a combination of phylogenetically controlled models to evaluate if VIS and NIR absorptivity in the Christmas beetles’ elytra can be predicted by climate and size. Climate here is determined by the ecological variables: maximum temperature, number of days above 35°C, solar radiation, cloud cover, rain, water vapour and aridity summarised in two principal components.
+In this script we repeated the PGLs analysis excluding the outliers: A. prasinus and the species belonging to the genus Xylonichus, Paraschizognathus because these species are known to have an independent mechanism to enhance NIR reflectivity, which could potentially also alter absorptivity. The main change is the exclusion of these species with "str_detect" in the chunk "Data Sets".
 
 # Setting up data
 

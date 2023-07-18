@@ -11,9 +11,9 @@
 
 
 
-<title>Absorptivity PGLS</title>
+<title>Absorptivity without outliers</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -45,7 +45,6 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
-
 
 
 <style type="text/css">
@@ -141,20 +140,13 @@ code span.wa { color: #bf0303; } /* Warning */
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    var j = 0;
-    while (j < rules.length) {
+    for (var j = 0; j < rules.length; j++) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
-        j++;
-        continue;
-      }
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') {
-        j++;
-        continue;
-      }
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -189,9 +181,6 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
-}
-details > summary > p:only-child {
-  display: inline;
 }
 pre code {
   padding: 0;
@@ -249,15 +238,11 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark the anchor link active (and if it's in a dropdown, also mark that active)
-  var dropdown = menuAnchor.closest('li.dropdown');
-  if (window.bootstrap) { // Bootstrap 4+
-    menuAnchor.addClass('active');
-    dropdown.find('> .dropdown-toggle').addClass('active');
-  } else { // Bootstrap 3
-    menuAnchor.parent().addClass('active');
-    dropdown.addClass('active');
-  }
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -286,8 +271,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -295,9 +280,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -417,7 +409,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -433,7 +425,7 @@ div.tocify {
   <a href="MacroEcol_1_SettingUp.html">Setting up</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Extracting variables
      
     <span class="caret"></span>
@@ -451,7 +443,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Analysis
      
     <span class="caret"></span>
@@ -470,15 +462,18 @@ div.tocify {
       <a href="MacroEcol_8_SizeStats.html">Size</a>
     </li>
     <li>
-      <a href="MacroEcol_9_ReflectivityQC.html">Quality control (reflectivity)</a>
+      <a href="MacroEcol_9_ReflectivityQC.html">Reflectivity no outliers</a>
     </li>
     <li>
-      <a href="MacroEcol_10_AbsorptivityQC.html">Quality control (absorptivity)</a>
+      <a href="MacroEcol_10_AbsorptivityQC.html">Absorptivity no outliers</a>
+    </li>
+    <li>
+      <a href="MacroEcol_10_AbsorptivityQC.html">Polarisation no outliers</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="MacroEcol_11_ExtraFigures.html">Extra figures</a>
+  <a href="MacroEcol_12_ExtraFigures.html">Extra figures</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -491,7 +486,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -500,17 +495,17 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Absorptivity PGLS</h1>
+<h1 class="title toc-ignore">Absorptivity without outliers</h1>
 
 </div>
 
 
-<p>In this script we use a combination of phylogenetically controlled
-models to evaluate if VIS and NIR absorptivity in the Christmas beetles’
-elytra can be predicted by climate and size. Climate here is determined
-by the ecological variables: maximum temperature, number of days above
-35°C, solar radiation, cloud cover, rain, water vapour and aridity
-summarised in two principal components.</p>
+<p>In this script we repeated the PGLs analysis excluding the outliers:
+A. prasinus and the species belonging to the genus Xylonichus,
+Paraschizognathus because these species are known to have an independent
+mechanism to enhance NIR reflectivity, which could potentially also
+alter absorptivity. The main change is the exclusion of these species
+with “str_detect” in the chunk “Data Sets”.</p>
 <div id="setting-up-data" class="section level1">
 <h1>Setting up data</h1>
 <div id="libraries" class="section level2">
@@ -990,13 +985,20 @@ obtained only one value per species.</p>
 <span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>SimpleNIRA <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(SimpleNIRA)</span>
 <span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(SimpleNIRA)</span></code></pre></div>
-<pre><code>##                                        phylogeny_name  Response     size      VIS         PC
-## Anomala_antigua                       Anomala_antigua 37.457412 1.767500 88.49838 -1.9015325
-## Anoplognathus_aureus             Anoplognathus_aureus  9.557756 1.714000 55.92975 -0.4118618
-## Anoplognathus_brunnipennis Anoplognathus_brunnipennis 23.589031 2.330667 68.88987  0.4607792
-## Anoplognathus_concolor         Anoplognathus_concolor 14.628072 2.175000 65.35370  1.4279128
-## Anoplognathus_hirsutus         Anoplognathus_hirsutus 35.732388 2.321429 79.49740  1.0545415
-## Anoplognathus_macleayi         Anoplognathus_macleayi 36.007010 3.025500 75.90286 -3.8769082</code></pre>
+<pre><code>##                                        phylogeny_name  Response     size      VIS
+## Anomala_antigua                       Anomala_antigua 37.457412 1.767500 88.49838
+## Anoplognathus_aureus             Anoplognathus_aureus  9.557756 1.714000 55.92975
+## Anoplognathus_brunnipennis Anoplognathus_brunnipennis 23.589031 2.330667 68.88987
+## Anoplognathus_concolor         Anoplognathus_concolor 14.628072 2.175000 65.35370
+## Anoplognathus_hirsutus         Anoplognathus_hirsutus 35.732388 2.321429 79.49740
+## Anoplognathus_macleayi         Anoplognathus_macleayi 36.007010 3.025500 75.90286
+##                                    PC
+## Anomala_antigua            -1.9015325
+## Anoplognathus_aureus       -0.4118618
+## Anoplognathus_brunnipennis  0.4607792
+## Anoplognathus_concolor      1.4279128
+## Anoplognathus_hirsutus      1.0545415
+## Anoplognathus_macleayi     -3.8769082</code></pre>
 <p>Now run the model</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>runsNIRsimpleA<span class="ot">&lt;-</span><span class="fu">lapply</span>(trees[trees_subset_min<span class="sc">:</span>trees_subset_max],</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>                      pgls_runF,</span>

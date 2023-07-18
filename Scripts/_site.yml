@@ -27,12 +27,14 @@ navbar:
          href: MacroEcol_7_PolarisationStats.html
        - text: Size
          href: MacroEcol_8_SizeStats.html
-       - text: Quality control (reflectivity)
+       - text: "Reflectivity no outliers"
          href: MacroEcol_9_ReflectivityQC.html
-       - text: Quality control (absorptivity)
+       - text: "Absorptivity no outliers"
+         href: MacroEcol_10_AbsorptivityQC.html
+       - text: "Polarisation no outliers"
          href: MacroEcol_10_AbsorptivityQC.html
    - text: Extra figures
-     href: MacroEcol_11_ExtraFigures.html
+     href: MacroEcol_12_ExtraFigures.html
 output:
   html_document:
    highlight: kate

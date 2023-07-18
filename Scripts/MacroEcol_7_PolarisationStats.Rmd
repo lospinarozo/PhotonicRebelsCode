@@ -5,7 +5,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-In this script we study the Polarisation trait corrected by phylogeny.
+In this script we study the correlations between the degree of polarisation and the ecological variables (PCs) and other optical properties, i.e. reflectivity and absorptivity. In addition, we used the raw RGB value sin the RCP filter as a coarse indicator of the presence of pigments (melanin). Here it is called "Right handed Pol". We tested for correlations between the Right handed Polarisation and reflectivity and absorptivity. 
+
+The part called "Mechanisms" contains only exploratory analysis. The formal equivalents can be found in "Quality Control (Polarisation)"
 
 # Setting up
 
@@ -526,7 +528,7 @@ Function
 Note that the function has to be modified for the predictors and data frame that we are using
 
 ```{r warning=FALSE, message=FALSE}
-source(here::here("Scripts/13_multiple_pgls_function_H.R")) # script A is for Polarization as a response
+source(here::here("Scripts/13_multiple_pgls_function_H.R")) # script A is for Polarization as a predictor
 ```
 
 Model
@@ -2188,4 +2190,8 @@ RCPVRPlot <- ggplot(data = ToPlotRHPolRefl, aes(x = meanRHPol, y = meanVIS),
   xlab("Right Handed Polarisation (RGB mean)")+
   ylab("Visible reflectivity (%)") +
   ylim(0, 40)
+
+
+RCPVRPlot 
+
 ```

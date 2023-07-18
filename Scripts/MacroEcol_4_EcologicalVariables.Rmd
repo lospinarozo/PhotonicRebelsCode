@@ -547,7 +547,7 @@ szp2 <- ggplot(PCSZ, aes(x = -meanPC2, y = meanSize)) +
   theme(legend.position = "none") +
   # geom_smooth(method=lm, color="#ffb000", fill="#D3D3D3")+ # Not different than 0
   xlab("Temperature (-PC1)") +
-  ylab("Size (cm)")
+  ylab("Size (cm)") 
 
 
 grid.arrange(szp1, szp2, nrow = 1)
@@ -557,7 +557,7 @@ grid.arrange(szp1, szp2, nrow = 1)
 
 ```{r}
 oz_states <- ozmaps::ozmap_states # load Australian maps
-st_crs(oz_states) <- 4326 # transform have to make due to package problem
+#st_crs(oz_states) <- 4326 # transform, have to make due to package problem
 
 ggplot(oz_states) +
   geom_sf() +

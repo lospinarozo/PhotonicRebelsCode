@@ -55,7 +55,6 @@ pgls_runH=function(x, model, dataset)
     if (nrow(model.results[["coefficients"]]) == 3) # 2 predictors plus intercept
       
     {
-      
       coef.res1[1,1]<-coefficients(model.results)[2,1]  ### estimates for predictor 1
       coef.res1[1,2]<-coefficients(model.results)[2,3]
       coef.res1[1,3]<-coefficients(model.results)[2,4]
@@ -110,7 +109,8 @@ check_and_fix_ultrametric <- function(phy){
 
 model.results<-list() #the entire model for each run, stored in a list
 ###list with coefficients and estimates for each of the predictors in the model, create one for each predictor in your model ######
-coef.res1<-matrix(data=NA, nrow=1, ncol=3) 
+coef.res1<-matrix(data=NA, nrow=1, ncol=3)
+coef.res2<-matrix(data=NA, nrow=1, ncol=3)
 
 
 

@@ -14,7 +14,7 @@
 
 <title>Polarisation analysis</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -44,7 +44,6 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
-
 
 
 <style type="text/css">
@@ -140,20 +139,13 @@ code span.wa { color: #bf0303; } /* Warning */
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    var j = 0;
-    while (j < rules.length) {
+    for (var j = 0; j < rules.length; j++) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
-        j++;
-        continue;
-      }
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') {
-        j++;
-        continue;
-      }
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -188,9 +180,6 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
-}
-details > summary > p:only-child {
-  display: inline;
 }
 pre code {
   padding: 0;
@@ -248,15 +237,11 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark the anchor link active (and if it's in a dropdown, also mark that active)
-  var dropdown = menuAnchor.closest('li.dropdown');
-  if (window.bootstrap) { // Bootstrap 4+
-    menuAnchor.addClass('active');
-    dropdown.find('> .dropdown-toggle').addClass('active');
-  } else { // Bootstrap 3
-    menuAnchor.parent().addClass('active');
-    dropdown.addClass('active');
-  }
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -285,8 +270,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -294,9 +279,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -416,7 +408,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -432,7 +424,7 @@ div.tocify {
   <a href="MacroEcol_1_SettingUp.html">Setting up</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Extracting variables
      
     <span class="caret"></span>
@@ -450,7 +442,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Analysis
      
     <span class="caret"></span>
@@ -469,15 +461,18 @@ div.tocify {
       <a href="MacroEcol_8_SizeStats.html">Size</a>
     </li>
     <li>
-      <a href="MacroEcol_9_ReflectivityQC.html">Quality control (reflectivity)</a>
+      <a href="MacroEcol_9_ReflectivityQC.html">Reflectivity no outliers</a>
     </li>
     <li>
-      <a href="MacroEcol_10_AbsorptivityQC.html">Quality control (absorptivity)</a>
+      <a href="MacroEcol_10_AbsorptivityQC.html">Absorptivity no outliers</a>
+    </li>
+    <li>
+      <a href="MacroEcol_10_AbsorptivityQC.html">Polarisation no outliers</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="MacroEcol_11_ExtraFigures.html">Extra figures</a>
+  <a href="MacroEcol_12_ExtraFigures.html">Extra figures</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -490,7 +485,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -505,8 +500,15 @@ div.tocify {
 </div>
 
 
-<p>In this script we study the Polarisation trait corrected by
-phylogeny.</p>
+<p>In this script we study the correlations between the degree of
+polarisation and the ecological variables (PCs) and other optical
+properties, i.e. reflectivity and absorptivity. In addition, we used the
+raw RGB value sin the RCP filter as a coarse indicator of the presence
+of pigments (melanin). Here it is called “Right handed Pol”. We tested
+for correlations between the Right handed Polarisation and reflectivity
+and absorptivity.</p>
+<p>The part called “Mechanisms” contains only exploratory analysis. The
+formal equivalents can be found in “Quality Control (Polarisation)”</p>
 <div id="setting-up" class="section level1">
 <h1>Setting up</h1>
 <div id="libraries" class="section level2">
@@ -688,14 +690,16 @@ significantly different than 0.</p>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(Difference <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>ElytraMoreP<span class="sc">$</span>ind</span></code></pre></div>
-<pre><code>##  [1] &quot;atki01&quot; &quot;atki02&quot; &quot;brun01&quot; &quot;brun04&quot; &quot;brun05&quot; &quot;ecry01&quot; &quot;fchi01&quot; &quot;fchi02&quot; &quot;hirs03&quot; &quot;lats01&quot; &quot;lats03&quot; &quot;pvul02&quot; &quot;pvul03&quot; &quot;pvul04&quot; &quot;rayn01&quot; &quot;rayn03&quot; &quot;smgr01&quot;</code></pre>
+<pre><code>##  [1] &quot;atki01&quot; &quot;atki02&quot; &quot;brun01&quot; &quot;brun04&quot; &quot;brun05&quot; &quot;ecry01&quot; &quot;fchi01&quot; &quot;fchi02&quot; &quot;hirs03&quot;
+## [10] &quot;lats01&quot; &quot;lats03&quot; &quot;pvul02&quot; &quot;pvul03&quot; &quot;pvul04&quot; &quot;rayn01&quot; &quot;rayn03&quot; &quot;smgr01&quot;</code></pre>
 <p>These beetles with higher polarisation in their pronotum are:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>PronotumMoreP <span class="ot">&lt;-</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    BeetlePol <span class="sc">%&gt;%</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(Difference <span class="sc">&lt;</span> <span class="sc">-</span><span class="fl">0.1</span>)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>PronotumMoreP<span class="sc">$</span>ind</span></code></pre></div>
-<pre><code>##  [1] &quot;aurs01&quot; &quot;aurs02&quot; &quot;clor09&quot; &quot;meli02&quot; &quot;meli03&quot; &quot;neus01&quot; &quot;oliv03&quot; &quot;opal01&quot; &quot;pvul01&quot; &quot;rubi01&quot; &quot;rubi02&quot; &quot;vrdi01&quot; &quot;vrdi03&quot;</code></pre>
+<pre><code>##  [1] &quot;aurs01&quot; &quot;aurs02&quot; &quot;clor09&quot; &quot;meli02&quot; &quot;meli03&quot; &quot;neus01&quot; &quot;oliv03&quot; &quot;opal01&quot; &quot;pvul01&quot;
+## [10] &quot;rubi01&quot; &quot;rubi02&quot; &quot;vrdi01&quot; &quot;vrdi03&quot;</code></pre>
 </div>
 <div id="ecological-variables" class="section level1">
 <h1>Ecological variables</h1>
@@ -1080,7 +1084,7 @@ light</p>
 <p>Function</p>
 <p>Note that the function has to be modified for the predictors and data
 frame that we are using</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Scripts/13_multiple_pgls_function_H.R&quot;</span>)) <span class="co"># script A is for Polarization as a response</span></span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Scripts/13_multiple_pgls_function_H.R&quot;</span>)) <span class="co"># script A is for Polarization as a predictor</span></span></code></pre></div>
 <p>Model</p>
 <div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>MuPGLSPol4 <span class="ot">&lt;-</span> Response <span class="sc">~</span> Pol <span class="sc">+</span> VIS</span></code></pre></div>
 <p>Dataset</p>
@@ -3129,7 +3133,8 @@ class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="#cb2
 <span id="cb238-113"><a href="#cb238-113" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb238-114"><a href="#cb238-114" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(PVRPlot, PNRPlot, PVAPlot, PNAPlot, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 3 rows containing missing values (geom_errorbarh).
-## Removed 3 rows containing missing values (geom_errorbarh).</code></pre>
+
+## Warning: Removed 3 rows containing missing values (geom_errorbarh).</code></pre>
 <p><img src="MacroEcol_7_PolarisationStats_files/figure-html/unnamed-chunk-136-1.png" width="672" /></p>
 </div>
 <div id="right-handed-polarisation" class="section level2">
@@ -3222,7 +3227,12 @@ class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="#cb2
 <span id="cb243-28"><a href="#cb243-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span> </span>
 <span id="cb243-29"><a href="#cb243-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Right Handed Polarisation (RGB mean)&quot;</span>)<span class="sc">+</span></span>
 <span id="cb243-30"><a href="#cb243-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Visible reflectivity (%)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb243-31"><a href="#cb243-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">40</span>)</span></code></pre></div>
+<span id="cb243-31"><a href="#cb243-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">40</span>)</span>
+<span id="cb243-32"><a href="#cb243-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb243-33"><a href="#cb243-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb243-34"><a href="#cb243-34" aria-hidden="true" tabindex="-1"></a>RCPVRPlot </span></code></pre></div>
+<pre><code>## Warning: Removed 3 rows containing missing values (geom_errorbarh).</code></pre>
+<p><img src="MacroEcol_7_PolarisationStats_files/figure-html/unnamed-chunk-140-1.png" width="672" /></p>
 </div>
 </div>
 

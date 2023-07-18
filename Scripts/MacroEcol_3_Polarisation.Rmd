@@ -9,13 +9,13 @@ editor_options:
 <br>
 <br>
 
-We calculated the reflectance of the beetles from the RGB values measured from calibrated photographs to find the degree of circular polarization.
+We calculated the reflectance of the beetles from the RGB values measured from calibrated photographs to find the degree of circular polarisation.
 
-First we linearised the RBGs using the parameters derived from the MATLAB code adapted from Stevens et al 2007 (Biological Journal of the Linnean society, 90(2), 211-237). Next we equalised the RGB values with the grey standard with known reflectance. Finally, we calculated the difference between the two polarizations standardized by their sum.
+First we linearised the RBGs using the parameters derived from the MATLAB code adapted from Stevens et al 2007 (Biological Journal of the Linnean society, 90(2), 211-237). Next we equalised the RGB values with the grey standard with known reflectance. Finally, we calculated the difference between the two Polarisations standardized by their sum.
 
 <br>
 
-In the second part of this script, we correlate the polarization with reflectivity obtained in previous scripts
+In the second part of this script, we correlate the polarisation with reflectivity obtained in previous scripts
 
 <br>
 <br>
@@ -185,7 +185,7 @@ setdiff(inPRind, inPGind)
 # Note pronotum missing for these: "ecry03" "mcla02" "roci02"
 ```
 
-They are considered for the overall polarization analysis but not in the correlations elytra-pronotum.
+They are considered for the overall polarisation analysis but not in the correlations elytra-pronotum.
 
 We separated the RGB values of the pronotum and the grey standard but kept a unique identifier called PhotoID. This helps pairing the sample with the grey that was in that picture further in the analysis (required to run the linearisation function).
 
@@ -390,11 +390,11 @@ head(RGB_avePr)
 
 
 
-# Polarization
+# Polarisation
 
-We calculated the polarization as $$\ P \ = \frac{l - r}{l + r}$$
+We calculated the polarisation as $$\ P \ = \frac{l - r}{l + r}$$
 
-where $l$ represents the mean reflectance under the filter for left handed circular polarization and $r$ represents the mean reflectance under the filter for right handed circular polarization.
+where $l$ represents the mean reflectance under the filter for left handed circular polarisation and $r$ represents the mean reflectance under the filter for right handed circular polarisation.
 
 
 ## Elytra
@@ -407,11 +407,11 @@ write.csv(RGB_ave, here::here("Data/FromCode/PolarzElytra_LERGBValues.csv"))
 ```
 
 
-Thus we obtained the polarization values for the elytron ROI by individual and by species:
+Thus we obtained the polarisation values for the elytron ROI by individual and by species:
 
 ```{r}
 
-# Calculate the polarization:
+# Calculate the polarisation:
 ElyPol <-
   RGB_ave %>%
   spread(Type, RGB_ave) %>%
@@ -460,10 +460,10 @@ EPolbs <-
 
 ## Pronotum
 
-Thus we obtained the polarization values for the pronotum ROI by individual:
+Thus we obtained the polarisation values for the pronotum ROI by individual:
 
 ```{r}
-# Calculate the polarization:
+# Calculate the polarisation:
 ProPol <-
   RGB_avePr %>%
   spread(Type, RGB_aveP) %>%
@@ -476,7 +476,7 @@ And by species:
 
 ```{r}
 
-# Average: One polarization value by spp
+# Average: One polarisation value by spp
 ProPolbysp <-
   ProPol %>%
   dplyr::select(ind, Polarization) %>%
@@ -544,19 +544,10 @@ head(BeetlePol)
 
 
 
+We merged the polarisation data with the data frames obtained in previous steps that contain ecological variables, reflectivity, size and the species name as follows: 
 
 
-
-
-###################### REMOVE ############################################
-
-
-Ecological variables
-
-We merged the polarization data with the data frames obtained in previous steps that contain ecological variables, reflectivity, size and the species name as follows: 
-
-
-First compare the dimensions of the two data frames (Reflectance and polarization):
+First compare the dimensions of the two data frames (Reflectance and polarisation):
 
 ```{r}
 
@@ -586,7 +577,7 @@ Refbyind <- Cons1[Cons1$ind %in% ElyPol$ind, ]
 But since they had different numbers of individuals we only considered the ones that were common for both data frames to combine them into one larger data frame
 
 ```{r}
-# Simplify the polarization data
+# Simplify the polarisation data
 ElyPolbyind <-
   ElyPol %>%
   select(1, 5) # keep only one column and the individual
@@ -620,7 +611,7 @@ This way we can conduct the analysis at both individual and species level
 As a general conclusion it does seem that there can be three mechanisms: White underlay, chiral and broadband chiral. 
 
 
-We obtained a data frame useful to compare the degree of polarization between two body parts, elytron and pronotum
+We obtained a data frame useful to compare the degree of polarisation between two body parts, elytron and pronotum
 
 ```{r}
 write.csv(BeetlePol, here::here("Data/FromCode/PolarzElytraPronot.csv"))

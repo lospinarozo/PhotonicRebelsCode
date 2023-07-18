@@ -13,7 +13,7 @@
 
 <title>Calculating degree of polarisation</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -43,7 +43,6 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
-
 
 
 <style type="text/css">
@@ -139,20 +138,13 @@ code span.wa { color: #bf0303; } /* Warning */
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    var j = 0;
-    while (j < rules.length) {
+    for (var j = 0; j < rules.length; j++) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
-        j++;
-        continue;
-      }
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') {
-        j++;
-        continue;
-      }
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -187,9 +179,6 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
-}
-details > summary > p:only-child {
-  display: inline;
 }
 pre code {
   padding: 0;
@@ -247,15 +236,11 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark the anchor link active (and if it's in a dropdown, also mark that active)
-  var dropdown = menuAnchor.closest('li.dropdown');
-  if (window.bootstrap) { // Bootstrap 4+
-    menuAnchor.addClass('active');
-    dropdown.find('> .dropdown-toggle').addClass('active');
-  } else { // Bootstrap 3
-    menuAnchor.parent().addClass('active');
-    dropdown.addClass('active');
-  }
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -284,8 +269,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -293,9 +278,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -415,7 +407,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -431,7 +423,7 @@ div.tocify {
   <a href="MacroEcol_1_SettingUp.html">Setting up</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Extracting variables
      
     <span class="caret"></span>
@@ -449,7 +441,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Analysis
      
     <span class="caret"></span>
@@ -468,15 +460,18 @@ div.tocify {
       <a href="MacroEcol_8_SizeStats.html">Size</a>
     </li>
     <li>
-      <a href="MacroEcol_9_ReflectivityQC.html">Quality control (reflectivity)</a>
+      <a href="MacroEcol_9_ReflectivityQC.html">Reflectivity no outliers</a>
     </li>
     <li>
-      <a href="MacroEcol_10_AbsorptivityQC.html">Quality control (absorptivity)</a>
+      <a href="MacroEcol_10_AbsorptivityQC.html">Absorptivity no outliers</a>
+    </li>
+    <li>
+      <a href="MacroEcol_10_AbsorptivityQC.html">Polarisation no outliers</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="MacroEcol_11_ExtraFigures.html">Extra figures</a>
+  <a href="MacroEcol_12_ExtraFigures.html">Extra figures</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -489,7 +484,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -506,14 +501,14 @@ div.tocify {
 <p><br> <br></p>
 <p>We calculated the reflectance of the beetles from the RGB values
 measured from calibrated photographs to find the degree of circular
-polarization.</p>
+polarisation.</p>
 <p>First we linearised the RBGs using the parameters derived from the
 MATLAB code adapted from Stevens et al 2007 (Biological Journal of the
 Linnean society, 90(2), 211-237). Next we equalised the RGB values with
 the grey standard with known reflectance. Finally, we calculated the
-difference between the two polarizations standardized by their sum.</p>
+difference between the two Polarisations standardized by their sum.</p>
 <p><br></p>
-<p>In the second part of this script, we correlate the polarization with
+<p>In the second part of this script, we correlate the polarisation with
 reflectivity obtained in previous scripts</p>
 <p><br> <br></p>
 <div id="setting-up" class="section level1">
@@ -650,7 +645,7 @@ to run the linearisation function).</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(inPRind, inPGind)</span></code></pre></div>
 <pre><code>## character(0)</code></pre>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Note pronotum missing for these: &quot;ecry03&quot; &quot;mcla02&quot; &quot;roci02&quot;</span></span></code></pre></div>
-<p>They are considered for the overall polarization analysis but not in
+<p>They are considered for the overall polarisation analysis but not in
 the correlations elytra-pronotum.</p>
 <p>We separated the RGB values of the pronotum and the grey standard but
 kept a unique identifier called PhotoID. This helps pairing the sample
@@ -770,7 +765,7 @@ calculations directly form the data frames.</p>
 <span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;sqzb&quot;</span>, ind)) <span class="co"># remove, absent in the phylogeny</span></span>
 <span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RGB_ave)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 3
+<pre><code>## # A tibble: 6 x 3
 ## # Groups:   ind, Type [6]
 ##   ind    Type  RGB_ave
 ##   &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;
@@ -838,7 +833,7 @@ calculations directly form the data frames.</p>
 <span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;sqzb&quot;</span>, ind)) <span class="co"># remove, absent in the phylogeny</span></span>
 <span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RGB_avePr)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 3
+<pre><code>## # A tibble: 6 x 3
 ## # Groups:   ind, Type [6]
 ##   ind    Type  RGB_aveP
 ##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;
@@ -851,29 +846,29 @@ calculations directly form the data frames.</p>
 </div>
 </div>
 </div>
-<div id="polarization" class="section level1">
-<h1>Polarization</h1>
-<p>We calculated the polarization as <span class="math display">\[\ P \
+<div id="polarisation" class="section level1">
+<h1>Polarisation</h1>
+<p>We calculated the polarisation as <span class="math display">\[\ P \
 = \frac{l - r}{l + r}\]</span></p>
 <p>where <span class="math inline">\(l\)</span> represents the mean
-reflectance under the filter for left handed circular polarization and
+reflectance under the filter for left handed circular polarisation and
 <span class="math inline">\(r\)</span> represents the mean reflectance
-under the filter for right handed circular polarization.</p>
+under the filter for right handed circular polarisation.</p>
 <div id="elytra-1" class="section level2">
 <h2>Elytra</h2>
 <p>First export data frame with the Raw polarisation values in case it
 is needed</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(RGB_ave, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/FromCode/PolarzElytra_LERGBValues.csv&quot;</span>))</span></code></pre></div>
-<p>Thus we obtained the polarization values for the elytron ROI by
+<p>Thus we obtained the polarisation values for the elytron ROI by
 individual and by species:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the polarization:</span></span>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the polarisation:</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>ElyPol <span class="ot">&lt;-</span></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  RGB_ave <span class="sc">%&gt;%</span></span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(Type, RGB_ave) <span class="sc">%&gt;%</span></span>
 <span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Polarization =</span> (LCP <span class="sc">-</span> RCP) <span class="sc">/</span> (LCP <span class="sc">+</span> RCP))</span>
 <span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ElyPol) <span class="co"># by individual</span></span></code></pre></div>
-<pre><code>## # A tibble: 6 × 5
+<pre><code>## # A tibble: 6 x 5
 ## # Groups:   ind [6]
 ##   ind      LCP   RCP   VIS Polarization
 ##   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
@@ -921,16 +916,16 @@ individual and by species:</p>
 </div>
 <div id="pronotum-1" class="section level2">
 <h2>Pronotum</h2>
-<p>Thus we obtained the polarization values for the pronotum ROI by
+<p>Thus we obtained the polarisation values for the pronotum ROI by
 individual:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the polarization:</span></span>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the polarisation:</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>ProPol <span class="ot">&lt;-</span></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  RGB_avePr <span class="sc">%&gt;%</span></span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(Type, RGB_aveP) <span class="sc">%&gt;%</span></span>
 <span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Polarization =</span> (LCP <span class="sc">-</span> RCP) <span class="sc">/</span> (LCP <span class="sc">+</span> RCP))</span>
 <span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ProPol) <span class="co">#  by individual</span></span></code></pre></div>
-<pre><code>## # A tibble: 6 × 5
+<pre><code>## # A tibble: 6 x 5
 ## # Groups:   ind [6]
 ##   ind      LCP   RCP   VIS Polarization
 ##   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
@@ -941,7 +936,7 @@ individual:</p>
 ## 5 atki01  3.28  2.65  2.41       0.107 
 ## 6 atki02  3.60  2.75  2.56       0.135</code></pre>
 <p>And by species:</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Average: One polarization value by spp</span></span>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Average: One polarisation value by spp</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>ProPolbysp <span class="ot">&lt;-</span></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  ProPol <span class="sc">%&gt;%</span></span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ind, Polarization) <span class="sc">%&gt;%</span></span>
@@ -953,7 +948,7 @@ individual:</p>
 <span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">Pol =</span> <span class="fu">mean</span>(Polarization)) <span class="co"># by species</span></span>
 <span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(PPolbs)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 2
+<pre><code>## # A tibble: 6 x 2
 ##   spp      Pol
 ##   &lt;chr&gt;  &lt;dbl&gt;
 ## 1 abno  0.0820
@@ -1013,14 +1008,11 @@ frames should be 0</p>
 ## 4 anom02 0.18547191 0.15926191  0.02621000
 ## 5 atki01 0.30583122 0.10721581  0.19861541
 ## 6 atki02 0.30355419 0.13451403  0.16904016</code></pre>
-<div id="remove" class="section level22">
-<p class="heading">REMOVE</p>
-<p>Ecological variables</p>
-<p>We merged the polarization data with the data frames obtained in
+<p>We merged the polarisation data with the data frames obtained in
 previous steps that contain ecological variables, reflectivity, size and
 the species name as follows:</p>
 <p>First compare the dimensions of the two data frames (Reflectance and
-polarization):</p>
+polarisation):</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>Cons1 <span class="ot">&lt;-</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  Cons1 <span class="sc">%&gt;%</span></span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">spp =</span> <span class="fu">substr</span>(ind, <span class="dv">1</span>, <span class="dv">4</span>))</span>
@@ -1029,9 +1021,11 @@ polarization):</p>
 <span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>inRGB <span class="ot">&lt;-</span> <span class="fu">levels</span>(<span class="fu">as.factor</span>(EPolbs<span class="sc">$</span>spp))</span></code></pre></div>
 <pre><code>## Warning: Unknown or uninitialised column: `spp`.</code></pre>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(inTree, inRGB)</span></code></pre></div>
-<pre><code>##  [1] &quot;abno&quot; &quot;anom&quot; &quot;atki&quot; &quot;aurs&quot; &quot;boid&quot; &quot;brev&quot; &quot;brun&quot; &quot;clor&quot; &quot;conc&quot; &quot;ecry&quot; &quot;fchi&quot; &quot;gray&quot; &quot;hirs&quot; &quot;lats&quot; &quot;macl&quot; &quot;mcla&quot; &quot;meli&quot; &quot;mima&quot; &quot;mont&quot; &quot;mult&quot; &quot;narm&quot; &quot;neba&quot; &quot;nebn&quot;
-## [24] &quot;neus&quot; &quot;oliv&quot; &quot;opal&quot; &quot;pali&quot; &quot;pczo&quot; &quot;pczp&quot; &quot;pczv&quot; &quot;pind&quot; &quot;pine&quot; &quot;poro&quot; &quot;prsi&quot; &quot;punc&quot; &quot;pvul&quot; &quot;rayn&quot; &quot;repa&quot; &quot;reps&quot; &quot;rept&quot; &quot;rina&quot; &quot;roci&quot; &quot;rose&quot; &quot;rubi&quot; &quot;rugo&quot; &quot;smgg&quot;
-## [47] &quot;smgp&quot; &quot;smgr&quot; &quot;tars&quot; &quot;velu&quot; &quot;vrdi&quot; &quot;xyle&quot; &quot;xyls&quot;</code></pre>
+<pre><code>##  [1] &quot;abno&quot; &quot;anom&quot; &quot;atki&quot; &quot;aurs&quot; &quot;boid&quot; &quot;brev&quot; &quot;brun&quot; &quot;clor&quot; &quot;conc&quot; &quot;ecry&quot; &quot;fchi&quot;
+## [12] &quot;gray&quot; &quot;hirs&quot; &quot;lats&quot; &quot;macl&quot; &quot;mcla&quot; &quot;meli&quot; &quot;mima&quot; &quot;mont&quot; &quot;mult&quot; &quot;narm&quot; &quot;neba&quot;
+## [23] &quot;nebn&quot; &quot;neus&quot; &quot;oliv&quot; &quot;opal&quot; &quot;pali&quot; &quot;pczo&quot; &quot;pczp&quot; &quot;pczv&quot; &quot;pind&quot; &quot;pine&quot; &quot;poro&quot;
+## [34] &quot;prsi&quot; &quot;punc&quot; &quot;pvul&quot; &quot;rayn&quot; &quot;repa&quot; &quot;reps&quot; &quot;rept&quot; &quot;rina&quot; &quot;roci&quot; &quot;rose&quot; &quot;rubi&quot;
+## [45] &quot;rugo&quot; &quot;smgg&quot; &quot;smgp&quot; &quot;smgr&quot; &quot;tars&quot; &quot;velu&quot; &quot;vrdi&quot; &quot;xyle&quot; &quot;xyls&quot;</code></pre>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(inRGB, inTree)</span></code></pre></div>
 <pre><code>## character(0)</code></pre>
 <p>Both contain the same species</p>
@@ -1045,7 +1039,7 @@ polarization):</p>
 <p>But since they had different numbers of individuals we only
 considered the ones that were common for both data frames to combine
 them into one larger data frame</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simplify the polarization data</span></span>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simplify the polarisation data</span></span>
 <span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>ElyPolbyind <span class="ot">&lt;-</span></span>
 <span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  ElyPol <span class="sc">%&gt;%</span></span>
 <span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">1</span>, <span class="dv">5</span>) <span class="co"># keep only one column and the individual</span></span>
@@ -1054,13 +1048,20 @@ them into one larger data frame</p>
 <span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">merge</span>(Refbyind, ElyPolbyind) <span class="co"># Combine the two</span></span>
 <span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPData)</span></code></pre></div>
-<pre><code>##      ind    R_ALL     R_VIS    R_NIR        Res   size         phylogeny_name        PC1         PC2  spp   ElytrPol
-## 1 abno01 24.36959 15.194950 32.37499 -9.8258343 1.5390 Anoplognathus_abnormis -2.1441633  0.07156382 abno 0.05631758
-## 2 abno02 30.17203 17.865117 40.90967 -3.9177421 1.6120 Anoplognathus_abnormis -1.8227362  0.16083346 abno 0.07228979
-## 3 anom01 17.25955  2.229028 30.33292  0.8864166 1.7630        Anomala_antigua -2.3016135 -2.27652672 anom 0.13646753
-## 4 anom02 19.93132  7.888188 30.40910 -4.6042095 1.7675        Anomala_antigua -0.3855034 -1.15167811 anom 0.18547191
-## 5 atki01 15.52166  6.194366 23.61734 -9.7297912 2.4590   Calloodes_atkinsonii -2.7414058  1.08031739 atki 0.30583122
-## 6 atki02 18.73437  6.636925 29.23785 -4.5446134 2.0180   Calloodes_atkinsonii -2.7414058  1.08031739 atki 0.30355419</code></pre>
+<pre><code>##      ind    R_ALL     R_VIS    R_NIR        Res   size         phylogeny_name
+## 1 abno01 24.36959 15.194950 32.37499 -9.8258343 1.5390 Anoplognathus_abnormis
+## 2 abno02 30.17203 17.865117 40.90967 -3.9177421 1.6120 Anoplognathus_abnormis
+## 3 anom01 17.25955  2.229028 30.33292  0.8864166 1.7630        Anomala_antigua
+## 4 anom02 19.93132  7.888188 30.40910 -4.6042095 1.7675        Anomala_antigua
+## 5 atki01 15.52166  6.194366 23.61734 -9.7297912 2.4590   Calloodes_atkinsonii
+## 6 atki02 18.73437  6.636925 29.23785 -4.5446134 2.0180   Calloodes_atkinsonii
+##          PC1         PC2  spp   ElytrPol
+## 1 -2.1441633  0.07156382 abno 0.05631758
+## 2 -1.8227362  0.16083346 abno 0.07228979
+## 3 -2.3016135 -2.27652672 anom 0.13646753
+## 4 -0.3855034 -1.15167811 anom 0.18547191
+## 5 -2.7414058  1.08031739 atki 0.30583122
+## 6 -2.7414058  1.08031739 atki 0.30355419</code></pre>
 <p>We also summarised this data by species</p>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>RPDataAgg <span class="ot">&lt;-</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  RPData <span class="sc">%&gt;%</span></span>
@@ -1070,26 +1071,25 @@ them into one larger data frame</p>
 <span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="fu">list</span>(mean))) <span class="co"># mean</span></span>
 <span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(RPDataAgg)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 9
-##   phylogeny_name            R_ALL_1 R_VIS_1 R_NIR_1   Res_1 size_1 PC1_1  PC2_1 ElytrPol_1
-##   &lt;chr&gt;                       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
-## 1 Anomala_antigua              18.6    5.06    30.4  -1.86    1.77 -1.34 -1.71      0.161 
-## 2 Anoplognathus_abnormis       27.3   16.5     36.6  -6.87    1.58 -1.98  0.116     0.0643
-## 3 Anoplognathus_aeneus         22.1   10.4     32.3  -5.22    3.11 -1.90  0.419     0.112 
-## 4 Anoplognathus_aureus         42.6   34.7     49.5 -11.9     1.71 -3.49 -0.434     0.206 
-## 5 Anoplognathus_boisduvalii    31.1   17.3     43.2  -1.06    2.61 -1.64 -0.922     0.0885
-## 6 Anoplognathus_brevicollis    27.4   12.9     40.1   0.236   2.51 -1.15 -3.63      0.0871</code></pre>
+<pre><code>## # A tibble: 6 x 9
+##   phylogeny_name         R_ALL_1 R_VIS_1 R_NIR_1   Res_1 size_1 PC1_1  PC2_1 ElytrPol_1
+##   &lt;chr&gt;                    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Anomala_antigua           18.6    5.06    30.4  -1.86    1.77 -1.34 -1.71      0.161 
+## 2 Anoplognathus_abnormis    27.3   16.5     36.6  -6.87    1.58 -1.98  0.116     0.0643
+## 3 Anoplognathus_aeneus      22.1   10.4     32.3  -5.22    3.11 -1.90  0.419     0.112 
+## 4 Anoplognathus_aureus      42.6   34.7     49.5 -11.9     1.71 -3.49 -0.434     0.206 
+## 5 Anoplognathus_boisduv~    31.1   17.3     43.2  -1.06    2.61 -1.64 -0.922     0.0885
+## 6 Anoplognathus_brevico~    27.4   12.9     40.1   0.236   2.51 -1.15 -3.63      0.0871</code></pre>
 <p>This way we can conduct the analysis at both individual and species
 level</p>
 <p><br> <br></p>
-</div>
 </div>
 </div>
 <div id="results-from-this-step" class="section level1">
 <h1>Results from this step</h1>
 <p>As a general conclusion it does seem that there can be three
 mechanisms: White underlay, chiral and broadband chiral.</p>
-<p>We obtained a data frame useful to compare the degree of polarization
+<p>We obtained a data frame useful to compare the degree of polarisation
 between two body parts, elytron and pronotum</p>
 <div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(BeetlePol, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/FromCode/PolarzElytraPronot.csv&quot;</span>))</span></code></pre></div>
 <p>We also obtained data frames with the degree of polarisation by

@@ -1,0 +1,1394 @@
+---
+title: Polarisation analysis without outliers
+author: Laura Ospina-Rozo
+editor_options: 
+  chunk_output_type: console
+---
+
+We repeated the analysis for degree of polarisation and the raw RGB value sin the right handed polarisation filter excluding the outliers: A. prasinus and the species belonging to the genus Xylonichus, Paraschizognathus because, unlike many scarabs, these species are known to have a bilayered mechanism that is not chiral. 
+
+# Setting up
+
+## Libraries
+
+Libraries sourced from an additional script.
+
+```{r message = FALSE, warning=FALSE}
+source(here::here("Scripts/MacroEcol_1_Libraries.R"))
+```
+
+## Data sets
+
+Import polarisation data.
+
+```{r}
+# elytra
+PolBySpp <- read.csv(here::here("Data/FromCode/PolarzElytraBySpp.csv"))[-1] %>% 
+  dplyr::arrange(phylogeny_name) %>%
+  dplyr::filter(
+    !str_detect(phylogeny_name, "Xylonichus_sp"),
+    !str_detect(phylogeny_name, "Anoplognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_ocularis"),
+    !str_detect(phylogeny_name, "Paraschizognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_olivaceous")
+  )
+
+PolByInd <- read.csv(here::here("Data/FromCode/PolarzElytraByInd.csv"))[-1] %>% 
+  dplyr::filter(
+    !str_detect(ind, "xyls"),
+    !str_detect(ind, "prsi"),
+    !str_detect(ind, "xyle"),
+    !str_detect(ind, "pczo"),
+    !str_detect(ind, "pczp"),
+    !str_detect(ind, "pczv")
+  )
+
+
+# elytra and pronotum
+#BeetlePol <- read.csv(here::here("Data/FromCode/PolarzElytraPronot.csv"))[-1]
+
+
+```
+
+All statistical analysis were done at the species level (polarisation data by species). Plots are produced with the polarisation data by individual.
+
+And we imported the phylogeny from a .nwk file which contains 2000 phylogenetic trees. This allows us to test our hypothesis in multiple trees and not only on the MCC tree. This way, we account for any uncertainty in unresolved tips of our phylogeny.
+
+```{r}
+# Phylogeny
+trees <- ape::read.tree(here::here("Data/XMAS_mat2b_bst2ef_set23nn2_pinct.nwk"))
+
+# Set subset limits
+trees_subset_min<-1000
+trees_subset_max<-2000
+
+MCCtree <- 
+  ape::read.nexus(here::here("Data/xmas_mat2b_bst2ef_set23nn2_pinct_med.tre"))
+```
+
+To explore the correlations between ecological variables and polarisation
+
+```{r}
+# PC Values
+PCValuesF <- read.csv(here::here("Data/FromCode/PCsbySpp.csv"))[-1] %>% 
+  dplyr::rename("PC1" = PC1_1, "PC2" = PC2_1) %>% 
+  dplyr::arrange(phylogeny_name) %>%
+  dplyr::filter(
+    !str_detect(phylogeny_name, "Xylonichus_sp"),
+    !str_detect(phylogeny_name, "Anoplognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_ocularis"),
+    !str_detect(phylogeny_name, "Paraschizognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_olivaceous")
+  )
+
+# merge with polarisation
+PolPCs <- merge(PCValuesF, PolBySpp)
+
+# adapt to merge with phylogeny
+PolPCs2 <- as.data.frame(PolPCs) # create new data frame
+rownames(PolPCs2) <- PolPCs2[, 1] # make species the row names
+PolPCsRows <- PolPCs2[, 2:length(PolPCs2)] # eliminate spp name (redundant)
+```
+
+To explore correlations with reflectivity
+
+```{r}
+# Reflectivity data consolidated by species
+ReflBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivitySpp.csv"))[-1] %>% 
+  dplyr::arrange(phylogeny_name) %>% 
+  dplyr::filter(
+    !str_detect(phylogeny_name, "Xylonichus_sp"),
+    !str_detect(phylogeny_name, "Anoplognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_ocularis"),
+    !str_detect(phylogeny_name, "Paraschizognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_olivaceous")
+  )
+
+# Merge with polarisation
+PolRefl <- merge(ReflBySpp, PolBySpp)
+
+# adapt to merge with phylogeny
+PolRefl2 <- as.data.frame(PolRefl) # create new data frame
+rownames(PolRefl2) <- PolRefl2[, 1] # make species the row names
+PolReflRows <- PolRefl2[, 2:length(PolRefl2)] # eliminate spp name (redundant)
+```
+
+To explore correlations with absorptivity
+
+```{r}
+AbsBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivitySpp.csv"))[-1] %>%
+  dplyr::arrange(phylogeny_name) %>%
+  dplyr::filter(
+    !str_detect(phylogeny_name, "Xylonichus_sp"),
+    !str_detect(phylogeny_name, "Anoplognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_ocularis"),
+    !str_detect(phylogeny_name, "Paraschizognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_olivaceous")
+  )
+
+# merge with polarisation
+PolAbs <- merge(AbsBySpp, PolBySpp)
+
+# adapt to merge with phylogeny
+PolAbs2 <- as.data.frame(PolAbs) # create new data frame
+rownames(PolAbs2) <- PolAbs2[, 1] # make species the row names
+PolAbsRows <- PolAbs2[, 2:length(PolAbs2)] # eliminate spp name (redundant)
+
+
+```
+
+
+To explore correlations with reflectivity only in Right handed polarisation (as a proxy of the amount of melanin/pigments)
+
+```{r}
+
+# Import equalised values for right handed polarisation
+RHand0<-read.csv(here::here("Data/FromCode/PolarzElytra_LERGBValues.csv"))[-1]%>% 
+  dplyr::filter(Type == "RCP") %>% 
+  dplyr::select(-Type) %>% 
+  dplyr::mutate(spp= substr(ind,1,4)) %>% 
+  dplyr::group_by(spp) %>% 
+  dplyr::summarise(
+    meanRCP = mean(RGB_ave),
+    sdRCP = sd(RGB_ave),
+    )
+
+# Join them with the phylogeny names
+SppNames<-read.csv(here::here("Data/9_CodesAndSpecies.csv")) %>% 
+  dplyr::mutate("spp" = substr(Ind,1,4)) %>% 
+  dplyr::select(-Ind) %>% 
+  distinct()
+
+
+RHand <- merge(RHand0[,c(1,2)],SppNames) %>% 
+ dplyr::arrange(phylogeny_name) %>%
+  dplyr::filter(
+    !str_detect(phylogeny_name, "Xylonichus_sp"),
+    !str_detect(phylogeny_name, "Anoplognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_ocularis"),
+    !str_detect(phylogeny_name, "Paraschizognathus_prasinus"),
+    !str_detect(phylogeny_name, "Paraschizognathus_olivaceous")
+  )
+
+# Name the right hand RGB "pol" to use the accessory scripts for multiple trees:
+RHand <- 
+  RHand %>% 
+  dplyr::rename(Pol = meanRCP) %>% 
+  dplyr::group_by(phylogeny_name) %>% 
+  dplyr::summarise(Pol= mean(Pol))
+
+
+# Combine with reflectivity
+
+RHandRefl <- merge(ReflBySpp, RHand) 
+
+RHandRefl2 <- as.data.frame(RHandRefl) # create new data frame
+rownames(RHandRefl2) <- RHandRefl2[, 1] # make species the row names
+RHandReflRows <- RHandRefl2[, 2:length(RHandRefl2)] # eliminate spp name 
+
+
+
+# Combine with absorptivity
+
+RHandAbs <- merge(AbsBySpp, RHand) 
+
+RHandAbs2 <- as.data.frame(RHandAbs) # create new data frame
+rownames(RHandAbs2) <- RHandAbs2[, 1] # make species the row names
+RHandAbsRows <- RHandAbs2[, 2:length(RHandAbs2)] # eliminate spp name 
+
+
+```
+
+
+
+We prune the species in the tree that are not present in the dataset
+
+```{r}
+
+# Prune extra spp in the tree, not contain in the test sample
+PolAbs.species.MCC <- as.data.frame(unique(PolAbs2$phylogeny_name))
+PolRefl.species.MCC <- as.data.frame(unique(PolRefl2$phylogeny_name))
+
+
+# Convert to "row names" (required for following steps)
+row.names(PolAbs.species.MCC) <- PolAbs.species.MCC[, 1] 
+row.names(PolRefl.species.MCC) <- PolRefl.species.MCC[, 1] 
+
+# Make sure the names in data set and tree match
+PolAbs.temp.MCC <- name.check(MCCtree, PolAbs.species.MCC)
+PolRefl.temp.MCC <- name.check(MCCtree, PolRefl.species.MCC)
+
+# This step is necessary because the tips are different.
+MCCtreeAbs <- drop.tip(MCCtree, PolAbs.temp.MCC$tree_not_data)
+MCCtreeRefl <- drop.tip(MCCtree, PolRefl.temp.MCC$tree_not_data)
+
+# Test if the species are the same
+identical(
+  length(name.check(MCCtreeAbs, PolAbs2$phylogeny_name)$tree_not_data),
+  length(PolAbs2$phylogeny_name)
+)
+
+identical(
+  length(name.check(MCCtreeRefl, PolRefl2$phylogeny_name)$tree_not_data),
+  length(PolRefl2$phylogeny_name)
+)
+
+```
+
+
+# Optical properties
+
+## Pol Degree
+
+This is an indication of "how much of the colour is circularly polarised to the left". As a simplification, we assume that this is equivalent to most of the reflections produced by a chiral mechanism
+
+### Reflectivity
+
+#### VIS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can polarisation predict visible reflectivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+```{r}
+cor.test(PolRefl$VIS, PolRefl$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL1 <- lm(PolRefl$VIS ~ PolRefl$Pol) # by spp
+summary(ModL1)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+Create the data frame of comparative data
+
+```{r}
+
+comp_data <- comparative.data(
+  phy = MCCtreeRefl,
+  data = PolRefl, # aggregated data without the spp in the row names
+  names.col = "phylogeny_name", # contains the column phylogeny name
+  vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+```
+
+Establish the model
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDVIS <- pgls(VIS ~ Pol,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDVIS)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Function
+
+Note that the function has to be modified for the predictors and data frame that we are using
+
+```{r warning=FALSE, message=FALSE}
+source(here::here("Scripts/6_multiple_pgls_function_A.R")) # script A is for Polarization as a response
+```
+
+Model
+
+```{r}
+MuPGLSPol3 <- Response ~ Pol
+```
+
+Dataset
+
+```{r message=FALSE}
+
+PolRefl3 <-
+    PolReflRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS) %>% 
+    dplyr::rename("Response" = VIS)
+
+PolRefl3 <- as.data.frame(PolRefl3)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsPol3 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = PolRefl3)
+
+dfPol3 <- ldply(runsPol3, data.frame)
+
+length(dfPol3[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfPol3))
+```
+
+[ **Conclusion** ]{style="color: #04C799"} <br/>
+
+**There's no correlation between visible reflectivity and polarisation at the species level.**
+
+<br> <br> <br>
+
+#### NIR
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Is polarisation correlated with NIR reflectivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(PolRefl$NIR, PolRefl$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL2 <- lm(PolRefl$NIR ~ PolRefl$Pol + PolRefl$VIS) # by spp
+summary(ModL2)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDNIR <- pgls(NIR ~ Pol + VIS,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDNIR)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Function
+
+Note that the function has to be modified for the predictors and data frame that we are using
+
+```{r warning=FALSE, message=FALSE}
+source(here::here("Scripts/13_multiple_pgls_function_H.R")) # script H is for Polarization as a predictor
+```
+
+Model
+
+```{r}
+MuPGLSPol4 <- Response ~ Pol + VIS
+```
+
+Dataset
+
+```{r message=FALSE}
+
+PolRefl4 <-
+    PolReflRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS, NIR) %>% 
+    dplyr::rename("Response" = NIR)
+
+PolRefl4 <- as.data.frame(PolRefl4)
+length(PolRefl4$Pol)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsPol4 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runH, model = MuPGLSPol4, dataset = PolRefl4)
+
+dfPol4 <- ldply(runsPol4, data.frame)
+
+length(dfPol4[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfPol4))
+```
+
+#### FRS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Is polarisation correlated with the NIR residuals corrected by phylogeny?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(PolRefl$FRS, PolRefl$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL3 <- lm(PolRefl$FRS ~ PolRefl$Pol) # by spp
+summary(ModL3)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDFRS <- pgls(FRS ~ Pol,
+  data = comp_data, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDFRS)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+PolRefl5 <-
+    PolReflRows %>% # phylogeny names in rows
+    dplyr::select(Pol, FRS) %>% 
+    dplyr::rename("Response" = FRS)
+
+PolRefl5 <- as.data.frame(PolRefl5)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsPol5 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = PolRefl5)
+
+dfPol5 <- ldply(runsPol5, data.frame)
+
+length(dfPol5[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfPol5))
+```
+
+### Absorptivity
+
+#### VIS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can polarisation predict visible absorptivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+```{r}
+cor.test(PolAbs$VIS, PolAbs$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL1Abs <- lm(PolAbs$VIS ~ PolAbs$Pol) # by spp
+summary(ModL1Abs)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+Create the data frame of comparative data
+
+```{r}
+
+CompDataAbs <- comparative.data(
+  phy = MCCtreeAbs,
+  data = PolAbs, # aggregated data without the spp in the row names
+  names.col = "phylogeny_name", # contains the column phylogeny name
+  vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+```
+
+Establish the model
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDVISAbs <- pgls(VIS ~ Pol,
+  data = CompDataAbs, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDVISAbs)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+PolAbs3 <-
+    PolAbsRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS) %>% 
+    dplyr::rename("Response" = VIS)
+
+PolAbs3 <- as.data.frame(PolAbs3)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsPol6 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = PolAbs3)
+
+dfPol6 <- ldply(runsPol6, data.frame)
+
+length(dfPol6[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfPol6))
+```
+
+[ **Conclusion** ]{style="color: #04C799"} <br/>
+
+**There's no correlation between visible absorptivity and polarisation at the species level.**
+
+<br> <br> <br>
+
+#### NIR
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Is polarisation correlated with NIR absorptivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(PolAbs$NIR, PolAbs$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL2Abs <- lm(PolAbs$NIR ~ PolAbs$Pol + PolAbs$VIS) # by spp
+summary(ModL2Abs)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDNIRAbs <- pgls(NIR ~ Pol + VIS,
+  data = CompDataAbs, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDNIRAbs)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+PolAbs4 <-
+    PolAbsRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS, NIR) %>% 
+    dplyr::rename("Response" = NIR)
+
+PolAbs4 <- as.data.frame(PolAbs4)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsPol7 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runH, model = MuPGLSPol4, dataset = PolAbs4)
+
+dfPol7 <- ldply(runsPol7, data.frame)
+
+length(dfPol7[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfPol7))
+```
+
+#### FRS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Is polarisation correlated with the NIR residuals corrected by phylogeny?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(PolAbs$FRS, PolAbs$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL3Abs <- lm(PolAbs$FRS ~ PolAbs$Pol) # by spp
+summary(ModL3Abs)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDFRSAbs <- pgls(FRS ~ Pol,
+  data = CompDataAbs, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDFRSAbs)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+PolAbs5 <-
+    PolAbsRows %>% # phylogeny names in rows
+    dplyr::select(Pol, FRS) %>% 
+    dplyr::rename("Response" = FRS)
+
+PolAbs5 <- as.data.frame(PolAbs5)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsPol8 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = PolAbs5)
+
+dfPol8 <- ldply(runsPol8, data.frame)
+
+length(dfPol8[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfPol8))
+```
+
+
+
+
+## Right handed Pol
+
+
+
+### Reflectivity
+
+#### VIS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can the darkness in the underlaying pigment affect the visible reflectivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+```{r}
+cor.test(RHandRefl$VIS, RHandRefl$Pol) # by spp
+
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL1RH <- lm(RHandRefl$VIS ~ RHandRefl$Pol) # by spp
+summary(ModL1RH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+Create the data frame of comparative data
+
+```{r}
+
+comp_dataRH <- comparative.data(
+  phy = MCCtreeRefl,
+  data = RHandRefl, # aggregated data without the spp in the row names
+  names.col = "phylogeny_name", # contains the column phylogeny name
+  vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+```
+
+Establish the model
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDVISRH <- pgls(VIS ~ Pol,
+  data = comp_dataRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDVISRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Function
+
+Note that the function has to be modified for the predictors and data frame that we are using
+
+```{r warning=FALSE, message=FALSE}
+source(here::here("Scripts/6_multiple_pgls_function_A.R")) # script A is for Polarization as a response
+```
+
+Model
+
+```{r}
+MuPGLSPol3 <- Response ~ Pol
+```
+
+Dataset
+
+```{r message=FALSE}
+
+RHandRefl3 <-
+    RHandReflRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS) %>% 
+    dplyr::rename("Response" = VIS)
+
+RHandRefl3 <- as.data.frame(RHandRefl3)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol3 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = RHandRefl3)
+
+dfRHPol3 <- ldply(runsRHPol3, data.frame)
+
+length(dfRHPol3[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol3))
+```
+
+[ **Conclusion** ]{style="color: #04C799"} <br/>
+
+**PENDING.**
+
+<br> <br> <br>
+
+#### NIR
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can the darkness in the underlaying pigment affect the NIR reflectivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(RHandRefl$NIR, RHandRefl$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL2RH <- lm(RHandRefl$NIR ~ RHandRefl$Pol + RHandRefl$VIS) # by spp
+summary(ModL2RH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDNIRRH <- pgls(NIR ~ Pol + VIS,
+  data = comp_dataRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDNIRRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Function
+
+Note that the function has to be modified for the predictors and data frame that we are using
+
+```{r warning=FALSE, message=FALSE}
+source(here::here("Scripts/13_multiple_pgls_function_H.R")) # script A is for Polarization as a response
+```
+
+Model
+
+```{r}
+MuPGLSPol4 <- Response ~ Pol + VIS
+```
+
+Dataset
+
+```{r message=FALSE}
+
+RHandRefl4 <-
+    RHandReflRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS, NIR) %>% 
+    dplyr::rename("Response" = NIR)
+
+RHandRefl4 <- as.data.frame(RHandRefl4)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol4 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runH, model = MuPGLSPol4, dataset = RHandRefl4)
+
+dfRHPol4 <- ldply(runsRHPol4, data.frame)
+
+length(dfRHPol4[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol4))
+```
+
+#### FRS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can the darkness in the underlaying pigment affect the NIR reflectivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(RHandRefl$FRS, RHandRefl$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL3RH <- lm(RHandRefl$FRS ~ RHandRefl$Pol) # by spp
+summary(ModL3RH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDFRSRH <- pgls(FRS ~ Pol,
+  data = comp_dataRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDFRSRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+RHandRefl5 <-
+    RHandReflRows %>% # phylogeny names in rows
+    dplyr::select(Pol, FRS) %>% 
+    dplyr::rename("Response" = FRS)
+
+RHandRefl5 <- as.data.frame(RHandRefl5)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol5 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = RHandRefl5)
+
+dfRHPol5 <- ldply(runsRHPol5, data.frame)
+
+length(dfRHPol5[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol5))
+```
+
+### Absorptivity
+
+#### VIS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can polarisation predict visible absorptivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+```{r}
+cor.test(RHandAbs$VIS, RHandAbs$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL1AbsRH <- lm(RHandAbs$VIS ~ RHandAbs$Pol) # by spp
+summary(ModL1AbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+Create the data frame of comparative data
+
+```{r}
+
+CompDataAbsRH <- comparative.data(
+  phy = MCCtreeAbs,
+  data = RHandAbs, # aggregated data without the spp in the row names
+  names.col = "phylogeny_name", # contains the column phylogeny name
+  vcv = TRUE,
+  na.omit = FALSE, warn.dropped = TRUE
+)
+```
+
+Establish the model
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDVISAbsRH <- pgls(VIS ~ Pol,
+  data = CompDataAbsRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDVISAbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+RHandAbs3 <-
+    RHandAbsRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS) %>% 
+    dplyr::rename("Response" = VIS)
+
+RHandAbs3 <- as.data.frame(RHandAbs3)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol6 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = RHandAbs3)
+
+dfRHPol6 <- ldply(runsRHPol6, data.frame)
+
+length(dfRHPol6[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol6))
+```
+
+[ **Conclusion** ]{style="color: #04C799"} <br/>
+
+**There's no correlation between visible absorptivity and polarisation at the species level.**
+
+<br> <br> <br>
+
+#### NIR
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Is polarisation correlated with NIR absorptivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(RHandAbs$NIR, RHandAbs$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL2AbsRH <- lm(RHandAbs$NIR ~ RHandAbs$Pol + RHandAbs$VIS) # by spp
+summary(ModL2AbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDNIRAbsRH <- pgls(NIR ~ Pol + VIS,
+  data = CompDataAbsRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDNIRAbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+RHandAbs4 <-
+    RHandAbsRows %>% # phylogeny names in rows
+    dplyr::select(Pol, VIS, NIR) %>% 
+    dplyr::rename("Response" = NIR)
+
+RHandAbs4 <- as.data.frame(RHandAbs4)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol7 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runH, model = MuPGLSPol4, dataset = RHandAbs4)
+
+dfRHPol7 <- ldply(runsRHPol7, data.frame)
+
+length(dfRHPol7[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol7))
+```
+
+#### FRS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Is polarisation correlated with the NIR residuals corrected by phylogeny?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+Species level:
+
+```{r}
+cor.test(RHandAbs$FRS, RHandAbs$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+**Linear model**
+
+</p>
+
+```{r}
+ModL3AbsRH <- lm(RHandAbs$FRS ~ RHandAbs$Pol) # by spp
+summary(ModL3AbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS**
+
+</p>
+
+The data frame of comparative data is the same as for visible light
+
+```{r message= FALSE, warnings=FALSE}
+pglsPDFRSAbsRH <- pgls(FRS ~ Pol,
+  data = CompDataAbsRH, param.CI = 0.95, lambda = "ML"
+)
+
+summary(pglsPDFRSAbsRH)
+```
+
+<p style="color: #04C799">
+
+**PGLS multiple trees**
+
+</p>
+
+Dataset
+
+```{r message=FALSE}
+
+RHandAbs5 <-
+    RHandAbsRows %>% # phylogeny names in rows
+    dplyr::select(Pol, FRS) %>% 
+    dplyr::rename("Response" = FRS)
+
+RHandAbs5 <- as.data.frame(RHandAbs5)
+```
+
+Apply
+
+```{r message=FALSE, warning=FALSE}
+runsRHPol8 <- lapply(trees[trees_subset_min:trees_subset_max],
+                   pgls_runA, model = MuPGLSPol3, dataset = RHandAbs5)
+
+dfRHPol8 <- ldply(runsRHPol8, data.frame)
+
+length(dfRHPol8[,1])
+```
+
+Get results
+
+```{r}
+HPDinterval(as.mcmc(dfRHPol8))
+```
+
+
