@@ -49,6 +49,8 @@ These are the main resources:
   
   -- [Reflectivity in small and large beetles](https://lospinarozo.github.io/PhotonicRebelsCode/MacroEcol_5_ReflectivityStats.html)
   
-  -- [Visible reflectivity reduced by "pigments"](https://lospinarozo.github.io/PhotonicRebelsCode/MacroEcol_7_PolarisationStats.html)
+  -- [NIR reflectivity reduced by chiral structures](https://lospinarozo.github.io/PhotonicRebelsCode/MacroEcol_7_PolarisationStats.html#Degree_of_polarisation)
   
-  -- [NIR reflectivity reduced by chiral structures](https://lospinarozo.github.io/PhotonicRebelsCode/MacroEcol_7_PolarisationStats.html)
+  -- [Visible reflectivity reduced by "pigments"](https://lospinarozo.github.io/PhotonicRebelsCode/MacroEcol_7_PolarisationStats.html#Right_handed_polarisation)
+  
+  -- Note: We repeated all the analysis excluding _A. prasinus_ and the species belonging to the genus Xylonichus, Paraschizognathus as a way to test if our large-scale patterns where driven by extreme values. Results in the tabs label "Subset". Unlike many scarabs, these species are known to have a bilayered mechanism that is not chiral and enhances NIR reflectivity (Ospina-Rozo et al. 2023 Deconstructed Beetles).

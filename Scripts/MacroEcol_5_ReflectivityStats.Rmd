@@ -259,6 +259,7 @@ pglsmodTOT <- pgls(TOT ~ PC1 + PC2 + size + PC1*size + PC2*size,
 FinMccTotc <- as.numeric(round(summary(pglsmodTOT)$coefficients[,1],3))
 FinMccTotp <- as.numeric(round(summary(pglsmodTOT)$coefficients[,4],3)) 
 
+summary(pglsmodTOT)
 ```
 
 
@@ -295,6 +296,7 @@ pglsmodVIS <- pgls(VIS ~ PC1 + PC2 + size + PC1*size + PC2*size,
 FinMccVisc <- as.numeric(round(summary(pglsmodVIS)$coefficients[,1],3)) 
 FinMccVisp <- as.numeric(round(summary(pglsmodVIS)$coefficients[,4],3))
 
+summary(pglsmodVIS)
 ```
 
 
@@ -381,6 +383,7 @@ pglsmodNIR <- pgls(NIR ~ PC1 + PC2 + size + PC1*size + PC2*size + VIS,
 FinMccNirc <- as.numeric(round(summary(pglsmodNIR)$coefficients[,1],3)) 
 FinMccNirp <- as.numeric(round(summary(pglsmodNIR)$coefficients[,4],3))
 
+summary(pglsmodNIR)
 ```
 
 
@@ -415,6 +418,7 @@ spglsmodNIR <- pgls(NIR ~ PC2 + size + PC2*size + VIS,
 
 sFinMccNirc <- as.numeric(round(summary(spglsmodNIR)$coefficients[,1],3)) 
 sFinMccNirp <- as.numeric(round(summary(spglsmodNIR)$coefficients[,4],3))
+
 
 ```
 
@@ -468,6 +472,8 @@ pglsmodRes <- pgls(Res ~ PC1 + PC2 + size + PC1*size + PC2*size,
 
 FinMccResc <- as.numeric(round(summary(pglsmodRes)$coefficients[,1],3)) 
 FinMccResp <- as.numeric(round(summary(pglsmodRes)$coefficients[,4],3))
+
+summary(pglsmodRes)
 
 ```
 
@@ -557,6 +563,7 @@ pglsmodFRS <- pgls(FRS ~ PC1 + PC2 + size + PC1*size + PC2*size,
 FinMccFRSc <- as.numeric(round(summary(pglsmodFRS)$coefficients[,1],3)) 
 FinMccFRSp <- as.numeric(round(summary(pglsmodFRS)$coefficients[,4],3))
 
+summary(pglsmodFRS )
 ```
 
 
@@ -643,6 +650,8 @@ pglsmodPRS <- pgls(FRS2 ~ PC1 + PC2 + size + PC1*size + PC2*size,
 
 FinMccPRSc <- as.numeric(round(summary(pglsmodPRS)$coefficients[,1],3)) 
 FinMccPRSp <- as.numeric(round(summary(pglsmodPRS)$coefficients[,4],3))
+
+summary(pglsmodPRS)
 
 ```
 

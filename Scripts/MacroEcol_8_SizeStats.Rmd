@@ -121,6 +121,8 @@ pglsmodSize <- pgls(meanSize ~ meanPC1 + meanPC2,
 
 FinMccSizec <- as.numeric(round(summary(pglsmodSize)$coefficients[,1],3))
 FinMccSizep <- as.numeric(round(summary(pglsmodSize)$coefficients[,4],3)) 
+
+summary(pglsmodSize)
 ```
 
 ## Multiple trees
@@ -147,6 +149,8 @@ length(dfSize[,1])
 write.csv(dfSize, here::here("Data/FromCode/MuTPglsResultsSize.csv"))
 
 FinSizeM <- HPDinterval(as.mcmc(dfSize))
+
+FinSizeM
 ```
 
 # Plot

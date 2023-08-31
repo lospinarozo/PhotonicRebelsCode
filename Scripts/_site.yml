@@ -27,12 +27,12 @@ navbar:
          href: MacroEcol_7_PolarisationStats.html
        - text: Size
          href: MacroEcol_8_SizeStats.html
-       - text: "Reflectivity no outliers"
+       - text: "Reflectivity Subset"
          href: MacroEcol_9_ReflectivityQC.html
-       - text: "Absorptivity no outliers"
+       - text: "Absorptivity Subset"
          href: MacroEcol_10_AbsorptivityQC.html
-       - text: "Polarisation no outliers"
-         href: MacroEcol_10_AbsorptivityQC.html
+       - text: "Polarisation Subset"
+         href: MacroEcol_11_PolarisationQC.html
    - text: Extra figures
      href: MacroEcol_12_ExtraFigures.html
 output:

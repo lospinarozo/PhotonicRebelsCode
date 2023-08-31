@@ -5,7 +5,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-We repeated the analysis for degree of polarisation and the raw RGB value sin the right handed polarisation filter excluding the outliers: A. prasinus and the species belonging to the genus Xylonichus, Paraschizognathus because, unlike many scarabs, these species are known to have a bilayered mechanism that is not chiral. 
+We repeated the analysis for degree of polarisation and the raw RGB value sin the right handed polarisation filter excluding A. prasinus and the species belonging to the genus Xylonichus, Paraschizognathus because, unlike many scarabs, these species are known to have a bilayered mechanism that is not chiral. 
 
 # Setting up
 

@@ -70,7 +70,8 @@ To explore correlations with reflectivity
 
 ```{r}
 # Reflectivity data consolidated by species
-ReflBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivitySpp.csv"))[-1] %>% 
+ReflBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedReflectivitySpp.csv"
+                                 ))[-1] %>% 
   dplyr::arrange(phylogeny_name)
 
 # Merge with polarisation
@@ -85,7 +86,8 @@ PolReflRows <- PolRefl2[, 2:length(PolRefl2)] # eliminate spp name (redundant)
 To explore correlations with absorptivity
 
 ```{r}
-AbsBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivitySpp.csv"))[-1] %>%
+AbsBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedAbsorptivitySpp.csv"
+                                ))[-1] %>%
   dplyr::arrange(phylogeny_name)
 
 # merge with polarisation
@@ -105,7 +107,8 @@ To explore correlations with reflectivity only in Right handed polarisation (as 
 ```{r}
 
 # Import equalised values for right handed polarisation
-RHand0<-read.csv(here::here("Data/FromCode/PolarzElytra_LERGBValues.csv"))[-1]%>% 
+RHand0<-read.csv(here::here("Data/FromCode/PolarzElytra_LERGBValues.csv"
+                            ))[-1]%>% 
   dplyr::filter(Type == "RCP") %>% 
   dplyr::select(-Type) %>% 
   dplyr::mutate(spp= substr(ind,1,4)) %>% 
@@ -233,7 +236,7 @@ PronotumMoreP <-
 PronotumMoreP$ind
 ```
 
-# Ecological variables
+# Climate
 
 <p style="color: #04C799">
 
@@ -1971,7 +1974,7 @@ trend1<-data.frame(PolDeg,RefDeg) # Pol values and expected reflectivity joint
 
 ```{r}
 
-NudgeXVal = 0.04
+NudgeXVal = 0.02
 NudgeYVal = 0.9
 
 PVRPlot <- ggplot(data = ToPlotPolRefl, aes(x = meanPol, y = meanVIS),
@@ -2086,6 +2089,13 @@ PNAPlot <- ggplot(data = ToPlotPolAbs, aes(x = meanPol, y = meanResA),
 
 grid.arrange(PVRPlot, PNRPlot, PVAPlot, PNAPlot, nrow = 2)
 ```
+
+
+```{r eval=FALSE}
+PNRPlot
+```
+
+
 
 ## Right handed polarisation
 

@@ -17,12 +17,16 @@ library(pavo) # Processing spectral data
 
 # For MCMCglmm
 library(MCMCglmm)
+
+install.packages("devtools")
+library(devtools)
+install_github("YuLab-SMU/ggtree")
 library(ggtree)
 library(ape)
 library(geiger) # for name.check() in run_mcmc()
 library(ggnewscale) # for new_scale_fill()
 library(phangorn) # for making MCC tree from 1300 trees using maxCladeCred()
-
+library(picante)
 
 # For PGLs
 library(caper) # for pgls()
