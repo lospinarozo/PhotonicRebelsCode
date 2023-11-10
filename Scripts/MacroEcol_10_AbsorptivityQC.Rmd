@@ -109,7 +109,7 @@ identical(
 
 Create subsets for each spectral band. In these subsets the response variable is always called "response" so that we can use the same function to run various models. 
 
-In this script, the response variable is the reflectance on each spectral band or the NIR/VIS residuals.
+In this script, the response variable is the absorptivity on each spectral band.
 
 ```{r}
 

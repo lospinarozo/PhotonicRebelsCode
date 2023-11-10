@@ -25,9 +25,9 @@ library(pavo) # Processing spectral data
 # For MCMCglmm
 library(MCMCglmm)
 
-install.packages("devtools")
+#install.packages("devtools")
 library(devtools)
-install_github("YuLab-SMU/ggtree")
+#install_github("YuLab-SMU/ggtree")
 library(ggtree)
 library(ape)
 library(geiger) # for name.check() in run_mcmc()
@@ -54,4 +54,6 @@ library(jtools) # Reporting Results from Linear Models
 library(here)
 library(stringr)
 
-
+library(huxtable)
+library(ozmaps)
+library(matrixStats)

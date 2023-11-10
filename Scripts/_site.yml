@@ -8,27 +8,27 @@ navbar:
    - text: Main
      href: index.html
    - text: Setting up
-     href: MacroEcol_1_SettingUp.html
+     href: MacroEcol_01_SettingUp.html
    - text: Extracting variables
      menu:
        - text: Reflectivity & Absorptivity
-         href: MacroEcol_2_OpticalProperties.html
+         href: MacroEcol_02_OpticalProperties.html
        - text: Polarisation
-         href: MacroEcol_3_Polarisation.html
+         href: MacroEcol_03_Polarisation.html
        - text: Ecology
-         href: MacroEcol_4_EcologicalVariables.html
+         href: MacroEcol_04_EcologicalVariables.html
    - text: Analysis
      menu:
        - text: Reflectivity
-         href: MacroEcol_5_ReflectivityStats.html
+         href: MacroEcol_05_ReflectivityStats.html
        - text: Absorptivity
-         href: MacroEcol_6_AbsorptivityStats.html
+         href: MacroEcol_06_AbsorptivityStats.html
        - text: Polarisation
-         href: MacroEcol_7_PolarisationStats.html
+         href: MacroEcol_07_PolarisationStats.html
        - text: Size
-         href: MacroEcol_8_SizeStats.html
+         href: MacroEcol_08_SizeStats.html
        - text: "Reflectivity Subset"
-         href: MacroEcol_9_ReflectivityQC.html
+         href: MacroEcol_09_ReflectivityQC.html
        - text: "Absorptivity Subset"
          href: MacroEcol_10_AbsorptivityQC.html
        - text: "Polarisation Subset"
