@@ -101,6 +101,16 @@ PolAbsRows <- PolAbs2[, 2:length(PolAbs2)] # eliminate spp name (redundant)
 
 ```
 
+To explore correlations with transmissivity
+
+```{r}
+TraBySpp <- read.csv(here::here("Data/FromCode/ConsolidatedTransmbySpp.csv"
+                                )) %>% 
+  rename(phylogeny_name = X) %>% 
+  dplyr::arrange(phylogeny_name)
+```
+
+
 
 To explore correlations with reflectivity only in Right handed polarisation (as a proxy of the amount of melanin/pigments)
 
@@ -153,6 +163,15 @@ RHandAbs2 <- as.data.frame(RHandAbs) # create new data frame
 rownames(RHandAbs2) <- RHandAbs2[, 1] # make species the row names
 RHandAbsRows <- RHandAbs2[, 2:length(RHandAbs2)] # eliminate spp name 
 
+
+# Combine with Transmissivity
+
+RHandTra <- merge(TraBySpp, RHand) 
+
+
+RHandTra2 <- as.data.frame(RHandTra) # create new data frame
+rownames(RHandTra2) <- RHandTra2[, 1] # make species the row names
+RHandTraRows <- RHandTra2[, 2:length(RHandTra2)] # eliminate spp name 
 
 ```
 
@@ -1502,7 +1521,46 @@ Get results
 HPDinterval(as.mcmc(dfRHPol8))
 ```
 
+### Transmissivity
 
+#### VIS
+
+<p style="color: #04C799">
+
+**Question**
+
+</p>
+
+**Can polarisation predict visible transmissivity?**
+
+<p style="color: #04C799">
+
+**Correlation**
+
+</p>
+
+```{r}
+cor.test(RHandTra2$VIS, RHandTra2$Pol) # by spp
+```
+
+<p style="color: #04C799">
+
+
+Plot: 
+
+```{r}
+par(mfrow=c(1,2))
+plot(RHandTra2$Pol, RHandTra2$VIS,
+     ylab=("Transmissivity in VIS (%)"),
+     xlab = ("Reflectance in RCP filter"))
+plot(RHandAbs2$Pol, RHandAbs2$VIS,
+     ylab=("Absorptivity in VIS (%)"),
+     xlab = ("Reflectance in RCP filter"))
+```
+
+Neither absorptivity nor transmissivity can be explained by the reflectance in RCP filter in the subset of 20 species. To further understand these correlations, a larger n is needed.
+
+<br> <br> <br>
 
 # Mechanisms
 
@@ -1875,8 +1933,20 @@ AbsByInd0 %>%
       )
 AbsByInd <- as.data.frame(AbsByInd)
 
+#mean and sd of transmittance per species 
 
-# Mean and sd per species Reflectivity
+TraByInd <-
+AbsByInd0 %>%
+  dplyr::mutate("spp" = substr(ind, 1, 4)) %>%
+  dplyr::select(spp, T_VIS) %>% 
+  dplyr::group_by(spp) %>% 
+  dplyr::summarise(
+    meanVIST = mean(T_VIS),
+    sdVIST = sd(T_VIS)
+      )
+TraByInd <- as.data.frame(TraByInd)
+
+# Mean and sd per species Reflectivity including pol
 ToPlotPolRefl <-
   merge(ReflByInd[,c(1,3,4,5)], PolByInd, by = "ind") %>%
   dplyr::select(-phylogeny_name) %>%
@@ -1898,6 +1968,10 @@ rownames(ToPlotPolRefl) <- ToPlotPolRefl$spp
 ToPlotPolAbs <- merge(
   ToPlotPolRefl[,c("spp", "meanPol", "sdPol")], AbsByInd)
 rownames(ToPlotPolAbs) <- ToPlotPolAbs$spp
+
+ToPlotPolTra <- merge(
+  ToPlotPolRefl[,c("spp", "meanPol", "sdPol")], TraByInd)
+rownames(ToPlotPolTra) <- ToPlotPolTra$spp
 
 ```
 

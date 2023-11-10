@@ -251,3 +251,33 @@ ggplot(Step1Example, aes(x = wl)) +
 
 ```
 
+
+## transmittance and absorbance
+
+```{r}
+TrAb <- read.csv("../Data/13_SuppTransmittancvsAbsorbance.csv") %>% 
+  mutate(Spp = substr(Beetle, 1, 4)) %>% 
+  select(-Beetle) %>% 
+  group_by(Spp) %>% 
+  summarise(Transm = mean(Td_VIS),
+            Absorb = mean(Ab_VIS),
+            Trsd = sd(Td_VIS),
+            Absd = sd(Ab_VIS))
+  
+
+head(TrAb)
+
+ggplot(TrAb, aes(y = reorder(Spp, -Transm))) +
+  geom_bar(aes(x = (-Transm), fill = "Transm"), 
+           stat = "identity", position = "dodge",  fill = "#ffb000") +
+  geom_bar(aes(x = Absorb, fill = "Absorb"), 
+          stat = "identity", position = "dodge",  fill = "#648fff") +
+  labs(fill = "Variable") +
+  theme_minimal() +
+  theme(legend.position = "top") +
+  ylab("Species") +
+  xlab("Percentage (%)")
+  
+
+```
+

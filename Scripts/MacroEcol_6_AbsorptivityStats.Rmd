@@ -276,6 +276,8 @@ pglsmodVISA <- pgls(VIS ~ PC1 + PC2 + size + PC1*size + PC2*size,
 
 FinMccViscA <- as.numeric(round(summary(pglsmodVISA)$coefficients[,1],3)) 
 FinMccVispA <- as.numeric(round(summary(pglsmodVISA)$coefficients[,4],3))
+
+summary(pglsmodVISA)
 ```
 
 #### multiple trees

@@ -2,6 +2,13 @@
 
 # Libraries
 
+# For images in the html
+library(imager)
+
+# 
+library(DT)
+library(pavo)
+
 #For PCA
 library(Hmisc) # To obtain p values of correlations
 library(psych) # For PCA 

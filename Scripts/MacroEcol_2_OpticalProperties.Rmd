@@ -821,3 +821,48 @@ Consolidated file with absorptivity on each spectral band including NIR residual
 ```{r}
 write.csv(Cons1aggA, here::here("Data/FromCode/ConsolidatedAbsorptivitySpp.csv"))
 ```
+
+<span style="color: #04C799"> **Transmissivity by species** </span>  <br/>
+
+Consolidated file with transmissivity for visible spectral band and phylogeny name for each species
+
+```{r}
+Transmissivity0 <- 
+  Transmissivity %>% 
+  mutate (spp = substr(ind, 1, 4)) %>% 
+  filter (spp != "ambl"& # Amblyterus cicatricosus
+          spp != "psqz"& # Pseudoschizongnatus schoenfeldti
+          spp != "saul"& # Saulostomus villosus
+          spp != "sqzb"& # Schizognathus burmeisteri
+          spp != "sqzc"& # Schizognathus compressicornis
+          spp != "sqzm"  # Schizognathus mesosternalis
+            ) %>% # These species were removed. No phylogenetic info
+  dplyr::select (-spp) %>% 
+  rename(Ind = ind)
+
+ConsTransm <-
+  inner_join(Transmissivity0, SppNames, by = "Ind")
+  data.frame()
+  
+
+Cons1AgTra <-
+  ConsTransm %>% 
+  dplyr::select (-Ind) %>%# remove individual id
+  dplyr::select (phylogeny_name, everything ()) %>% # order columns
+  dplyr::group_by (phylogeny_name) %>%  # group
+  dplyr::summarise (across(everything(), list(mean))) # mean
+
+# Modify to make it compatible with tree tips
+ConsAggT <- as.data.frame(Cons1AgTra) # convert to a data frame
+
+rownames(ConsAggT) <- ConsAggT[, 1] # make species the row names 
+ConsAggT <- ConsAggT [,2:length(ConsAggT)] # eliminate spp name (redundant)
+
+# Separate the data frames 
+# Useful for plotting in the tree
+names(ConsAggT) <- c("TOT", "VIS", "NIR")
+
+write.csv(ConsAggT, here::here("Data/FromCode/ConsolidatedTransmbySpp.csv"))
+
+```
+
