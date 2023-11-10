@@ -256,10 +256,10 @@ ggplot(Step1Example, aes(x = wl)) +
 
 ```{r}
 TrAb <- read.csv("../Data/13_SuppTransmittancvsAbsorbance.csv") %>% 
-  mutate(Spp = substr(Beetle, 1, 4)) %>% 
-  select(-Beetle) %>% 
-  group_by(Spp) %>% 
-  summarise(Transm = mean(Td_VIS),
+  dplyr::mutate(Spp = substr(Beetle, 1, 4)) %>% 
+  dplyr::select(-Beetle) %>% 
+  dplyr::group_by(Spp) %>% 
+  dplyr::summarise(Transm = mean(Td_VIS),
             Absorb = mean(Ab_VIS),
             Trsd = sd(Td_VIS),
             Absd = sd(Ab_VIS))
@@ -277,7 +277,6 @@ ggplot(TrAb, aes(y = reorder(Spp, -Transm))) +
   theme(legend.position = "top") +
   ylab("Species") +
   xlab("Percentage (%)")
-  
 
 ```
 
